@@ -15,9 +15,9 @@ class CachedTensorMixin:
         self.edge_initial_position_cache = dict()
         self.valid_attention_cache = dict()
 
-    def parallel_backward_mask(self, L: int, device: str = "cpu"):
-        if (L, device) in self.parallel_backward_mask_cache:
-            return self.parallel_backward_mask_cache[(L, device)]
+    def parallel_backward_mask(self, L: int, M: int, device: str = "cpu"):
+        if (L, M, device) in self.parallel_backward_mask_cache:
+            return self.parallel_backward_mask_cache[(L, M, device)]
         mmask = torch.zeros(L, L, L, dtype=torch.float).to(device)
         emask = torch.zeros(L, L, L, dtype=torch.float).to(device)
         triu_ones = torch.triu(torch.ones(L, L, dtype=torch.float).to(device), diagonal=0)
@@ -35,18 +35,18 @@ class CachedTensorMixin:
             mmask[j, :L - i, i:L] = triu_ones[:L - i, :L - i]
             emask[j, :L - i, i:L] = triu_ones[:L - i, :L - i]
             mmask[j, 0, :i] = 1
-        self.parallel_backward_mask_cache[(L, device)] = (mmask, emask)
+        mmask, emask = mmask[:,:M,:], emask[:,:M,:]
+        self.parallel_backward_mask_cache[(L, M, device)] = (mmask, emask)
         return mmask, emask
 
-    def valid_attention(self, L: int, device: str = "cpu"):
-        if (L, device) in self.valid_attention_cache:
-            return self.valid_attention_cache[(L, device)]
-        num_substr_per_length = list(reversed(range(1, L + 1)))
-        num_substr_lt_length = [sum(num_substr_per_length[:i]) for i in range(L)]
-        mask = torch.zeros(L * (L + 1) // 2, L * (L + 1) // 2, dtype=torch.float).to(device)
+    def valid_attention(self, L: int, M: int, device: str = "cpu"):
+        if (L, M, device) in self.valid_attention_cache:
+            return self.valid_attention_cache[(L, M, device)]
+        E = L * (L + 1) // 2 - (L - M) * (L - M + 1) // 2
+        mask = torch.zeros(E, E, dtype=torch.float).to(device)
         edges = []
         for i in range(L):
-            for j in range(i + 1, L + 1):
+            for j in range(i + 1, min(L + 1, i + M + 1)):
                 edges.append((i, j))
         for i, (si, ei) in enumerate(edges):
             for j, (sj, ej) in enumerate(edges):
@@ -54,36 +54,37 @@ class CachedTensorMixin:
                     mask[i, j] = 0
                 else:
                     mask[i, j] = 1
-        self.valid_attention_cache[(L, device)] = mask
+        mask = mask[:E, :E]
+        self.valid_attention_cache[(L, M, device)] = mask
         return mask
 
-    def permutation(self, L: int):
-        if L in self.permutation_cache:
-            return self.permutation_cache[L]
+    def permutation(self, L: int, M: int):
+        if (L, M) in self.permutation_cache:
+            return self.permutation_cache[(L, M)]
         num_substr_per_length = list(reversed(range(1, L + 1)))
         num_substr_lt_length = [sum(num_substr_per_length[:i]) for i in range(L)]
         l = []
         for i in range(L):
-            for j in range(i + 1, L + 1):
+            for j in range(i + 1, min(L + 1, i + M + 1)):
                 l.append(num_substr_lt_length[j - i - 1] + i)
-        self.permutation_cache[L] = l
+        self.permutation_cache[(L, M)] = l
         return l
 
-    def edge_initial_position(self, L: int) -> List[int]:
-        if L in self.edge_initial_position_cache:
-            return self.edge_initial_position_cache[L]
+    def edge_initial_position(self, L: int, M: int) -> List[int]:
+        if (L, M) in self.edge_initial_position_cache:
+            return self.edge_initial_position_cache[(L, M)]
         l = []
         for i in range(L):
-            for j in range(i + 1, L + 1):
+            for j in range(i + 1, min(L + 1, i + M + 1)):
                 l.append(i)
-        self.edge_initial_position_cache[L] = l
+        self.edge_initial_position_cache[(L, M)] = l
         return l
 
 class Tokenizer(nn.Module, CachedTensorMixin):
 
     def __init__(self, vocab: List[str], weights: Dict[str, float],
                  continuing_subword_prefix: str = None, pad_token: str = "[PAD]",
-                 log_space_parametrization: bool = False, max_edge_length: int = INF):
+                 log_space_parametrization: bool = False, max_unit_length: int = INF):
         """
         `weights` should always be in log space
         `log_space_parametrization` controls whether the parameters are in log space or real space
@@ -95,7 +96,7 @@ class Tokenizer(nn.Module, CachedTensorMixin):
         self.csp = continuing_subword_prefix
         self.pad_token = pad_token
         self.lsp = log_space_parametrization
-        self.max_edge_length = min(max_edge_length, max(len(u) for u in vocab))
+        self.max_unit_length = min(max_unit_length, max(len(u) for u in vocab))
 
         # represent vocabulary
         self.vocab = Integerizer(vocab)
@@ -116,10 +117,11 @@ class Tokenizer(nn.Module, CachedTensorMixin):
             raise ValueError("clamp_weights should only be used with real space parametrization")
         self.weights.weight.data = torch.clamp(self.weights.weight.data, min=epsilon)
 
-    def forward(self, chunks: List[str]):
+    def forward(self, chunks: List[str], override_M: int):
         device = self.weights.weight.device
         L = max(len(chunk) for chunk in chunks) # max length of chunk
         B = len(chunks)
+        M = min(self.max_unit_length, L, override_M)
 
         # encode lattice as special transition matrices
         fwd_ts = []
@@ -128,7 +130,7 @@ class Tokenizer(nn.Module, CachedTensorMixin):
         bwd_ms = []
         lengths = []
         for chunk in chunks:
-            fwd_t, fwd_m, bwd_t, bwd_m = self.encode_transitions(chunk, L, device=device)
+            fwd_t, fwd_m, bwd_t, bwd_m = self.encode_transitions(chunk, L, M, device=device)
             fwd_ts.append(fwd_t)
             fwd_ms.append(fwd_m)
             bwd_ts.append(bwd_t)
@@ -144,25 +146,25 @@ class Tokenizer(nn.Module, CachedTensorMixin):
         lengths = torch.tensor(lengths, dtype=torch.long, device=device) # torch.LongTensor
 
         # 1 forward pass
-        log_alpha, edge_log_alpha = self.forward_algorithm(fwd_ts, fwd_ms, lengths)
-        ent, edge_ent = self.entropy(fwd_ts, fwd_ms, lengths)
+        log_alpha, edge_log_alpha = self.forward_algorithm(fwd_ts, fwd_ms, lengths, M)
+        ent, edge_ent = self.entropy(fwd_ts, fwd_ms, lengths, M)
 
         # max_length backward passes, one from each position
-        mmask, emask = self.parallel_backward_mask(L, device=device)
+        mmask, emask = self.parallel_backward_mask(L, M, device=device)
         mmask = mmask.unsqueeze(0)
         emask = emask.unsqueeze(0)
-        bwd_ts = (bwd_ts.unsqueeze(1) * emask).reshape(B * L, L, L)
-        bwd_ms = (bwd_ms.unsqueeze(1) * mmask).reshape(B * L, L, L)
+        bwd_ts = (bwd_ts.unsqueeze(1) * emask).reshape(B * L, M, L)
+        bwd_ms = (bwd_ms.unsqueeze(1) * mmask).reshape(B * L, M, L)
         bwd_lengths = torch.repeat_interleave(lengths, L)
-        log_betas, edge_log_betas = self.forward_algorithm(bwd_ts, bwd_ms, bwd_lengths)
+        log_betas, edge_log_betas = self.forward_algorithm(bwd_ts, bwd_ms, bwd_lengths, M)
         log_betas = log_betas.reshape(B, L)
-        edge_log_betas = edge_log_betas.reshape(B, L, L, L)
+        edge_log_betas = edge_log_betas.reshape(B, L, M, L)
 
         # mask out the character suffixes in backward that are just auxiliary and don't really exist
         edge_log_betas = edge_log_betas * emask + torch.ones_like(edge_log_betas).fill_(-INF) * (1-emask)
         return fwd_ts, fwd_ms, log_alpha, edge_log_alpha, log_betas, edge_log_betas, ent, edge_ent
 
-    def encode_transitions(self, chunk: str, L: int, device="cpu") -> Tuple[torch.FloatTensor, torch.FloatTensor, torch.FloatTensor, torch.FloatTensor]:
+    def encode_transitions(self, chunk: str, L: int, M: int, device="cpu") -> Tuple[torch.FloatTensor, torch.FloatTensor, torch.FloatTensor, torch.FloatTensor]:
         """
         forward encoding
         [ h a  t   e   ]
@@ -179,12 +181,12 @@ class Tokenizer(nn.Module, CachedTensorMixin):
         """
         if len(chunk) > L:
             raise ValueError(f"chunk length of {chunk} is greater than allowed max chunk length {L}")
-        fwd_mask = torch.zeros((L, L), dtype=torch.float, device=device)  # whenever a element of a matrix is from weights, set to 1
-        bwd_mask = torch.zeros((L, L), dtype=torch.float, device=device)  # whenever a element of a matrix is from weights, set to 1
-        fwd_ids = torch.zeros((L, L), dtype=torch.int, device=device)
-        bwd_ids = torch.zeros((L, L), dtype=torch.int, device=device)
+        fwd_mask = torch.zeros((M, L), dtype=torch.float, device=device)  # whenever a element of a matrix is from weights, set to 1
+        bwd_mask = torch.zeros((M, L), dtype=torch.float, device=device)  # whenever a element of a matrix is from weights, set to 1
+        fwd_ids = torch.zeros((M, L), dtype=torch.int, device=device)
+        bwd_ids = torch.zeros((M, L), dtype=torch.int, device=device)
         for s in range(len(chunk)):
-            for l in range(min(len(chunk) - s) + 1):
+            for l in range(min(len(chunk) - s, M) + 1):
                 unit = chunk[s:s + l]
                 unit = unit if self.csp is None or s == 0 else self.csp + unit
                 if unit in self.vocab:
@@ -206,13 +208,14 @@ class Tokenizer(nn.Module, CachedTensorMixin):
             bwd_t = torch.log(bwd_t)
         return fwd_t, fwd_m, bwd_t, bwd_m
 
-    def forward_algorithm(self, transition_matrix: torch.FloatTensor, mask: torch.FloatTensor, lengths: torch.LongTensor):
+    def forward_algorithm(self, transition_matrix: torch.FloatTensor, mask: torch.FloatTensor, lengths: torch.LongTensor, M: int):
         """
-        transition_matrix: [B, L, L]
-        mask: [B, L, L]
+        transition_matrix: [B, M, L]
+        mask: [B, M, L]
         lengths: [B]
         """
-        B, L = transition_matrix.size(0), transition_matrix.size(1)
+        B, L = transition_matrix.size(0), transition_matrix.size(2)
+
         bmask: torch.BoolTensor = mask.to(torch.bool)
         edge_log_alphas: torch.FloatTensor = torch.ones_like(transition_matrix).fill_(-INF)
         edge_log_alphas[bmask] = 0.0
@@ -238,7 +241,7 @@ class Tokenizer(nn.Module, CachedTensorMixin):
             # [      at      ]   mask2 =   [ 0 0 1 0 ]   &   [ 0 0 0 1 ]
             # [      hat ate ]             [ 0 0 1 1 ]       [ 0 0 0 0 ]
             # [          hate]             [ 0 0 0 1 ]       [ 0 0 0 0 ]
-            maski = (bmask & torch.diag_embed(mask.new_ones(L - i, dtype=torch.bool), offset=i).unsqueeze(0)).to(torch.float)
+            maski = (bmask & torch.diag_embed(mask.new_ones(L - i, dtype=torch.bool), offset=i)[:M].unsqueeze(0)).to(torch.float)
             # this update corresponds to the propagation of alpha from a node to all `outgoing` edges
             # for i = 2 as an example, this propagates [n1], which we aggregated last iteration
             node_to_edge = log_alphas[i][:, None, None] * maski
@@ -252,9 +255,10 @@ class Tokenizer(nn.Module, CachedTensorMixin):
         log_alphas = torch.gather(torch.stack(log_alphas), 0, lengths.unsqueeze(0))
         return log_alphas.squeeze(0), edge_log_alphas
 
-    def entropy(self, transition_matrix: torch.FloatTensor, mask: torch.FloatTensor, lengths: torch.LongTensor):
+    def entropy(self, transition_matrix: torch.FloatTensor, mask: torch.FloatTensor, lengths: torch.LongTensor, M: int):
         """Essentially forward but with a more tricky semiring"""
-        B, L = transition_matrix.size(0), transition_matrix.size(1)
+        B, L = transition_matrix.size(0), transition_matrix.size(2)
+
         bmask: torch.BoolTensor = mask.to(torch.bool)
         edge_log_alphas: torch.FloatTensor = torch.ones_like(transition_matrix).fill_(-INF)
         edge_log_alphas[bmask] = 0.0
@@ -265,7 +269,7 @@ class Tokenizer(nn.Module, CachedTensorMixin):
         log_alphas: List[torch.FloatTensor] = [mask.new_zeros(B)]
         entropies: List[torch.FloatTensor] = [mask.new_zeros(B)] # diff
         for i in range(L):
-            maski = (bmask & torch.diag_embed(mask.new_ones(L - i, dtype=torch.bool), offset=i).unsqueeze(0)).to(torch.float)
+            maski = (bmask & torch.diag_embed(mask.new_ones(L - i, dtype=torch.bool), offset=i)[:M].unsqueeze(0)).to(torch.float)
             node_to_edge = log_alphas[i][:, None, None] * maski
             edge_log_alphas = edge_log_alphas + node_to_edge
             log_alphas.append(torch.logsumexp(edge_log_alphas[:, :, i], -1))
@@ -278,17 +282,17 @@ class Tokenizer(nn.Module, CachedTensorMixin):
         log_alphas = torch.gather(torch.stack(log_alphas), 0, lengths.unsqueeze(0))
         return (uentropy/ log_alphas.exp() + log_alphas).squeeze(0), edge_entropy # entropy = internal energy + free energy
 
-    def conditionals(self, fwd_ts, fwd_ms, log_alpha, edge_log_alpha, log_betas, edge_log_betas, device="cpu"):
+    def conditionals(self, fwd_ts, fwd_ms, log_alpha, edge_log_alpha, log_betas, edge_log_betas, M: int, device="cpu"):
         """
-        fwd_ts: B, L, L
-        fwd_ms: B, L, L
+        fwd_ts: B, M, L
+        fwd_ms: B, M, L
         log_alpha: B
-        edge_log_alpha: B, L, L
+        edge_log_alpha: B, M, L
         log_betas: B, L
-        edge_log_betas: B, L, L, L
+        edge_log_betas: B, L, M, L
         """
-        B, L = edge_log_alpha.size(0), edge_log_alpha.size(1)
-        E = L * (L+1) // 2 # number of all possible edges for a chunk of length L is L (L + 1) / 2
+        B, L = edge_log_alpha.size(0), edge_log_alpha.size(2)
+        E = L * (L+1) // 2 - (L-M) * (L-M+1) // 2# number of all possible edges for a chunk of length L with max edge length M is L (L + 1) / 2 - (L-M) * (L-M+1) // 2
 
         ela = edge_log_alpha
         elb = edge_log_betas.flip(-1) # remember the backward transition matrices are ordered from last to first char
@@ -298,7 +302,8 @@ class Tokenizer(nn.Module, CachedTensorMixin):
 
         # gather all the `possible` edges (not necessarily in vocab, just possible) using masked indexing
         # they exactly live in upper triangular part of the transition matrix
-        triu_ones = torch.triu(torch.ones(L, L, dtype=torch.bool).to(device), diagonal=0)
+        triu_ones = torch.triu(torch.ones(M, L, dtype=torch.bool).to(device), diagonal=0)
+
         ea = ela[triu_ones[None, ...].expand(B, -1, -1)].reshape(B, 1, -1) # [B, 1, E] where E  = L (L+1) / 2
         eb = elb[triu_ones.flip(-1)[None, None, ...].expand(B, L, -1, -1)].reshape(B, L, -1) # [B, L, E]
         td = ts[triu_ones[None, ...].expand(B, -1, -1)].reshape(B, 1, -1) # [B, L, E]
@@ -306,7 +311,7 @@ class Tokenizer(nn.Module, CachedTensorMixin):
 
         # permute the final dimension of size E cleverly to guarantee any edge ei in position i < j
         # will always intersect ej (in which case it's not valid attention) or be in front of ej which is valid
-        permutation = self.permutation(L)
+        permutation = self.permutation(L, M)
         ea = ea[..., permutation]
         eb = eb[..., permutation]
         td = td[..., permutation]
@@ -320,7 +325,7 @@ class Tokenizer(nn.Module, CachedTensorMixin):
         # compute the numerator of the conditional probability
         # u(tgt | src) = bacward_marginal(src, tgt.start_node) * beta(tgt, last_node)
         # visually it's this [n1] ... src ... [nx] tgt ... [nN] the first part is the src backward marginal, second part is tgt beta
-        edge_start_pos = self.edge_initial_position(L) # List of size E
+        edge_start_pos = self.edge_initial_position(L, M) # List of size E
         edge_start_pos = torch.tensor(edge_start_pos, dtype=torch.long, device=device).unsqueeze(0).unsqueeze(1).unsqueeze(-1).expand(B, E, E, 1) # [B, E (dup), E (tgt), 1]
         em_expansion = em_.transpose(-1,-2).unsqueeze(2).expand(-1,-1,E,-1) # [B, E, L] -> [B, E, 1, L] -> [B, E, E (dup), L]
         em_src = torch.gather(em_expansion, -1, (edge_start_pos-1).clamp(min=0)).squeeze(-1) # [B, E (src), E (tgt)]
@@ -340,7 +345,7 @@ class Tokenizer(nn.Module, CachedTensorMixin):
 
         # create a mask for valid edges (that don't cross), intersect it with the vocabulary mask so that what remains is
         # only edge-edge attentions that are valid and from vocab item to vocab item
-        cm = self.valid_attention(L, device=device).unsqueeze(0) * ms.unsqueeze(1) * ms.unsqueeze(2)
+        cm = self.valid_attention(L, M, device=device).unsqueeze(0) * ms.unsqueeze(1) * ms.unsqueeze(2)
         ec = ec * cm + (1-cm) * -INF # mask out invalid attentions
 
         # here's the normalized backward marginals maybe useful?
