@@ -117,9 +117,9 @@ class Tokenizer(nn.Module, CachedTensorMixin):
             raise ValueError("clamp_weights should only be used with real space parametrization")
         self.weights.weight.data = torch.clamp(self.weights.weight.data, min=epsilon)
 
-    def forward(self, chunks: List[str], override_M: int):
+    def encode_batch(self, chunks: List[str], override_M: int):
         device = self.weights.weight.device
-        L = max(len(chunk) for chunk in chunks) # max length of chunk
+        L = max(len(chunk) for chunk in chunks)  # max length of chunk
         B = len(chunks)
         M = min(self.max_unit_length, L, override_M)
 
@@ -139,23 +139,28 @@ class Tokenizer(nn.Module, CachedTensorMixin):
 
         # ts and ms are [B x max_length x max_length] tensors
         # lengths is a [B] tensor
-        fwd_ts = torch.stack(fwd_ts) # torch.FloatTensor
-        fwd_ms = torch.stack(fwd_ms) # torch.FloatTensor
-        bwd_ts = torch.stack(bwd_ts) # torch.FloatTensor
-        bwd_ms = torch.stack(bwd_ms) # torch.FloatTensor
-        lengths = torch.tensor(lengths, dtype=torch.long, device=device) # torch.LongTensor
+        fwd_ts = torch.stack(fwd_ts)  # torch.FloatTensor
+        fwd_ms = torch.stack(fwd_ms)  # torch.FloatTensor
+        bwd_ts = torch.stack(bwd_ts)  # torch.FloatTensor
+        bwd_ms = torch.stack(bwd_ms)  # torch.FloatTensor
+        lengths = torch.tensor(lengths, dtype=torch.long, device=device)  # torch.LongTensor
 
-        # 1 forward pass
-        log_alpha, edge_log_alpha = self.forward_algorithm(fwd_ts, fwd_ms, lengths, M)
-        ent, edge_ent = self.entropy(fwd_ts, fwd_ms, lengths, M)
-
-        # max_length backward passes, one from each position
         mmask, emask = self.parallel_backward_mask(L, M, device=device)
         mmask = mmask.unsqueeze(0)
         emask = emask.unsqueeze(0)
         bwd_ts = (bwd_ts.unsqueeze(1) * emask).reshape(B * L, M, L)
         bwd_ms = (bwd_ms.unsqueeze(1) * mmask).reshape(B * L, M, L)
         bwd_lengths = torch.repeat_interleave(lengths, L)
+        return fwd_ts, fwd_ms, lengths, bwd_ts, bwd_ms, bwd_lengths, mmask, emask
+
+
+    def forward(self, fwd_ts, fwd_ms, lengths, bwd_ts, bwd_ms, bwd_lengths, mmask, emask):
+        B, L, M = fwd_ts.size(0), fwd_ts.size(2), fwd_ts.size(1)
+        # 1 forward pass
+        log_alpha, edge_log_alpha = self.forward_algorithm(fwd_ts, fwd_ms, lengths, M)
+        ent, edge_ent = self.entropy(fwd_ts, fwd_ms, lengths, M)
+
+        # max_length backward passes, one from each position
         log_betas, edge_log_betas = self.forward_algorithm(bwd_ts, bwd_ms, bwd_lengths, M)
         log_betas = log_betas.reshape(B, L)
         edge_log_betas = edge_log_betas.reshape(B, L, M, L)
