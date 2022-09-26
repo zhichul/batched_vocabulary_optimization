@@ -184,7 +184,7 @@ class Tokenizer(nn.Module, CachedTensorMixin):
         fwd_ids = torch.zeros((L, L), dtype=torch.int, device=device)
         bwd_ids = torch.zeros((L, L), dtype=torch.int, device=device)
         for s in range(len(chunk)):
-            for l in range(min(len(chunk) - s, M) + 1):
+            for l in range(min(len(chunk) - s) + 1):
                 unit = chunk[s:s + l]
                 unit = unit if self.csp is None or s == 0 else self.csp + unit
                 if unit in self.vocab:
