@@ -75,5 +75,5 @@ class Tokenizer(TokenizationMixin, LatticeDPMixin, LatticeAttentionMixin, nn.Mod
         edge_log_betas = edge_log_betas * emask + torch.ones_like(edge_log_betas).fill_(-INF) * (1-emask)
 
         # compute conditionals
-        c, ea, eb, em_, em = self.conditionals( fwd_ts, fwd_ms, log_alpha, edge_log_alpha, log_betas, edge_log_betas, device=device)
-        return ent, log_alpha, c
+        c, ea, eb, em_, m = self.conditionals( fwd_ts, fwd_ms, log_alpha, edge_log_alpha, log_betas, edge_log_betas, device=device)
+        return ent, m, c

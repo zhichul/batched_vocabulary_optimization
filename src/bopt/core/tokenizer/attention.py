@@ -126,9 +126,11 @@ class LatticeAttentionMixin:
         ec = ec * cm + (1-cm) * -INF # mask out invalid attentions
 
         # here's the normalized backward marginals maybe useful?
-        em = em_ - log_betas[..., None]
+        # em = em_ - log_betas[..., None]
 
         # put together the matrix by taking the triu, tril, and diagonal with only non-vocab items -inf'ed out
         c = triu_c * ec + tril_c * ec + torch.diag_embed((1-ms) * -INF)
 
-        return c, ea, eb, em_, em
+        m = em_[:, -1, :] - log_alpha.unsqueeze(1)
+
+        return c, ea, eb, em_, m
