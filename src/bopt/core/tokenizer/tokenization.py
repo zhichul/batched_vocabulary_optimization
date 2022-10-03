@@ -44,7 +44,7 @@ class TokenizationMixin:
         for chunk in chunks:
             length = cls.len_chunk(chunk, specials_set)
             if length > C:
-                raise ValueError(f"{C} is not enough to pack {chunk} of length {len(chunk)}")
+                raise ValueError(f"{C} is not enough to pack {chunk} of length {length}")
             if quota >= length:
                 packed_chunk.append(chunk)
                 quota -= length
