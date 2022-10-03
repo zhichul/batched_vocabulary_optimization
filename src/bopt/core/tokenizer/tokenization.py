@@ -146,9 +146,8 @@ class TokenizationMixin:
         emask = emask.unsqueeze(0)
         bwd_ts = (bwd_ids.unsqueeze(1) * emask.to(torch.long)).reshape(B * L, M, L)
         bwd_ms = (bwd_ms.unsqueeze(1) * mmask).reshape(B * L, M, L)
-        bwd_lengths = torch.repeat_interleave(lengths, L)
+        bwd_lengths = (L-1) * torch.repeat_interleave(torch.ones_like(lengths), L)
 
-        print(bwd_lengths)
         return fwd_ids, fwd_ms, lengths, bwd_ts, bwd_ms, bwd_lengths, mmask, emask
 
     @staticmethod
