@@ -36,13 +36,12 @@ class TokenizationMixin:
     def len_p(self, packed_chunk: List[str]):
         return sum(self.len_c(chunk) for chunk in packed_chunk)
 
-    @classmethod
-    def pack_chunks(cls, chunks: List[str], C: int, specials_set: Set[str] = None):
+    def pack_chunks(self, chunks: List[str], C: int):
         packed_chunks = list()
         packed_chunk = list()
         quota = C
         for chunk in chunks:
-            length = cls.len_chunk(chunk, specials_set)
+            length = self.len_c(chunk)
             if length > C:
                 raise ValueError(f"{C} is not enough to pack {chunk} of length {length}")
             if quota >= length:
@@ -50,8 +49,8 @@ class TokenizationMixin:
                 quota -= length
             else:
                 packed_chunks.append(packed_chunk)
-                packed_chunk = list()
-                quota = C
+                packed_chunk = [chunk]
+                quota = C - length
         if len(packed_chunk) > 0:
             packed_chunks.append(packed_chunk)
         return packed_chunks
