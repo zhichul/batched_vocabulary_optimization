@@ -80,7 +80,7 @@ class TokenizationMixin:
         self.parallel_backward_mask_cache[(L, M, device)] = (mmask, emask)
         return mmask, emask
 
-    def encode_batch(self, chunks: List[str], M: int, device: str = "cpu") -> Tuple[torch.LongTensor,
+    def encode_batch(self, chunks: List[str], M: int, L: int = None, device: str = "cpu") -> Tuple[torch.LongTensor,
                                                                             torch.FloatTensor,
                                                                             torch.LongTensor,
                                                                             torch.LongTensor,
@@ -88,10 +88,11 @@ class TokenizationMixin:
                                                                             torch.LongTensor,
                                                                             torch.FloatTensor,
                                                                             torch.FloatTensor,]:
-        L = max(self.len_c(chunk) for chunk in chunks)  # max length of chunk
+        if L is None:
+            L = max(self.len_c(chunk) for chunk in chunks)  # max length of chunk
         return self.encode_batch_generic(chunks, L, M, self.encode_transitions, self.len_c, device=device)
 
-    def encode_packed_batch(self, packed_chunks: List[List[str]], M: int, device: str = "cpu") -> Tuple[torch.LongTensor,
+    def encode_packed_batch(self, packed_chunks: List[List[str]], M: int, L: int = None, device: str = "cpu") -> Tuple[torch.LongTensor,
                                                                             torch.FloatTensor,
                                                                             torch.LongTensor,
                                                                             torch.LongTensor,
@@ -99,7 +100,8 @@ class TokenizationMixin:
                                                                             torch.LongTensor,
                                                                             torch.FloatTensor,
                                                                             torch.FloatTensor,]:
-        L = max(self.len_p(packed_chunk) for packed_chunk in packed_chunks)  # max length of packed chunk
+        if L is None:
+            L = max(self.len_p(packed_chunk) for packed_chunk in packed_chunks)  # max length of packed chunk
         return self.encode_batch_generic(packed_chunks, L, M, self.encode_packed_transitions, self.len_p, device=device)
 
     def encode_batch_generic(self, chunks: List[T],
@@ -130,7 +132,6 @@ class TokenizationMixin:
             fwd_ms.append(fwd_m)
             bwd_ids.append(bwd_id)
             bwd_ms.append(bwd_m)
-            print(chunk, length_fn(chunk))
             lengths.append(length_fn(chunk))
 
         # ts and ms are [B x max_length x max_length] tensors
