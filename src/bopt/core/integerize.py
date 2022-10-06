@@ -66,7 +66,7 @@ class Integerizer(Generic[T]):
     # If you are unfamiliar with the special __ method names, check out
     # https://docs.python.org/3/reference/datamodel.html#special-method-names .
 
-    def __init__(self, iterable: List[T] = []):
+    def __init__(self, iterable: List[T] = [], unk_token="[UNK]"):
         """
         Initialize the collection to the empty set, or to the set of *unique* objects in its argument
         (in order of first occurrence).
@@ -86,6 +86,7 @@ class Integerizer(Generic[T]):
         # each object and each integer only once.  Unfortunately,
         # Python's built-in set API doesn't give us access to the
         # integer indices that the set uses internally.
+        self.unk_token = unk_token
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, Integerizer):
@@ -139,8 +140,8 @@ class Integerizer(Generic[T]):
                 if not unk:
                     return None
                 else:
-                    print(f"WARNING: [UNK] used for {obj}")
-                    return self.index("[UNK]")
+                    print(f"WARNING: {self.unk_token} used for {obj}")
+                    return self.index(self.unk_token)
 
             # add the object to both data structures
             i = len(self)

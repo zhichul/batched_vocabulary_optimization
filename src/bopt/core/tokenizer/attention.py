@@ -134,3 +134,31 @@ class LatticeAttentionMixin:
         m = em_[:, -1, :] - log_alpha.unsqueeze(1)
 
         return c, ea, eb, em_, m
+
+    def tile(self, marginals: torch.FloatTensor, conditionals: torch.FloatTensor, batch_size: int, num_blocks: int, M: int, L: int , ms: torch.FloatTensor, task_mask: torch.FloatTensor = None):
+        """
+            (log) marginals: batch * block, E
+            (log) conditionals:  batch * block, E, E
+            batch_size: batch
+            num_blocks: block
+        """
+        B = batch_size * num_blocks # number of total blocks
+        E = marginals.size(-1) # number of edges per block
+        if num_blocks == 1:
+            return conditionals.reshape(batch_size, E, E)
+        # now there's at least two blocks to merge
+
+        triu_ones = torch.triu(torch.ones(M, L, dtype=torch.bool).to(marginals.device), diagonal=0)
+        ms = ms[triu_ones[None, ...].expand(B, -1, -1)].reshape(B, -1)[..., self.permutation(L, M)] # [B, E]
+        ms = ms.reshape(batch_size, num_blocks * E)
+        mask = ms.unsqueeze(2) * ms.unsqueeze(1)
+        if task_mask is not None:
+            mask = mask * task_mask
+
+        conditionals = conditionals.reshape(batch_size, num_blocks, E, E)
+        marginals = marginals.reshape(batch_size, num_blocks, 1, E).expand(batch_size, num_blocks, (num_blocks -1) * E, E)
+        attention = torch.stack([conditionals, marginals], dim=2)
+        columns = [attention[:,i,:,:].roll(i * E, 1) for i in range(num_blocks)]
+        attention = torch.cat(columns, dim=-1).reshape(-1, num_blocks * E, num_blocks * E)
+        attention = attention * mask + (-INF) * (1-mask)
+        return attention

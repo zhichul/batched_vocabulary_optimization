@@ -48,7 +48,29 @@ class Tokenizer(TokenizationMixin, LatticeDPMixin, LatticeAttentionMixin, nn.Mod
                 bwd_ms: torch.FloatTensor,
                 bwd_lengths:  torch.LongTensor,
                 mmask: torch.FloatTensor,
-                emask: torch.FloatTensor) -> Tuple[torch.FloatTensor, torch.FloatTensor, torch.FloatTensor]:
+                emask: torch.FloatTensor,
+                tmask: torch.FloatTensor=None) -> Tuple[torch.FloatTensor, torch.FloatTensor, torch.FloatTensor, torch.FloatTensor]:
+        """
+
+        fwd_ids: num_batch, num_block, max_unit_length, max_block_length
+        fwd_ms: num_batch, num_block, max_unit_length, max_block_length
+        lengths: num_batch, num_block
+        bwd_ids: num_batch, num_block, max_block_length, max_unit_length, max_block_length
+        bwd_ms: num_batch, num_block, max_block_length, max_unit_length, max_block_length
+        bwd_lengths: num_batch, num_block
+        mmask: num_batch, num_block, max_block_length, max_unit_length, max_block_length
+        emask: num_batch, num_block, max_block_length, max_unit_length, max_block_length
+        """
+        # reshape inputs to have only one batch dimension
+        num_batch, num_block = fwd_ids.size()[:2]
+        fwd_ids = fwd_ids.reshape(-1, *fwd_ids.size()[2:])
+        fwd_ms = fwd_ms.reshape(-1, *fwd_ms.size()[2:])
+        lengths = lengths.reshape(-1, *lengths.size()[2:])
+        bwd_ids = bwd_ids.reshape(-1, *bwd_ids.size()[2:])
+        bwd_ms = bwd_ms.reshape(-1, *bwd_ms.size()[2:])
+        bwd_lengths = bwd_lengths.reshape(-1, *bwd_lengths.size()[2:])
+        mmask = mmask[0] # mmask and emask should be the same for all examples, so just take the first one (it already has an extra dimension)
+        emask = emask[0] # mmask and emask should be the same for all examples, so just take the first one (it already has an extra dimension)
         device = self.weights.weight.data.device
 
         # get the weights from ids
@@ -75,5 +97,8 @@ class Tokenizer(TokenizationMixin, LatticeDPMixin, LatticeAttentionMixin, nn.Mod
         edge_log_betas = edge_log_betas * emask + torch.ones_like(edge_log_betas).fill_(-INF) * (1-emask)
 
         # compute conditionals
-        c, ea, eb, em_, m = self.conditionals( fwd_ts, fwd_ms, log_alpha, edge_log_alpha, log_betas, edge_log_betas, device=device)
-        return ent, m, c
+        c, ea, eb, em_, m = self.conditionals(fwd_ts, fwd_ms, log_alpha, edge_log_alpha, log_betas, edge_log_betas, device=device)
+        c = c.reshape(num_batch, num_block, c.size(-2), c.size(-1))
+        m = m.reshape(num_batch, num_block, m.size(-1))
+        a = self.tile(m, c, num_batch, num_block, M, L, fwd_ms, task_mask=tmask)
+        return ent, a, m, c
