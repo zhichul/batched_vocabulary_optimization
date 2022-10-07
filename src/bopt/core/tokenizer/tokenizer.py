@@ -101,4 +101,5 @@ class Tokenizer(TokenizationMixin, LatticeDPMixin, LatticeAttentionMixin, nn.Mod
         c = c.reshape(num_batch, num_block, c.size(-2), c.size(-1))
         m = m.reshape(num_batch, num_block, m.size(-1))
         a = self.tile(m, c, num_batch, num_block, M, L, fwd_ms, task_mask=tmask)
+        ent = ent.reshape(num_batch, -1).sum(-1)
         return ent, a, m, c

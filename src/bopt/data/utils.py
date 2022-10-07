@@ -4,7 +4,7 @@ from typing import Dict
 import numpy as np
 import torch
 
-from vopt.integerize import Integerizer
+from bopt.core.integerize import Integerizer
 from collections import OrderedDict
 
 
