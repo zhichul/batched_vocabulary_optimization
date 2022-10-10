@@ -26,6 +26,12 @@ class TokenizationMixin:
         self.vocab = vocab
         self.specials_set = set() if not specials else set(specials)
 
+        # some bookkeeping
+        self.pad_index = vocab.index(pad_token)
+        self.specials_indices = [vocab.index(special) for special in specials]
+        self.singleton_indices = [vocab.index(u) for u in vocab if self.len_c(u) == 1]
+        self.constant_indices = sorted(list(set([self.pad_index] + self.specials_indices + self.singleton_indices)))
+
     @classmethod
     def len_chunk(cls, chunk: str, specials_set: Set[str]):
         return 1 if specials_set and chunk in specials_set else len(chunk)
@@ -186,12 +192,13 @@ class TokenizationMixin:
         bwd_lengths = L * torch.repeat_interleave(torch.ones_like(lengths), L)
         return fwd_ids, fwd_ms, lengths, bwd_ids, bwd_ms, bwd_lengths, mmask, emask
 
-    @staticmethod
-    def init_transitions_and_masks(M:int, L:int, device: str = "cpu"):
+    def init_transitions_and_masks(self, M:int, L:int, device: str = "cpu"):
         fwd_mask = torch.zeros((M, L), dtype=torch.float, device=device)  # whenever a element of a matrix is from weights, set to 1
         bwd_mask = torch.zeros((M, L), dtype=torch.float, device=device)  # whenever a element of a matrix is from weights, set to 1
         fwd_ids = torch.zeros((M, L), dtype=torch.int, device=device)
         bwd_ids = torch.zeros((M, L), dtype=torch.int, device=device)
+        fwd_ids.fill_(self.vocab.index(self.pad_token))
+        bwd_ids.fill_(self.vocab.index(self.pad_token))
         bwd_mask[0, :] = 1 # make sure to pad the lattice for backward
         return fwd_ids, fwd_mask, bwd_ids, bwd_mask
 

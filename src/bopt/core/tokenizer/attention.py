@@ -157,7 +157,7 @@ class LatticeAttentionMixin:
 
         conditionals = conditionals.reshape(batch_size, num_blocks, E, E)
         marginals = marginals.reshape(batch_size, num_blocks, 1, E).expand(batch_size, num_blocks, (num_blocks -1) * E, E)
-        attention = torch.stack([conditionals, marginals], dim=2)
+        attention = torch.cat([conditionals, marginals], dim=2)
         columns = [attention[:,i,:,:].roll(i * E, 1) for i in range(num_blocks)]
         attention = torch.cat(columns, dim=-1).reshape(-1, num_blocks * E, num_blocks * E)
         attention = attention * mask + (-INF) * (1-mask)

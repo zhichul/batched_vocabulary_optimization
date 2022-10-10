@@ -136,9 +136,7 @@ def regulairzation(args, tokenizer, model, lengths, entropic_weight, ent, device
     if args.vopt and entropic_weight > 0:
         nchars = lengths.sum(-1)
         avg_ent = ent / nchars
-        if any(ent < 0):
-            print("Bug detected in entropy! Negative entropy!")
-            code.interact(local=locals())
+        ent = torch.maximum(ent, torch.zeros_like(ent))
         e = entropic_weight * avg_ent.mean()
     return l1, e
 
@@ -189,6 +187,9 @@ def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, dataloader: DataLoa
             loss = losses[0] * args.main_loss_multiplier
 
             # get regularizations
+            if (ent < -1e-5).any():
+                print("Bug detected in entropy! Negative entropy!")
+                code.interact(local=locals())
             l1, e = regulairzation(args, tokenizer, model, lengths, entropic_weight, ent, device=device)
 
             # weight the loss and backpropograte
@@ -205,6 +206,7 @@ def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, dataloader: DataLoa
                     # make sure weights are positive if parametrized as real numbers
                     tokenizer.clamp_weights()
                 optimizer.zero_grad(set_to_none=True)
+                tokenizer.reset_weight()
                 step += 1
 
             # bookkeep

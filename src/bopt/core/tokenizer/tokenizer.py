@@ -40,6 +40,17 @@ class Tokenizer(TokenizationMixin, LatticeDPMixin, LatticeAttentionMixin, nn.Mod
             raise ValueError("clamp_weights should only be used with real space parametrization")
         self.weights.weight.data = torch.clamp(self.weights.weight.data, min=epsilon)
 
+    def reset_padding_weight(self) -> None:
+        self.weights.weight.data[self.pad_index] = 1.0 if not self.lsp else 0.0
+
+    def reset_specials_weight(self) -> None:
+        self.weights.weight.data[self.specials_indices] = 1.0 if not self.lsp else 0.0
+
+    def reset_singleton_weight(self) -> None:
+        self.weights.weight.data[self.singleton_indices] = 1.0 if not self.lsp else 0.0
+
+    def reset_weight(self) -> None:
+        self.weights.weight.data[self.constant_indices] = 1.0 if not self.lsp else 0.0
 
     def forward(self, fwd_ids: torch.LongTensor,
                 fwd_ms: torch.FloatTensor,

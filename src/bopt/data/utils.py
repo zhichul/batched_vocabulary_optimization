@@ -38,7 +38,15 @@ def save_weights(weights, file: Path, unit_only=False):
             if unit_only:
                 print(v, file=f)
             else:
-                print(f"{v}\t{w.item()}", file=f)
+                if isinstance(w, torch.Tensor):
+                    print(f"{v}\t{w.item()}", file=f)
+                elif isinstance(w, float):
+                    print(f"{v}\t{w}", file=f)
+                elif isinstance(w, list) and isinstance(w[0], float):
+                    print(f"{v}\t{w[0]}", file=f)
+                else:
+                    print(type(w))
+                    raise ValueError(w)
 
 def load_labels(file: Path):
     label_list = list()

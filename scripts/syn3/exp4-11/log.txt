@@ -1,0 +1,8 @@
+# conda environments:
+#
+                         /home/blu/anaconda3
+base                  *  /home/blu/anaconda3/envs/dl22
+                         /home/blu/anaconda3/envs/jhu
+                         /home/blu/anaconda3/envs/notebook
+
+CUDA_VISIBLE_DEVICES=
