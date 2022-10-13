@@ -52,7 +52,7 @@ def preprocess_morpheme_prediction_with_lattices_dataset(data_file: str,
             elif len(packed_chunks) < max_blocks:
                 packed_chunks += [[]] * (max_blocks - len(packed_chunks))
             fwd_ids, fwd_ms, lengths, bwd_ids, bwd_ms, bwd_lengths, mmask, emask = input_tokenizer.encode_packed_batch(packed_chunks, max_unit_length, max_block_length)
-            ids, mask, pos_ids = input_tokenizer.integerize_packed_chunks(packed_chunks, max_unit_length, max_block_length)
+            ids, mask, pos_ids, _, _, _ = input_tokenizer.integerize_packed_chunks(packed_chunks, max_unit_length, max_block_length)
             label_ids: torch.LongTensor = torch.ones_like(ids, dtype=torch.long) * -100 # default value for ignore label
             for j, out_id in enumerate(output_labels):
                 label_ids[j * max_unit_length] = out_id

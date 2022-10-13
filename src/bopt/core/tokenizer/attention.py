@@ -1,3 +1,4 @@
+import code
 from typing import List, Tuple
 
 import torch
@@ -10,6 +11,7 @@ class LatticeAttentionMixin:
         self.permutation_cache = dict()
         self.edge_initial_position_cache = dict()
         self.valid_attention_cache = dict()
+        self.causal_mask_cache = dict()
 
     def valid_attention(self, L: int, M: int, device: str = "cpu"):
         if (L, M, device) in self.valid_attention_cache:
@@ -162,3 +164,68 @@ class LatticeAttentionMixin:
         attention = torch.cat(columns, dim=-1).reshape(-1, num_blocks * E, num_blocks * E)
         attention = attention * mask + (-INF) * (1-mask)
         return attention
+
+    def tile_node(self, marginals: torch.FloatTensor, conditionals: torch.FloatTensor, batch_size: int, num_blocks: int, M: int, L: int):
+        """
+            (log) marginals: batch * block, E
+            (log) conditionals:  batch * block, L, E
+            batch_size: batch
+            num_blocks: block
+        """
+        B = batch_size * num_blocks # number of total blocks
+        E = marginals.size(-1) # number of edges per block
+        if num_blocks == 1:
+            return conditionals.reshape(batch_size, L, E)
+        # now there's at least two blocks to merge
+        conditionals = conditionals.reshape(batch_size, num_blocks, L, E)
+        marginals = marginals.reshape(batch_size, num_blocks, 1, E).expand(batch_size, num_blocks, (num_blocks -1) * L, E)
+        attention = torch.cat([conditionals, marginals], dim=2)
+        columns = [attention[:,i,:,:].roll(i * L, 1) for i in range(num_blocks)]
+        attention = torch.cat(columns, dim=-1).reshape(-1, num_blocks * L, num_blocks * E)
+        return attention
+
+    def tile_lm(self, edge_marginals: torch.FloatTensor, log_betas: torch.FloatTensor, marginals: torch.FloatTensor, attentions: torch.FloatTensor, batch_size: int, num_blocks: int, M: int, L: int, mask: torch.FloatTensor):
+        em = edge_marginals - log_betas[..., None]
+        bottom_left = self.tile_node(marginals, em, batch_size, num_blocks, M, L)#marginals.reshape(batch_size, 1, -1).expand(batch_size, num_blocks * L, attentions.size(-1)) # batch NL NE
+        bottom_left = bottom_left.roll(1, -2)
+        top_right = torch.ones_like(bottom_left).reshape(batch_size, bottom_left.size(-1), bottom_left.size(-2)) * -INF # botch NE NL
+        bottom_right = (1 - torch.eye(num_blocks * L).unsqueeze(0).expand(batch_size, num_blocks * L, num_blocks * L).to(attentions.device)) * -INF # batch NL NL
+        full_attention = torch.cat([torch.cat([attentions, top_right],dim=2), torch.cat([bottom_left, bottom_right], dim=2)],dim=1)
+        full_attention = full_attention * mask + (-INF) * (1-mask)
+        return full_attention
+
+    def block_tril(self, mat: torch.Tensor, N: int, diagonal_mat: torch.Tensor = None, shift: int = 0):
+        """
+        Tiles the lower triangular part of a N x N grid with `mat`
+        """
+        if diagonal_mat is None: diagonal_mat = mat
+        zeros = torch.zeros_like(mat)
+        grid = [[mat if row - col > shift else (diagonal_mat if row - col == shift else zeros) for col in range(N)] for row in range(N)]
+        return torch.cat([torch.cat(grid_row, dim=1) for grid_row in grid], dim=0)
+
+    def causal_mask(self, N: int, L:int, M:int, device="cpu"):
+        """
+        Returns a NxE + NxL by NxE + NxL matrix representing the causal mask.
+        """
+        # make the within-block causal mask
+        if (N, L, M, device) not in self.causal_mask_cache:
+            triu = torch.triu(torch.ones((M, L), dtype=torch.bool))
+            trius = torch.triu(torch.ones((L, M, L), dtype=torch.bool))
+            for i in range(L):
+                trius[i, :, i:] = 0
+
+            permutation = self.permutation(L, M)
+            node_causal_mask = trius[triu.unsqueeze(0).expand(L, M, L)].reshape(L, -1) # [L, E]
+            node_causal_mask = node_causal_mask[..., permutation]
+
+            edge_causal_mask = torch.stack([node_causal_mask[s] for s in range(L) for l in range(1, 1 + min(L-s, M))])
+
+            top_left = self.block_tril(torch.ones_like(edge_causal_mask), N, diagonal_mat=edge_causal_mask)
+            bottom_left = self.block_tril(torch.ones_like(node_causal_mask), N, diagonal_mat=node_causal_mask)
+            top_right = torch.zeros_like(bottom_left).transpose(0,1)
+            bottom_right = torch.eye(bottom_left.size(0))
+            causal_mask = torch.cat([torch.cat([top_left, top_right], dim=1), torch.cat([bottom_left, bottom_right], dim=1)], dim=0)
+            causal_mask[torch.eye(causal_mask.size(0), dtype=torch.bool)] = 1
+            self.causal_mask_cache[(N, L, M, device)] = causal_mask.to(device)
+        return self.causal_mask_cache[(N, L, M, device)]
+

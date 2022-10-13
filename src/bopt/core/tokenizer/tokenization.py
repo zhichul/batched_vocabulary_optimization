@@ -12,14 +12,16 @@ class TokenizationMixin:
                  vocab: Integerizer = None,
                  continuing_subword_prefix: str = None,
                  pad_token: str = "[PAD]",
+                 node_token: str = "[SP4]",
                  max_unit_length: int = 1e9,
-                 specials: List[str] = None,
+                 specials: List[str] = tuple(),
                  **kwargs):
         super().__init__(*args, **kwargs)
         self.parallel_backward_mask_cache = dict()
         self.vocab_list = vocab
         self.csp = continuing_subword_prefix
         self.pad_token = pad_token
+        self.node_token = node_token
         self.max_unit_length = min(max_unit_length, max(len(u) for u in vocab))
 
         # represent vocabulary
@@ -28,6 +30,7 @@ class TokenizationMixin:
 
         # some bookkeeping
         self.pad_index = vocab.index(pad_token)
+        self.node_index = vocab.index(node_token)
         self.specials_indices = [vocab.index(special) for special in specials]
         self.singleton_indices = [vocab.index(u) for u in vocab if self.len_c(u) == 1]
         self.constant_indices = sorted(list(set([self.pad_index] + self.specials_indices + self.singleton_indices)))
@@ -64,39 +67,59 @@ class TokenizationMixin:
     def integerize_packed_chunks(self, packed_chunks: List[List[str]], M:int, L:int):
         E = (L * (L+1))//2 - ((L-M) * (L-M+1)) // 2
         N = len(packed_chunks)
+        # encoder part
         ids = torch.zeros((E * N,), dtype=torch.long)
-        ids.fill_(self.vocab.index(self.pad_token))
+        ids.fill_(self.pad_index)
         pos_ids = torch.zeros((E * N,), dtype=torch.long)
         mask = torch.zeros((E * N,), dtype=torch.long)
-        pos = 0
+        # decoder part
+        lm_ids = torch.zeros((L * N,), dtype=torch.long)
+        lm_ids.fill_(self.pad_index)
+        lm_pos_ids = torch.zeros((L * N,), dtype=torch.long)
+        lm_mask = torch.zeros((L * N,), dtype=torch.long)
+        # init iterator vars
+        pos_id = 0
+
         for i, packed_chunk in enumerate(packed_chunks):
+            # init iterator vars
             j = 0
             pack_offset = 0
             for chunk in packed_chunk:
                 if chunk in self.specials_set:
                     ids[i * E + pack_offset] = self.vocab.index(chunk)
                     mask[i * E + pack_offset] = 1
-                    pos_ids[i * E + pack_offset] = pos
+                    pos_ids[i * E + pack_offset] = pos_id
+
+                    lm_ids[i * L + j] = self.node_index
+                    lm_mask[i * L + j] = 1
+                    lm_pos_ids[i * L + j] = pos_id
+
+                    # update iterator vars
                     local_offset = min(M, L - j)
-                    pos += 1
+                    pos_id += 1
                 else:
                     local_offset = 0
                     for local_offset_s, s in enumerate(range(len(chunk))):
+                        lm_ids[i * L + j + s] = self.node_index
+                        lm_mask[i * L + j + s] = 1
+                        lm_pos_ids[i * L + j + s] = pos_id
                         for local_offset_l, l in enumerate(range(1, min(M, len(chunk) - s) + 1)):
                             unit = chunk[s:s + l]
                             unit = unit if self.csp is None or s == 0 else self.csp + unit
                             if unit in self.vocab:
                                 ids[i * E + pack_offset + local_offset + local_offset_l] = self.vocab.index(unit)
                                 mask[i * E + pack_offset + local_offset + local_offset_l] = 1
-                                pos_ids[i * E + pack_offset + local_offset + local_offset_l] = pos
+                                pos_ids[i * E + pack_offset + local_offset + local_offset_l] = pos_id
+                        # update iterator vars
                         local_offset += min(M, L - (s + j))
-                        pos += 1
+                        pos_id += 1
                 assert local_offset == sum(min(M, L - v) for v in range(j, j+self.len_c(chunk)))
+                # update iterator vars
                 pack_offset += local_offset
                 j += self.len_c(chunk)
             assert pack_offset == sum(min(M, L - v) for v in range(0, sum(self.len_c(chunk) for chunk in packed_chunk)))
         assert pos_ids.max().item() == (sum(self.len_c(chunk) for packed_chunk in packed_chunks for chunk in packed_chunk ) - 1)
-        return ids, mask, pos_ids
+        return ids, mask, pos_ids, lm_ids, lm_mask, lm_pos_ids
 
     def parallel_backward_mask(self, L: int, M: int, device: str = "cpu") -> Tuple[torch.FloatTensor, torch.FloatTensor]:
         if (L, M, device) in self.parallel_backward_mask_cache:
@@ -122,7 +145,7 @@ class TokenizationMixin:
         self.parallel_backward_mask_cache[(L, M, device)] = (mmask, emask)
         return mmask, emask
 
-    def encode_batch(self, chunks: List[str], M: int, L: int = None, device: str = "cpu") -> Tuple[torch.LongTensor,
+    def encode_batch(self, chunks: List[str], M: int, L: int = None, device: str = "cpu", compact=False) -> Tuple[torch.LongTensor,
                                                                             torch.FloatTensor,
                                                                             torch.LongTensor,
                                                                             torch.LongTensor,
@@ -132,9 +155,9 @@ class TokenizationMixin:
                                                                             torch.FloatTensor,]:
         if L is None:
             L = max(self.len_c(chunk) for chunk in chunks)  # max length of chunk
-        return self.encode_batch_generic(chunks, L, M, self.encode_transitions, self.len_c, device=device)
+        return self.encode_batch_generic(chunks, L, M, self.encode_transitions, self.len_c, device=device, compact=compact)
 
-    def encode_packed_batch(self, packed_chunks: List[List[str]], M: int, L: int = None, device: str = "cpu") -> Tuple[torch.LongTensor,
+    def encode_packed_batch(self, packed_chunks: List[List[str]], M: int, L: int = None, device: str = "cpu", compact=False) -> Tuple[torch.LongTensor,
                                                                             torch.FloatTensor,
                                                                             torch.LongTensor,
                                                                             torch.LongTensor,
@@ -144,14 +167,15 @@ class TokenizationMixin:
                                                                             torch.FloatTensor,]:
         if L is None:
             L = max(self.len_p(packed_chunk) for packed_chunk in packed_chunks)  # max length of packed chunk
-        return self.encode_batch_generic(packed_chunks, L, M, self.encode_packed_transitions, self.len_p, device=device)
+        return self.encode_batch_generic(packed_chunks, L, M, self.encode_packed_transitions, self.len_p, device=device, compact=compact)
 
     def encode_batch_generic(self, chunks: List[T],
                      L: int,
                      M: int,
                      encoder: Callable[[List[T], int, int], Tuple[torch.FloatTensor, torch.FloatTensor, torch.FloatTensor, torch.FloatTensor]],
                      length_fn: Callable[[List[T]], int],
-                     device: str = "cpu") -> Tuple[torch.LongTensor,
+                     device: str = "cpu",
+                     compact=False) -> Tuple[torch.LongTensor,
                                                     torch.FloatTensor,
                                                     torch.LongTensor,
                                                     torch.LongTensor,
@@ -187,8 +211,9 @@ class TokenizationMixin:
         mmask, emask = self.parallel_backward_mask(L, M,  device=device)
         mmask = mmask.unsqueeze(0)
         emask = emask.unsqueeze(0)
-        bwd_ids = (bwd_ids.unsqueeze(1) * emask.to(torch.long)).reshape(B * L, M, L)
-        bwd_ms = (bwd_ms.unsqueeze(1) * mmask).reshape(B * L, M, L)
+        if not compact:
+            bwd_ids = (bwd_ids.unsqueeze(1) * emask.to(torch.long)).reshape(B * L, M, L)
+            bwd_ms = (bwd_ms.unsqueeze(1) * mmask).reshape(B * L, M, L)
         bwd_lengths = L * torch.repeat_interleave(torch.ones_like(lengths), L)
         return fwd_ids, fwd_ms, lengths, bwd_ids, bwd_ms, bwd_lengths, mmask, emask
 

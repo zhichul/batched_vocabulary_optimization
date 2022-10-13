@@ -6,7 +6,7 @@ def parse_args():
     parser.add_argument('--model_name', type=str, default=None,  help='pretrained model name')
     parser.add_argument('--config', type=str)
     parser.add_argument("--output_dir", default=None, type=str, help="The output directory where the model predictions and checkpoints will be written.", required=True)
-    parser.add_argument('--task', type=str, choices=["morpheme_prediction"], default="morpheme_prediction", help='name of the task', required=True)
+    parser.add_argument('--task', type=str, choices=["morpheme_prediction", "language_modeling"], default="morpheme_prediction", help='name of the task', required=True)
     parser.add_argument('--overwrite_output_dir', action='store_true')
     parser.add_argument('--overwrite_cache', action='store_true')
 
@@ -21,8 +21,8 @@ def parse_args():
     parser.add_argument('--train_epochs', type=int)
     parser.add_argument('--eval_epochs', type=int)
     parser.add_argument('--save_epochs', type=int)
-    parser.add_argument('--train_dataset', type=str, default=None, required=True)
-    parser.add_argument('--eval_dataset', type=str, default=None, required=True)
+    parser.add_argument('--train_dataset', type=str, default=None, required=False)
+    parser.add_argument('--eval_dataset', type=str, default=None, required=False)
     parser.add_argument('--seed', type=int, default=42)
 
 
@@ -50,7 +50,7 @@ def parse_args():
     parser.add_argument('--max_blocks', type=int)
     parser.add_argument('--max_block_length', type=int)
     parser.add_argument('--max_unit_length', type=int)
-    parser.add_argument('--specials', type=str, nargs="+", default=["[UNK]", "[CLS]", "[SEP]", "[PAD]", "[MASK]", "[WBD]", "[SP1]", "[SP2]", "[SP3]", "[SP4]", "[SP5]"])
+    parser.add_argument('--specials', type=str, nargs="+", default=["[UNK]", "[CLS]", "[SEP]", "[PAD]", "[MASK]", "[WBD]", "[SP1]", "[SP2]", "[SP3]", "[SP4]", "[SP5]", "[BOS]", "[EOS]"])
     parser.add_argument('--pad_token', type=str, default="[PAD]")
 
     return check_args(parser.parse_args())

@@ -1,6 +1,7 @@
 from typing import Dict, Tuple
 
 import torch
+import code
 from torch import nn
 
 from bopt.core.tokenizer.attention import LatticeAttentionMixin
@@ -30,6 +31,7 @@ class Tokenizer(TokenizationMixin, LatticeDPMixin, LatticeAttentionMixin, nn.Mod
                                     embedding_dim=1,
                                     padding_idx=self.vocab.index(self.pad_token),
                                     _weight=weights_tensor if self.lsp else weights_tensor.exp())
+        self.reset_padding_weight()
 
     def clamp_weights(self, epsilon=1e-9) -> None:
         """
@@ -41,7 +43,7 @@ class Tokenizer(TokenizationMixin, LatticeDPMixin, LatticeAttentionMixin, nn.Mod
         self.weights.weight.data = torch.clamp(self.weights.weight.data, min=epsilon)
 
     def reset_padding_weight(self) -> None:
-        self.weights.weight.data[self.pad_index] = 1.0 if not self.lsp else 0.0
+        self.weights.weight.data[self.pad_index] = 1.0  if not self.lsp else 0.0
 
     def reset_specials_weight(self) -> None:
         self.weights.weight.data[self.specials_indices] = 1.0 if not self.lsp else 0.0
@@ -49,8 +51,16 @@ class Tokenizer(TokenizationMixin, LatticeDPMixin, LatticeAttentionMixin, nn.Mod
     def reset_singleton_weight(self) -> None:
         self.weights.weight.data[self.singleton_indices] = 1.0 if not self.lsp else 0.0
 
-    def reset_weight(self) -> None:
-        self.weights.weight.data[self.constant_indices] = 1.0 if not self.lsp else 0.0
+    def prevent_under_over_flow(self, ent, a):
+        if (ent < -1e-4).any():
+            print("Bug detected in entropy! Negative entropy!")
+            code.interact(local=locals())
+        if (a > 1e-4).any():
+            print("Bug detected in entropy! Greater than one marginals!")
+            code.interact(local=locals())
+        ent = torch.maximum(ent, torch.zeros_like(ent))
+        a = torch.minimum(a, torch.zeros_like(a))
+        return ent, a
 
     def forward(self, fwd_ids: torch.LongTensor,
                 fwd_ms: torch.FloatTensor,
@@ -60,7 +70,9 @@ class Tokenizer(TokenizationMixin, LatticeDPMixin, LatticeAttentionMixin, nn.Mod
                 bwd_lengths:  torch.LongTensor,
                 mmask: torch.FloatTensor,
                 emask: torch.FloatTensor,
-                tmask: torch.FloatTensor=None) -> Tuple[torch.FloatTensor, torch.FloatTensor, torch.FloatTensor, torch.FloatTensor]:
+                tmask: torch.FloatTensor=None,
+                lm: bool=False,
+                lm_mask: torch.FloatTensor=None) -> Tuple[torch.FloatTensor, torch.FloatTensor, torch.FloatTensor, torch.FloatTensor]:
         """
 
         fwd_ids: num_batch, num_block, max_unit_length, max_block_length
@@ -113,4 +125,7 @@ class Tokenizer(TokenizationMixin, LatticeDPMixin, LatticeAttentionMixin, nn.Mod
         m = m.reshape(num_batch, num_block, m.size(-1))
         a = self.tile(m, c, num_batch, num_block, M, L, fwd_ms, task_mask=tmask)
         ent = ent.reshape(num_batch, -1).sum(-1)
+        if lm:
+            a = self.tile_lm(em_, log_betas, m, a, num_batch, num_block, M, L, lm_mask)
+        ent, a = self.prevent_under_over_flow(ent, a)
         return ent, a, m, c
