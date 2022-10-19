@@ -31,11 +31,11 @@ CUDA_VISIBLE_DEVICES=1 python3 -O -um bopt.run \
     --output_vocab ${DATA_PREFIX}/substring8-vocab-threshold=None.txt \
     --config ${SCRIPT_PREFIX}/config${SIZE}.json \
     --output_dir ${ARTIFACT_PREFIX}/${SEED}/${L1}/${SIZE}/ \
-    --overwrite_output_dir --overwrite_cache \
+    --overwrite_output_dir \
     --do_train --do_eval \
     --vopt \
     --bias_mode albo \
-    --train_epochs 5 \
+    --train_epochs 15 \
     --eval_epochs 1 \
     --save_epochs 1 \
     --train_batch_size 128 \
@@ -44,8 +44,8 @@ CUDA_VISIBLE_DEVICES=1 python3 -O -um bopt.run \
     --continuing_subword_prefix @@ \
     --task language_modeling \
     --entropic 10.0 \
-    --entropy_start 3 \
-    --entropy_end 4 \
+    --entropy_start 13 \
+    --entropy_end 14 \
     --max_blocks 8 \
     --max_block_length 32 \
     --max_unit_length 8 \

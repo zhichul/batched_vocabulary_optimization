@@ -296,7 +296,7 @@ def main():
         f"Loaded transformer model with {model_size} parameters and vocab weight with {tokenizer_size} parameters, "
         f"percentage of weight among all parameters weights is {tokenizer_size / (tokenizer_size + model_size):e}")
 
-    input("Please hit enter if you want to overwrite the directory...")
+    #input("Please hit enter if you want to overwrite the directory...")
     with open(os.path.join(args.output_dir, "log.json"), "wt") as f:
         pass
 
@@ -310,11 +310,11 @@ def main():
     if args.do_train:
         logger.info("Training...")
         train(args, model, tokenizer, dataloaders["train"], dataloaders["eval"], optimizer, lr_scheduler, device=device)
-        code.interact(local=locals())
+    #    code.interact(local=locals())
     if args.do_eval:
         logger.info("Evaluating...")
         eval(args, model, tokenizer, dataloaders["eval"], device=device)
-        code.interact(local=locals())
+    #    code.interact(local=locals())
 
 
 
