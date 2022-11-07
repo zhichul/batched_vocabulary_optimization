@@ -5,14 +5,15 @@ import torch
 INF = 1e9
 
 class LatticeAttentionMixin:
+    permutation_cache = dict()
+    edge_initial_position_cache = dict()
+    valid_attention_cache = dict()
+    causal_mask_cache = dict()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.permutation_cache = dict()
-        self.edge_initial_position_cache = dict()
-        self.valid_attention_cache = dict()
-        self.causal_mask_cache = dict()
 
+    @classmethod
     def valid_attention(self, L: int, M: int, device: str = "cpu"):
         if (L, M, device) in self.valid_attention_cache:
             return self.valid_attention_cache[(L, M, device)]
@@ -32,6 +33,7 @@ class LatticeAttentionMixin:
         self.valid_attention_cache[(L, M, device)] = mask
         return mask
 
+    @classmethod
     def permutation(self, L: int, M: int):
         if (L, M) in self.permutation_cache:
             return self.permutation_cache[(L, M)]
@@ -44,6 +46,7 @@ class LatticeAttentionMixin:
         self.permutation_cache[(L, M)] = l
         return l
 
+    @classmethod
     def edge_initial_position(self, L: int, M: int) -> List[int]:
         if (L, M) in self.edge_initial_position_cache:
             return self.edge_initial_position_cache[(L, M)]
@@ -60,6 +63,7 @@ class LatticeAttentionMixin:
                      edge_log_alpha:  torch.FloatTensor,
                      log_betas:  torch.FloatTensor,
                      edge_log_betas:  torch.FloatTensor,
+                     marginal_temperature: float=None,
                      device: str = "cpu") -> Tuple[torch.FloatTensor, torch.FloatTensor, torch.FloatTensor, torch.FloatTensor, torch.FloatTensor]:
         """
         fwd_ts: B, M, L
@@ -98,7 +102,7 @@ class LatticeAttentionMixin:
 
         em_ = ea + eb - td # [B, L, E] this is the (log of) the sum of all paths through every edge, with L different
                             # lattice ending positions
-
+        # code.interact(local=locals())
         # make conditionals matrix, encoded as A_ij = attention from ith row (src) -> to jth column (tgt)
         # given src tgt (src always guaranteed to be in front of target)
         # compute the numerator of the conditional probability
@@ -125,6 +129,8 @@ class LatticeAttentionMixin:
         # create a mask for valid edges (that don't cross), intersect it with the vocabulary mask so that what remains is
         # only edge-edge attentions that are valid and from vocab item to vocab item
         cm = self.valid_attention(L, M, device=device).unsqueeze(0) * ms.unsqueeze(1) * ms.unsqueeze(2)
+        if marginal_temperature is not None:
+            ec = ec / marginal_temperature
         ec = ec * cm + (1-cm) * -INF # mask out invalid attentions
 
         # here's the normalized backward marginals maybe useful?
@@ -134,7 +140,9 @@ class LatticeAttentionMixin:
         c = triu_c * ec + tril_c * ec + torch.diag_embed((1-ms) * -INF)
 
         m = em_[:, -1, :] - log_alpha.unsqueeze(1)
-
+        if marginal_temperature is not None:
+            m = m / marginal_temperature
+        # code.interact(local=locals())
         return c, ea, eb, em_, m
 
     def tile(self, marginals: torch.FloatTensor, conditionals: torch.FloatTensor, batch_size: int, num_blocks: int, M: int, L: int , ms: torch.FloatTensor, task_mask: torch.FloatTensor = None):
@@ -188,12 +196,14 @@ class LatticeAttentionMixin:
         em = edge_marginals - log_betas[..., None]
         bottom_left = self.tile_node(marginals, em, batch_size, num_blocks, M, L)#marginals.reshape(batch_size, 1, -1).expand(batch_size, num_blocks * L, attentions.size(-1)) # batch NL NE
         bottom_left = bottom_left.roll(1, -2)
+        # code.interact(local=locals())
         top_right = torch.ones_like(bottom_left).reshape(batch_size, bottom_left.size(-1), bottom_left.size(-2)) * -INF # botch NE NL
         bottom_right = (1 - torch.eye(num_blocks * L).unsqueeze(0).expand(batch_size, num_blocks * L, num_blocks * L).to(attentions.device)) * -INF # batch NL NL
         full_attention = torch.cat([torch.cat([attentions, top_right],dim=2), torch.cat([bottom_left, bottom_right], dim=2)],dim=1)
         full_attention = full_attention * mask + (-INF) * (1-mask)
         return full_attention
 
+    @classmethod
     def block_tril(self, mat: torch.Tensor, N: int, diagonal_mat: torch.Tensor = None, shift: int = 0):
         """
         Tiles the lower triangular part of a N x N grid with `mat`
@@ -203,6 +213,7 @@ class LatticeAttentionMixin:
         grid = [[mat if row - col > shift else (diagonal_mat if row - col == shift else zeros) for col in range(N)] for row in range(N)]
         return torch.cat([torch.cat(grid_row, dim=1) for grid_row in grid], dim=0)
 
+    @classmethod
     def causal_mask(self, N: int, L:int, M:int, device="cpu"):
         """
         Returns a NxE + NxL by NxE + NxL matrix representing the causal mask.

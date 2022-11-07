@@ -54,6 +54,8 @@ from transformers.modeling_utils import (
 )
 from transformers.utils import logging
 
+EPSILON = 1e-6
+DEBUG = False
 
 logger = logging.get_logger(__name__)
 
@@ -433,12 +435,28 @@ class BertSelfAttention(nn.Module):
                 attention_threshold = attn_bias.exp()
                 attention_probs = torch.min(attention_transformer, attention_threshold)
             elif bias_mode == "albo":
-                marginals = attn_bias.exp()
-                attention_probs = nn.Softmax(dim=-1)(attention_scores)
-                numerators = marginals * attention_probs
-                adjustment = (1-marginals) * attention_probs
-                denominators = numerators.sum(dim=-1,keepdim=True) + adjustment
-                attention_probs = numerators / denominators
+                eye = torch.eye(attn_bias.size(-1), dtype=attn_bias.dtype, device=attn_bias.device).unsqueeze(0)
+                log_marginals = attn_bias * (1 - eye)  # prevent underflow by allowing one nonzero marginal
+                log_attention_probs = torch.log_softmax(attention_scores, dim=-1)
+                log_numerators = log_marginals + log_attention_probs
+                log_adjustment = torch.log(1-(1-EPSILON) * log_marginals.exp()) + log_attention_probs
+                log_denominators = torch.logaddexp(torch.logsumexp(log_numerators, dim=-1,keepdim=True), log_adjustment)
+                attention_probs = (log_numerators - log_denominators).exp()
+                if DEBUG: code.interact(local=locals())
+                # min_ = log_denominators.min()
+                # max_ = log_denominators.max()
+                # local = locals()
+                # def intercept(grad):
+                #     print("############## intercept ##############")
+                #     nonlocal local
+                #     code.interact(local=dict(list(local.items()) + [("grad", grad)]))
+                #attention_probs.register_hook(intercept)
+                # if attention_probs.isnan().any():
+                #     print("Nan attention probs detected")
+                # if attention_probs.isinf().any():
+                #     print("inf attention probs detected")
+                # print(min_, max_)
+                # code.interact(local=locals())
             else:
                 print(bias_mode)
                 raise ValueError

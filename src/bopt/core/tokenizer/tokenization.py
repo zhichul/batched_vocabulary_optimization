@@ -42,9 +42,21 @@ class TokenizationMixin:
     def len_c(self, chunk: str):
         return self.len_chunk(chunk, self.specials_set)
 
+    def len_type(self, type: str):
+        if self.specials_set and type in self.specials_set:
+            return 1
+        if self.csp is not None and type.startswith(self.csp):
+            return len(type) - len(self.csp)
+        return len(type)
     def len_p(self, packed_chunk: List[str]):
         return sum(self.len_c(chunk) for chunk in packed_chunk)
 
+    def len_id(self, id: int):
+        unit = self.vocab[id]
+        if self.csp is not None and unit.startswith(self.csp):
+            return len(unit) - len(self.csp)
+        else:
+            return self.len_c(unit)
     def pack_chunks(self, chunks: List[str], C: int):
         packed_chunks = list()
         packed_chunk = list()
@@ -135,17 +147,17 @@ class TokenizationMixin:
             # [      ate hat ]             [ 0 0 0 0 ]       [ 0 0 0 0 ]
             # [          hate]             [ 0 0 0 0 ]       [ 0 0 0 0 ]
             #
-            # mmask has the diagonal and a single path leading up to the i=2th node (this represents the actual lattice)
+            # mmask has [nolonger!] the diagonal and a single path leading up to the i=2th node (this represents the actual lattice)
             # emask only cuts out the edges themselves that's actually in the sub-lattice (this is for picking out weigths)
             i = L - 1 - j  # reverse the order so we do backward of the smallest lattice first instead of full lattice first
-            mmask[j, :L - i, i:L] = triu_ones[:L - i, :L - i]
+            # mmask[j, :L - i, i:L] = triu_ones[:L - i, :L - i]
             emask[j, :L - i, i:L] = triu_ones[:L - i, :L - i]
             mmask[j, 0, :i] = 1
         mmask, emask = mmask[:,:M,:], emask[:,:M,:]
         self.parallel_backward_mask_cache[(L, M, device)] = (mmask, emask)
         return mmask, emask
 
-    def encode_batch(self, chunks: List[str], M: int, L: int = None, device: str = "cpu", compact=False) -> Tuple[torch.LongTensor,
+    def encode_batch(self, chunks: List[str], M: int, L: int = None, device: str = "cpu", compact=False, verbatim=False) -> Tuple[torch.LongTensor,
                                                                             torch.FloatTensor,
                                                                             torch.LongTensor,
                                                                             torch.LongTensor,
@@ -155,9 +167,9 @@ class TokenizationMixin:
                                                                             torch.FloatTensor,]:
         if L is None:
             L = max(self.len_c(chunk) for chunk in chunks)  # max length of chunk
-        return self.encode_batch_generic(chunks, L, M, self.encode_transitions, self.len_c, device=device, compact=compact)
+        return self.encode_batch_generic(chunks, L, M, self.encode_transitions, self.len_c, device=device, compact=compact, verbatim=verbatim)
 
-    def encode_packed_batch(self, packed_chunks: List[List[str]], M: int, L: int = None, device: str = "cpu", compact=False) -> Tuple[torch.LongTensor,
+    def encode_packed_batch(self, packed_chunks: List[List[str]], M: int, L: int = None, device: str = "cpu", compact=False, verbatim=False) -> Tuple[torch.LongTensor,
                                                                             torch.FloatTensor,
                                                                             torch.LongTensor,
                                                                             torch.LongTensor,
@@ -167,7 +179,7 @@ class TokenizationMixin:
                                                                             torch.FloatTensor,]:
         if L is None:
             L = max(self.len_p(packed_chunk) for packed_chunk in packed_chunks)  # max length of packed chunk
-        return self.encode_batch_generic(packed_chunks, L, M, self.encode_packed_transitions, self.len_p, device=device, compact=compact)
+        return self.encode_batch_generic(packed_chunks, L, M, self.encode_packed_transitions, self.len_p, device=device, compact=compact, verbatim=verbatim)
 
     def encode_batch_generic(self, chunks: List[T],
                      L: int,
@@ -175,7 +187,8 @@ class TokenizationMixin:
                      encoder: Callable[[List[T], int, int], Tuple[torch.FloatTensor, torch.FloatTensor, torch.FloatTensor, torch.FloatTensor]],
                      length_fn: Callable[[List[T]], int],
                      device: str = "cpu",
-                     compact=False) -> Tuple[torch.LongTensor,
+                     compact=False,
+                     verbatim=False) -> Tuple[torch.LongTensor,
                                                     torch.FloatTensor,
                                                     torch.LongTensor,
                                                     torch.LongTensor,
@@ -193,7 +206,7 @@ class TokenizationMixin:
         bwd_ms = []
         lengths = []
         for chunk in chunks:
-            fwd_id, fwd_m, bwd_id, bwd_m = encoder(chunk, L, M, device=device)
+            fwd_id, fwd_m, bwd_id, bwd_m = encoder(chunk, L, M, device=device, verbatim=verbatim)
             fwd_ids.append(fwd_id)
             fwd_ms.append(fwd_m)
             bwd_ids.append(bwd_id)
@@ -212,22 +225,23 @@ class TokenizationMixin:
         mmask = mmask.unsqueeze(0)
         emask = emask.unsqueeze(0)
         if not compact:
-            bwd_ids = (bwd_ids.unsqueeze(1) * emask.to(torch.long)).reshape(B * L, M, L)
-            bwd_ms = (bwd_ms.unsqueeze(1) * mmask).reshape(B * L, M, L)
+            bwd_ids = (bwd_ids.unsqueeze(1) * emask.to(torch.long) + (1-emask.to(torch.long)) * self.pad_index).reshape(B * L, M, L)
+            bwd_ms = (bwd_ms.unsqueeze(1) * emask + mmask).reshape(B * L, M, L)
         bwd_lengths = L * torch.repeat_interleave(torch.ones_like(lengths), L)
         return fwd_ids, fwd_ms, lengths, bwd_ids, bwd_ms, bwd_lengths, mmask, emask
 
-    def init_transitions_and_masks(self, M:int, L:int, device: str = "cpu"):
+    def init_transitions_and_masks(self, M:int, L:int, device: str = "cpu", verbatim=False):
         fwd_mask = torch.zeros((M, L), dtype=torch.float, device=device)  # whenever a element of a matrix is from weights, set to 1
         bwd_mask = torch.zeros((M, L), dtype=torch.float, device=device)  # whenever a element of a matrix is from weights, set to 1
         fwd_ids = torch.zeros((M, L), dtype=torch.int, device=device)
         bwd_ids = torch.zeros((M, L), dtype=torch.int, device=device)
         fwd_ids.fill_(self.vocab.index(self.pad_token))
         bwd_ids.fill_(self.vocab.index(self.pad_token))
-        bwd_mask[0, :] = 1 # make sure to pad the lattice for backward
+        if not verbatim:
+            bwd_mask[0, :] = 1 # make sure to pad the lattice for backward
         return fwd_ids, fwd_mask, bwd_ids, bwd_mask
 
-    def encode_transitions(self, chunk: str, L: int, M: int, device: str = "cpu") -> Tuple[torch.LongTensor, torch.FloatTensor, torch.LongTensor, torch.FloatTensor]:
+    def encode_transitions(self, chunk: str, L: int, M: int, device: str = "cpu", verbatim=False) -> Tuple[torch.LongTensor, torch.FloatTensor, torch.LongTensor, torch.FloatTensor]:
         """
         forward encoding
         [ h a  t   e   ]
@@ -244,7 +258,7 @@ class TokenizationMixin:
         """
         if chunk not in self.specials_set and len(chunk) > L:
             raise ValueError(f"chunk length of {chunk} is greater than allowed max chunk length {L}")
-        fwd_ids, fwd_mask, bwd_ids, bwd_mask = self.init_transitions_and_masks(M, L, device=device)
+        fwd_ids, fwd_mask, bwd_ids, bwd_mask = self.init_transitions_and_masks(M, L, device=device, verbatim=verbatim)
 
         # handle special tokens
         if chunk in self.specials_set:
@@ -252,6 +266,22 @@ class TokenizationMixin:
             fwd_mask[0,0] = 1
             bwd_ids[0,0] = self.vocab.index(chunk)
             bwd_mask[0,0] = 1
+            return fwd_ids, fwd_mask, bwd_ids, bwd_mask
+
+        if verbatim:
+            s = 0
+            l = len(chunk)
+            if self.csp and chunk.startswith(self.csp):
+                l -= len(self.csp)
+            unit = chunk
+            if unit not in self.vocab:
+                raise AssertionError(f"verbatim should only be used with known vocab items {unit}")
+            # fwd
+            fwd_mask[l - 1, s + l - 1] = 1
+            fwd_ids[l - 1, s + l - 1] = self.vocab.index(unit)
+            # bwd
+            bwd_mask[l - 1, L - s - 1] = 1
+            bwd_ids[l - 1, L - s - 1] = self.vocab.index(unit)
             return fwd_ids, fwd_mask, bwd_ids, bwd_mask
 
         # handle real tokens
@@ -268,7 +298,7 @@ class TokenizationMixin:
                     bwd_ids[l - 1, L - s - 1] = self.vocab.index(unit)
         return fwd_ids, fwd_mask, bwd_ids, bwd_mask
 
-    def encode_packed_transitions(self, packed_chunk: List[str], L: int, M: int, device="cpu") -> Tuple[torch.LongTensor, torch.FloatTensor, torch.LongTensor, torch.FloatTensor]:
+    def encode_packed_transitions(self, packed_chunk: List[str], L: int, M: int, device="cpu", verbatim=False) -> Tuple[torch.LongTensor, torch.FloatTensor, torch.LongTensor, torch.FloatTensor]:
         """
         forward encoding
         [ h a  t   e   ]
@@ -291,7 +321,7 @@ class TokenizationMixin:
         start = 0
         for chunk in packed_chunk:
             length = self.len_c(chunk)
-            cfi, cfm, cbi, cbm = self.encode_transitions(chunk, L=length, M=min(M,length), device=device)
+            cfi, cfm, cbi, cbm = self.encode_transitions(chunk, L=length, M=min(M,length), device=device, verbatim=verbatim)
             r, c = cfi.size()
             fwd_ids[:r, start:start + c] = cfi
             fwd_mask[:r, start:start + c] = cfm
@@ -299,3 +329,9 @@ class TokenizationMixin:
             bwd_mask[:r, L - start - c:L - start] = cbm
             start += length
         return fwd_ids, fwd_mask, bwd_ids, bwd_mask
+
+    def id2str(self, id: int, remove_csp=False):
+        unit = self.vocab[id]
+        if remove_csp and self.csp is not None and unit.startswith(self.csp):
+            return unit[len(self.csp):]
+        return unit

@@ -1,0 +1,1 @@
+entropy regularizer + full attention + bias renorm

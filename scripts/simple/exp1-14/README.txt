@@ -1,0 +1,1 @@
+max entropy lattice for attention (fixed during training not updated) + bias renorm
