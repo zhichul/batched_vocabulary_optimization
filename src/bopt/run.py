@@ -9,6 +9,7 @@ import cProfile
 from torch.optim import Adam
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import RandomSampler, DataLoader, SequentialSampler
+from torch.utils.data.dataloader import default_collate
 from tqdm import tqdm
 
 from bopt.core.utils import length_normalized_initialization
@@ -17,7 +18,8 @@ from bopt.data.language_modeling.unigram import preprocess_language_modeling_wit
     preprocess_language_modeling_with_unigram_node_dataset
 from bopt.forward_step import morpheme_prediction_lattice_step, language_modeling_lattice_step, \
     language_modeling_unigram_step
-from bopt.forward_loop import language_modeling_lattice_loop, language_modeling_unigram_loop
+from bopt.forward_loop import language_modeling_lattice_loop, language_modeling_unigram_loop, \
+    language_modeling_lattice_decode_loop, language_modeling_unigram_decode_loop
 
 from bopt.arguments import parse_args
 from bopt.core.tokenizer import Tokenizer
@@ -37,6 +39,8 @@ from bopt.data.utils import load_vocab, load_weights, constant_initializer, save
 import json
 
 DEBUG = False
+INF = 1e9
+
 logging.basicConfig(format = '%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt = '%m/%d/%Y %H:%M:%S',
                     stream=sys.stderr,
@@ -48,6 +52,12 @@ acquire_all_available_gpu()
 # torch.set_anomaly_enabled(True)
 
 DEBUG = False
+
+def default_collate_(batch):
+    for i in range(len(batch[0])):
+        for j in [27]:
+            print(i, len(batch[j][i]), batch[j][i])
+    return default_collate(batch)
 
 def initialize(args):
     # seed the experiment
@@ -83,6 +93,8 @@ def load_model(args, device):
         model = BertForMaskedLM(config)
     model.to(device)
     model.bias_mode = args.bias_mode if args.vopt else "mult_then_renorm" # mult_then_renorm is for attention causal masking
+    if args.no_pos:
+        model.bert.embeddings.no_pos = True
     return model, config
 
 
@@ -152,38 +164,39 @@ def preprocess_datasets(args, tokenizer, input_vocab, output_vocab):
                                                                            cache_dir,
                                                                            tokenizer,
                                                                            output_vocab,
-                                                                           args.max_blocks,
-                                                                           args.max_block_length,
-                                                                           args.max_unit_length)
+                                                                           args.max_blocks if name == "train" or args.eval_max_blocks is None else args.eval_max_blocks,
+                                                                           args.max_block_length if name == "train" or args.eval_max_block_length is None else args.eval_max_block_length,
+                                                                           args.max_unit_length if name == "train" or args.eval_max_unit_length is None else args.eval_max_unit_length)
                     elif args.output_viterbi:
-                        preprocess_language_modeling_with_lattices_output_viterbi_dataset(data,
-                                                                                   cache_dir,
-                                                                                   tokenizer,
-                                                                                   output_vocab,
-                                                                                   args.max_blocks,
-                                                                                   args.max_block_length,
-                                                                                   args.max_unit_length)
+                        preprocess_language_modeling_with_lattices_output_viterbi_dataset(args, data,
+                                                                           cache_dir,
+                                                                           tokenizer,
+                                                                           output_vocab,
+                                                                           args.max_blocks if name == "train" or args.eval_max_blocks is None else args.eval_max_blocks,
+                                                                           args.max_block_length if name == "train" or args.eval_max_block_length is None else args.eval_max_block_length,
+                                                                           args.max_unit_length if name == "train" or args.eval_max_unit_length is None else args.eval_max_unit_length)
                     else:
                         preprocess_language_modeling_with_lattices_dataset(data,
                                                                            cache_dir,
                                                                            tokenizer,
                                                                            output_vocab,
-                                                                           args.max_blocks,
-                                                                           args.max_block_length,
-                                                                           args.max_unit_length)
+                                                                           args.max_blocks if name == "train" or args.eval_max_blocks is None else args.eval_max_blocks,
+                                                                           args.max_block_length if name == "train" or args.eval_max_block_length is None else args.eval_max_block_length,
+                                                                           args.max_unit_length if name == "train" or args.eval_max_unit_length is None else args.eval_max_unit_length)
                 else:
                     if args.debug_node_unigram:
                         preprocess_language_modeling_with_unigram_node_dataset(data,
                                                                       cache_dir,
                                                                       tokenizer,
                                                                       output_vocab,
-                                                                      args.max_length)
+                                                                      args.max_length if name == "train" or args.eval_max_length is None else args.eval_max_length,
+                                                                      pos_length=args.pos_length)
                     else:
                         preprocess_language_modeling_with_unigram_dataset(data,
                                                                       cache_dir,
                                                                       tokenizer,
                                                                       output_vocab,
-                                                                      args.max_length)
+                                                                      args.max_length if name == "train" or args.eval_max_length is None else args.eval_max_length)
             if args.vopt:
                 if args.output_viterbi:
                     datasets[name] = dataset = LanguageModelingLatticeOutputViterbiDataset(cache_dir)
@@ -192,8 +205,8 @@ def preprocess_datasets(args, tokenizer, input_vocab, output_vocab):
             else:
                 datasets[name] = dataset = LanguageModelingUnigramDataset(cache_dir)
             sampler = RandomSampler(dataset) if name == "train" else SequentialSampler(dataset)
-            dataloaders[name] = dataloader = DataLoader(dataset, sampler=sampler, batch_size=args.gpu_batch_size,
-                                                        num_workers=args.data_num_workers)
+            dataloaders[name] = dataloader = DataLoader(dataset, sampler=sampler, batch_size=args.gpu_batch_size if name == "train" or args.eval_gpu_batch_size is None else args.eval_gpu_batch_size,
+                                                        num_workers=args.data_num_workers, collate_fn=default_collate)
     else:
         raise ValueError(args.task)
     return datasets, dataloaders
@@ -213,21 +226,40 @@ def build_optimizers(args, tokenizer, model):
     return optimizer, plat_scheduler
 
 
-def regulairzation(args, tokenizer, model, lengths, entropic_weight, ent, device="cpu"):
-    l1 = torch.zeros((1,), device=device)
-    e = torch.zeros((1,), device=device)
-    if args.l1 > 0:
-        if not tokenizer.lsp:
-            l1 = args.l1 * tokenizer.weights.weight.mean()
-        else:
-            l1 = args.l1 * tokenizer.weights.weight.exp().mean()
-    if args.vopt and entropic_weight > 0:
-        nchars = lengths.sum(-1)
-        avg_ent = ent / nchars
-        e = entropic_weight * avg_ent.mean()
-    return l1, e
+class Regularizers:
 
-def save_checkpoint(args, epoch, step, model, tokenizer):
+    @classmethod
+    def regulairzation(cls, args, tokenizer, model, lengths, entropic_weight, ent, out_marginals, out_units, log_marginal_counts, counts, prev_lmc, prev_c, lmc, device="cpu"):
+        l1 = torch.zeros((1,), device=device)
+        e = torch.zeros((1,), device=device)
+        gl = torch.zeros((1,), device=device)
+        if args.l1 > 0:
+            if not tokenizer.lsp:
+                l1 = args.l1 * tokenizer.weights.weight.mean()
+            else:
+                l1 = args.l1 * tokenizer.weights.weight.exp().mean()
+        if args.vopt and entropic_weight != 0:
+            nchars = lengths.sum(-1)
+            avg_ent = ent / nchars
+            e = entropic_weight * avg_ent.mean()
+        if args.group_lasso > 0:
+            # if cls.log_marginal_counts is None:
+            #     cls.log_marginal_counts = torch.ones((len(tokenizer.vocab),), dtype=torch.float)
+            for om, ou in zip(out_marginals.detach().cpu(), out_units.detach().cpu()):
+                log_marginal_counts[ou] = torch.logaddexp(log_marginal_counts[ou], 2 * om) # the 2 is for the squaring
+                lmc[ou] = torch.logaddexp(lmc[ou], om)
+                counts[ou] = counts[ou] + 1.0
+            if prev_lmc is not None:
+                try:
+                    # d/d out_marginals (group lasso) = lambda * sqrt(group_size) / sqrt(sum of squared marginals) * 2 exp om * exp om
+                    log_global_multiplier = (prev_c.sqrt().log() - log_marginal_counts/2).to(device)
+                    log_individual_multiplier = log_global_multiplier[out_units] + 2 * out_marginals.detach()
+                    gl = args.group_lasso * (log_individual_multiplier.exp().to(device) * out_marginals).sum()
+                except Exception as ex:
+                    code.interact(local=locals())
+        return l1, e, gl
+
+def save_checkpoint(args, epoch, step, model, tokenizer, optimizer):
     checkpointdir = os.path.join(args.output_dir, f"checkpoint-{step}")
     os.makedirs(checkpointdir, exist_ok=True)
     # Save a trained model
@@ -244,40 +276,50 @@ def save_checkpoint(args, epoch, step, model, tokenizer):
     output_vocab_file = os.path.join(checkpointdir, "learned_vocab.txt")
     weights = tokenizer.weights.weight.detach().tolist() if tokenizer.lsp else tokenizer.weights.weight.log().detach().tolist()
     save_weights(OrderedDict(zip(tokenizer.vocab, weights)), output_vocab_file)
+    output_optim_file = os.path.join(checkpointdir, "optim.bin")
+    torch.save({"optimizer_state_dict": optimizer.state_dict()}, output_optim_file)
 
 def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, train_dataloader: DataLoader,eval_dataloader: DataLoader, optimizer, lr_scheduler, device="cpu"):
     logger.info("Training...")
     bn = 0
     step = 0
     entropic_weight = 0
+    prev_counts = prev_log_marginal_counts = prev_lmc = prev_type_ent = None
     for epoch in range(args.train_epochs):
-        if args.entropic > 0:
-            entropic_weight = args.entropic * max(0, min(1, (epoch - args.entropy_start) / (args.entropy_end - args.entropy_start)))
+        if args.entropic != 0:
+            if epoch < args.entropy_start_dec:
+                entropic_weight = args.entropic * max(0, min(1, (epoch - args.entropy_start) / (args.entropy_end - args.entropy_start)))
+            else:
+                entropic_weight = args.entropic * min(1, max(0,  1 - (epoch - args.entropy_start_dec) / (args.entropy_end_dec - args.entropy_start_dec)))
         weight = args.gpu_batch_size / args.train_batch_size # TODO: if gpu_batch_size approaches the size of the dataset, make sure to drop_last
-        epoch_loss = epoch_l1 = epoch_e =  epoch_examples = 0
+        epoch_loss = epoch_l1 = epoch_e =  epoch_examples = epoch_gl = 0
         tqdm_bar = tqdm(train_dataloader, total=len(train_dataloader) * args.train_epochs, initial=epoch * len(train_dataloader))
+        log_marginal_counts = torch.ones((len(tokenizer.vocab),), dtype=torch.float) * -INF
+        lmc = torch.ones((len(tokenizer.vocab),), dtype=torch.float) * -INF
+        counts = torch.zeros((len(tokenizer.vocab),), dtype=torch.float)
         for batch in tqdm_bar:
             # if not batch[-2][0].startswith("some changes to the plan"):
             #     continue
+
             bn += 1
             # load inputs
             batch_size = batch[0].size(0)
 
             if args.task == "morpheme_prediction":
-                loss, ent, lengths, ntokens = morpheme_prediction_lattice_step(args, batch, tokenizer, model, device)
+                loss, ent, lengths, ntokens, out_marginals, out_units = morpheme_prediction_lattice_step(args, batch, tokenizer, model, device)
             elif args.task == "language_modeling":
                 if args.vopt:
-                    loss, ent, lengths, ntokens = language_modeling_lattice_step(args, batch, tokenizer, model, device)
+                    loss, ent, lengths, ntokens, out_marginals, out_units = language_modeling_lattice_step(args, batch, tokenizer, model, device)
                 else:
-                    loss, ent, lengths, ntokens = language_modeling_unigram_step(args, batch, tokenizer, model, device)
+                    loss, ent, lengths, ntokens, out_marginals, out_units = language_modeling_unigram_step(args, batch, tokenizer, model, device)
             else:
                 raise ValueError
 
             # get regularizations
-            l1, e = regulairzation(args, tokenizer, model, lengths, entropic_weight, ent, device=device)
+            l1, e, gl = Regularizers.regulairzation(args, tokenizer, model, lengths, entropic_weight, ent, out_marginals, out_units, log_marginal_counts, counts, prev_log_marginal_counts, prev_counts, lmc, device=device)
 
             # weight the loss and backpropograte
-            Li = weight * (loss + l1 + e)
+            Li = weight * (loss + l1 + e + gl)
             Li.backward()
             # code.interact(local=locals())
             # for group in optimizer.param_groups:
@@ -291,12 +333,15 @@ def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, train_dataloader: D
             epoch_loss += loss.item() * batch_size
 
             epoch_l1 += l1.item() * batch_size
+            epoch_gl += gl.item() * batch_size
             epoch_e += e.item() * batch_size
             tqdm_bar.desc = f"Epoch {epoch:<4} " \
                             f"Step {step:<4} " \
                             f"Task {epoch_loss / epoch_examples:<4.2f} " \
                             f"L1 {epoch_l1 / epoch_examples:<6.4f} " \
+                            f"GL {epoch_gl / epoch_examples:<6.4f} " \
                             f"Ent {epoch_e / epoch_examples:<6.4f} " \
+                            f"TEnt {-42.0 if prev_type_ent is None else prev_type_ent.item():<6.4f} " \
                             f"GnormM {(sum([(param.grad ** 2).sum() for param in list(model.parameters()) if param.grad is not None], torch.tensor(0, device=device))**0.5).item():<6.4f} " \
                             f"GnormV {(sum([(param.grad ** 2).sum() for param in list(tokenizer.parameters()) if param.grad is not None], torch.tensor(0, device=device)) ** 0.5).item():<6.4f} " \
                             f"LR " + " ".join([f"{param_group['lr']:<6.4f}" for param_group in optimizer.param_groups])
@@ -318,7 +363,7 @@ def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, train_dataloader: D
                 if DEBUG:
                     code.interact(local=locals())
                 # evaluate
-                if (step % 10) == 0:
+                if (step % args.eval_steps) == 0:
                     if args.task == "morpheme_prediction":
                         pass
                     elif args.task == "language_modeling":
@@ -340,14 +385,20 @@ def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, train_dataloader: D
                                 "train_loss": epoch_loss / epoch_examples,
                                 "train_ent": epoch_e / epoch_examples,
                                 "train_l1": epoch_l1 / epoch_examples,
+                                "group_lasso": epoch_gl / epoch_examples,
+                                "type_entropy": -42.0 if prev_type_ent is None else prev_type_ent.item()
                             }), file=f)
                     else:
                         raise ValueError
-                    save_checkpoint(args, epoch, step, model, tokenizer)
-
+                if (step % args.save_steps) == 0:
+                    save_checkpoint(args, epoch, step, model, tokenizer, optimizer)
+        prev_log_marginal_counts = log_marginal_counts
+        prev_counts = counts
+        prev_lmc = lmc
+        prev_type_ent = (-(prev_lmc - prev_lmc.logsumexp(-1)).to(torch.double) * (prev_lmc - prev_lmc.logsumexp(-1)).to(torch.double).exp()).sum()
 
         if (epoch + 1) % args.save_epochs == 0:
-            save_checkpoint(args, epoch, step, model, tokenizer)
+            save_checkpoint(args, epoch, step, model, tokenizer, optimizer)
         lr_scheduler.step(epoch_loss / epoch_examples)
 
 def eval(args, model: BertForMaskedLM, tokenizer:Tokenizer, eval_dataloader: DataLoader, device="cpu"):
@@ -361,6 +412,18 @@ def eval(args, model: BertForMaskedLM, tokenizer:Tokenizer, eval_dataloader: Dat
             eval_loss_avg_c, eval_loss_avg_t, eval_loss, eval_NC, eval_NT = language_modeling_unigram_loop(args, eval_dataloader, tokenizer, model, device)
             logger.info(f"Eval loss: avgc = {eval_loss_avg_c}, avgt = {eval_loss_avg_t}, loss = {eval_loss}, NC = {eval_NC}, NT = {eval_NT}")
 
+
+def decode(args, model, tokenizer, eval_dataloader, device="cpu"):
+    if args.task == "morpheme_prediction":
+        pass
+    elif args.task == "language_modeling":
+        if args.vopt:
+            decodings = language_modeling_lattice_decode_loop(args, eval_dataloader, tokenizer, model, device, remove_csp=args.decode_remove_csp, remove_padding=args.decode_remove_padding)
+        else:
+            decodings = language_modeling_unigram_decode_loop(args, eval_dataloader, tokenizer, model, device, remove_csp=args.decode_remove_csp, remove_padding=args.decode_remove_padding)
+        with open(os.path.join(args.output_dir, f"{os.path.basename(args.eval_dataset)}.viterbi.txt"), "wt") as f:
+            for decoding in decodings:
+                print(" ".join(decoding), file=f)
 def tokenize(args, tokenizer):
     if args.task == "language_modeling":
         tokenize_language_modeling_with_unigram_dataset(args.eval_dataset, tokenizer)
@@ -372,6 +435,8 @@ def main():
 
     # initialize experiment
     device, n_gpu = initialize(args)
+    if args.double_precision:
+        torch.set_default_dtype(torch.float64)
 
     # load labels, vocab, and weights from cmdline arguments
     input_vocab, output_vocab, weights = load_vocab_and_weights(args)
@@ -415,9 +480,15 @@ def main():
     #    code.interact(local=locals())
     if args.do_eval:
         logger.info("Evaluating...")
+        model.eval()
         eval(args, model, tokenizer, dataloaders["eval"], device=device)
     #    code.interact(local=locals())
-
+    if args.do_decode:
+        logger.info("Decoding...")
+        decode(args, model, tokenizer, dataloaders["eval"], device=device)
+    if args.do_inspection:
+        logger.info("Decoding...")
+        code.interact(local=locals())
 
 
 if __name__ == "__main__":

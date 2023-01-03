@@ -290,6 +290,7 @@ class BertEmbeddings(nn.Module):
         # position_ids (1, len position emb) is contiguous in memory and exported when serialized
         self.register_buffer("position_ids", torch.arange(config.max_position_embeddings).expand((1, -1)))
         self.position_embedding_type = getattr(config, "position_embedding_type", "absolute")
+        self.no_pos = False
 
     def forward(
         self, input_ids=None, token_type_ids=None, position_ids=None, inputs_embeds=None, past_key_values_length=0
@@ -312,7 +313,7 @@ class BertEmbeddings(nn.Module):
         token_type_embeddings = self.token_type_embeddings(token_type_ids)
 
         embeddings = inputs_embeds + token_type_embeddings
-        if self.position_embedding_type == "absolute":
+        if not self.no_pos and self.position_embedding_type == "absolute":
             position_embeddings = self.position_embeddings(position_ids)
             embeddings += position_embeddings
         embeddings = self.LayerNorm(embeddings)

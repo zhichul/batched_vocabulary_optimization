@@ -38,7 +38,7 @@ def length_normalized_initialization(model, tokenizer, **kwargs):
     bias = [tokenizer.len_type(unit) * char_bias for unit in tokenizer.vocab]
     model.cls.predictions.bias.data[:len(bias)] = torch.tensor(bias, device = model.cls.predictions.bias.data.device)
     model.cls.predictions.bias.data[len(bias):] = -INF
-def find_bias(tokenizer, eps = 1e-3, tol=1e-3, lr=1e-4):
+def find_bias(tokenizer, eps = 1e-3, tol=1e-3, lr=1e-3):
     length_counts = defaultdict(int)
     for unit in tokenizer.vocab:
         length_counts[tokenizer.len_type(unit)] += 1
@@ -46,15 +46,18 @@ def find_bias(tokenizer, eps = 1e-3, tol=1e-3, lr=1e-4):
     x = torch.nn.Parameter(torch.tensor(math.log(1/sum(length_counts.values()))))
     loss = torch.tensor([math.inf])
     bar = tqdm(forever_generator())
+    lengths = []
+    for length, count in length_counts.items():
+        lengths.extend([torch.FloatTensor((length,)) for _ in range(count)])
+    lengths = torch.cat(lengths, dim=-1)
     for iter in bar:
         if loss.item() <= tol:
             break
-        values = []
-        for length, count in length_counts.items():
-            values.extend([x * length for _ in range(count)])
-        loss = (torch.logsumexp(torch.stack(values), -1) - 1) ** 2
+        values = lengths * x
+        loss = (torch.logsumexp(values, -1) - 1) ** 2
         loss.backward()
         x.data -= lr * x.grad
         x.data = torch.clamp(x.data, max=-eps)
-        bar.desc = f"loss = {loss}, x = {x.item()}"
+        bar.desc = f"loss = {loss}, x = {x.item()} x.grad = {x.grad.item()}"
+        x.grad = None
     return x.item()

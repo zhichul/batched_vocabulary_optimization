@@ -27,12 +27,12 @@ def morpheme_prediction_lattice_step(args, batch, tokenizer, model, device):
 
     # get loss
     loss = losses[0] * args.main_loss_multiplier
-    return loss, ent, lengths, None
+    return loss, ent, lengths, None, None, None
 
-def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=False):
+def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=False, decode=False, decode_remove_csp=True, decode_remove_padding=True):
     batch = [t.to(device) if isinstance(t, torch.Tensor) else t for t in batch ]
     if args.output_viterbi:
-        input_ids, pos_ids, input_mask, fwd_ids, fwd_ms, lengths, bwd_ids, bwd_ms_c, bwd_lengths, vfwd_ids, vfwd_ms, vbwd_ids, vbwd_ms, mmask, emask, binary_mask, txt, ntokens = batch
+        input_ids, pos_ids, input_mask, fwd_ids, fwd_ms, lengths, bwd_ids, bwd_ms_c, bwd_lengths, vfwd_ids, vfwd_ms, vbwd_ids, vbwd_ms_c, mmask, emask, binary_mask, txt, ntokens = batch
     else:
         input_ids, pos_ids, input_mask, fwd_ids, fwd_ms, lengths, bwd_ids, bwd_ms_c, bwd_lengths, mmask, emask, binary_mask, txt, ntokens = batch
     # code.interact(local=locals())
@@ -47,13 +47,21 @@ def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=F
     global_mask = binary_mask.unsqueeze(1) * binary_mask.unsqueeze(2) * tokenizer.causal_mask(N, L, M, device=device).unsqueeze(0)
 
     if args.output_viterbi:
-        output_fwd_ids = vfwd_ids
-        output_fwd_ms = vfwd_ms
-    else:
         output_fwd_ids = fwd_ids
         output_fwd_ms = fwd_ms
         output_bwd_ms_c = bwd_ms_c
         output_bwd_ms = bwd_ms
+
+        f_output_fwd_ids = vfwd_ids
+        f_output_fwd_ms = vfwd_ms
+        f_output_bwd_ms_c = vbwd_ms_c
+        vbwd_ms = (vbwd_ms_c.unsqueeze(2) * emask + mmask).reshape(batch_size, B * L, M, L)
+        f_output_bwd_ms = vbwd_ms
+    else:
+        f_output_fwd_ids = output_fwd_ids = fwd_ids
+        f_output_fwd_ms = output_fwd_ms = fwd_ms
+        f_output_bwd_ms_c = output_bwd_ms_c = bwd_ms_c
+        f_output_bwd_ms = output_bwd_ms = bwd_ms
 
     output_fwd_ts = tokenizer.get_weights(fwd_ids)
     output_bwd_ts = None
@@ -62,8 +70,10 @@ def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=F
         prev = output_fwd_ts
         counter =0
         errors = []
+        model.eval()
         with torch.no_grad():
             # tqdm_bar = tqdm(forever_generator())
+            # for _ in tqdm_bar:
             for _ in forever_generator():
                 ent, a, m, c = tokenizer(fwd_ids, fwd_ms, lengths,
                                          bwd_ids, bwd_ms, bwd_lengths,
@@ -71,14 +81,6 @@ def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=F
                 # run model
                 losses = model(input_ids=input_ids, position_ids=pos_ids, attn_bias=a if args.vopt else None, return_dict=True)
 
-                if args.output_viterbi:
-                    output_fwd_ids = vfwd_ids
-                    output_fwd_ms = vfwd_ms
-                    output_bwd_ms = vbwd_ms
-                else:
-                    output_fwd_ids = fwd_ids
-                    output_fwd_ms = fwd_ms
-                    output_bwd_ms = bwd_ms
                 # get indices
                 indices = increasing_roll_left(output_fwd_ids, tokenizer.pad_index).transpose(-1, -2).reshape(batch_size, N * L,M)  # batch x NL x M
 
@@ -102,7 +104,6 @@ def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=F
                 diff = ((output_fwd_ts - prev)**2).sum().item()
                 # tqdm_bar.desc = f"Diff = {diff}"
                 errors.append(diff)
-                prev = output_fwd_ts
                 # print(counter)
                 # code.interact(local=locals())
                 if diff < 1e-3:
@@ -112,11 +113,10 @@ def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=F
                 if counter > 100:
                     print(f"Error: did not converge in 100 iterations {errors}")
                     code.interact(local=locals())
-
-
-
-    iters = 2 if args.debug_fixed_point else 1
-    for iter in range(iters):
+                    break
+                prev = output_fwd_ts
+        model.train()
+    if args.debug_fixed_point:
         # dp lattice if necessasry
         ent, a, m, c = None, None, None, None
         if args.vopt:
@@ -146,6 +146,36 @@ def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=F
         output_fwd_ts = increasing_roll_right(output_fwd_ts, 0)
         output_fwd_ts = output_fwd_ts * output_fwd_ms + (1-output_fwd_ms) * -INF
 
+    # dp lattice if necessasry
+    ent, a, m, c = None, None, None, None
+    if args.vopt:
+        ent, a, m, c = tokenizer(fwd_ids, fwd_ms, lengths,
+                                 bwd_ids, bwd_ms, bwd_lengths,
+                                 mmask, emask, None, lm=True, lm_mask=global_mask, fwd_ts=output_fwd_ts, bwd_ts=output_bwd_ts, marginal_temperature=args.marginal_temperature)
+    # run model
+    losses = model(input_ids=input_ids, position_ids=pos_ids, attn_bias=a if args.vopt else None, return_dict=True)
+
+    # get indices
+    indices = increasing_roll_left(f_output_fwd_ids, tokenizer.pad_index).transpose(-1, -2).reshape(batch_size, N * L, M) # batch x NL x M
+
+    # get output probabilities
+    log_edge_weights = torch.log_softmax(losses["logits"][:, -N * L:, :], -1) # batch x NL x V
+
+    # get log probs and convert back to transition matrix
+    output_fwd_ts = torch.gather(log_edge_weights, -1, indices).reshape(batch_size, N, L, M).transpose(-1,-2) # batch x N x M x L
+    bos_mask = torch.ones_like(output_fwd_ts)
+    bos_mask[:,0,:,0] = 0 # first column of first block is bos
+    ofts = output_fwd_ts.reshape(batch_size, -1)
+    conditioning = ofts.max(-1)[0].detach()
+    output_fwd_ts = bos_mask * output_fwd_ts + (1-bos_mask) * conditioning[:,None, None, None]
+    output_bwd_ts = torch.flip(output_fwd_ts, dims=[-1])
+    output_bwd_ts = output_bwd_ts * f_output_bwd_ms_c + -INF * (1 - f_output_bwd_ms_c)
+    output_bwd_ts = (output_bwd_ts.unsqueeze(2) * emask + -INF * (1-emask)).reshape(batch_size, B * L, M, L)
+    output_bwd_ts = output_bwd_ts * (1-bwd_connector)
+    output_fwd_ts = increasing_roll_right(output_fwd_ts, 0)
+    output_fwd_ts = output_fwd_ts * f_output_fwd_ms + (1-f_output_fwd_ms) * -INF
+
+
     # local = locals()
     # def hook(grad):
     #     print("hook")
@@ -163,7 +193,11 @@ def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=F
             f.write(json.dumps(d) + "\n")
     # compute prob
     log_alphas, _= tokenizer.forward_algorithm(output_fwd_ts.reshape(batch_size * N, M, L), output_fwd_ms.reshape(batch_size * N, M, L), lengths.reshape(batch_size * N))
-
+    if decode:
+        max_log_alpha, _, backpointers = tokenizer.viterbi_algorithm(output_fwd_ts.reshape(-1, *output_fwd_ts.size()[2:]), output_fwd_ms.reshape(-1, *output_fwd_ms.size()[2:]), lengths.reshape(-1, *lengths.size()[2:]))
+        word_ids = tokenizer.decode_backpointers(fwd_ids.reshape(-1, *fwd_ids.size()[2:]), lengths.reshape(-1, *lengths.size()[2:]), backpointers)
+        word_ids = [sum(word_ids[i*N:(i+1)*N],[]) for i in range(batch_size)]
+        return [[tokenizer.id2str(id, remove_csp=decode_remove_csp) for id in word_id if not decode_remove_padding or not tokenizer.is_padding(id)] for word_id in word_ids]
 
     # get loss
     nchars = lengths.sum() - batch_size # adjust for BOS
@@ -171,7 +205,7 @@ def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=F
     if eval:
         loss = -log_probs / nchars  * args.main_loss_multiplier
     elif args.normalize_by_tokens:
-        loss = -log_probs / (output_fwd_ms.sum() - batch_size)  * args.main_loss_multiplier
+        loss = -log_probs / (f_output_fwd_ms.sum() - batch_size)  * args.main_loss_multiplier
     elif args.normalize_by_expected_length:
         length_transition = (torch.ones(fwd_ids.size(-2)))[None,None, :, None].expand(*fwd_ids.size()).to(output_fwd_ms.device) * output_fwd_ms
         expected_lengths, _ = tokenizer.expectation(output_fwd_ts.reshape(batch_size * N, M, L), length_transition.reshape(batch_size * N, M, L), output_fwd_ms.reshape(batch_size * N, M, L), lengths.reshape(batch_size * N))
@@ -182,19 +216,35 @@ def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=F
         loss = -log_probs * args.main_loss_multiplier / batch_size / args.constant_normalization
     else:
         loss = -log_probs / nchars  * args.main_loss_multiplier
+
+    # get regularizer necessary bookkeeping
+    if args.group_lasso > 0:
+        oent, _, om, _ = tokenizer(fwd_ids, fwd_ms, lengths,
+                                 bwd_ids, bwd_ms, bwd_lengths,
+                                 mmask, emask, None, lm=True, lm_mask=global_mask, fwd_ts=output_fwd_ts,
+                                 bwd_ts=output_bwd_ts)
+        om_list = om.reshape(batch_size, -1)[input_mask[:, :om.size(1) * om.size(2)].to(torch.bool)]
+        unit_list = input_ids[:, :om.size(1) * om.size(2)][input_mask[:, :om.size(1) * om.size(2)].to(torch.bool)].reshape(-1)
+        if om_list.size() != unit_list.size():
+            print("Bug Detected! Unmatched om_list and unit_list size!")
+            code.interact(local=locals())
+    else:
+        om_list = unit_list = None
+
+
     # if loss.isnan().any():
     #     print("nan loss")
     #     code.interact(local=locals())
     # if txt[0].startswith("some changes to the plan"):
     #     print("some changes to the plan")
     #     code.interact(local=locals())
-    code.interact(local=locals())
+    # code.interact(local=locals())
     if loss.isnan().any():
         code.interact(local=locals())
 
     if DEBUG:
         code.interact(local=locals())
-    return loss, ent, lengths, ntokens
+    return loss, ent, lengths, ntokens, om_list, unit_list
 
 def language_modeling_unigram_step(args, batch, tokenizer, model, device):
     batch = [t.to(device) if isinstance(t, torch.Tensor) else t for t in batch]
@@ -214,4 +264,4 @@ def language_modeling_unigram_step(args, batch, tokenizer, model, device):
     losses = model(input_ids=input_ids, position_ids=pos_ids, attention_mask=input_mask, labels=labels, attn_bias=attn_bias, return_dict=True)
     # get loss
     loss = losses[0] * args.main_loss_multiplier
-    return loss, None, lengths, ntokens # sum of mask is the number of tokens
+    return loss, None, lengths, ntokens, None, None # sum of mask is the number of tokens

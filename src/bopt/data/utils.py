@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from typing import Dict
 
@@ -6,6 +7,9 @@ import torch
 
 from bopt.core.integerize import Integerizer
 from collections import OrderedDict
+
+from bopt.core.modeling_bert import BertForMaskedLM
+from bopt.core.modeling_bert import BertConfig
 
 
 def apply(func, iterable):
@@ -16,7 +20,7 @@ def load_vocab(file: Path):
     units = []
     with open(file, "rt") as f:
         for line in f:
-            line = line.strip()
+            line = line.rstrip()
             unit = line.split("\t")[0]
             units.append(unit)
     return Integerizer(units)
@@ -25,7 +29,7 @@ def load_weights(file: Path, tensor=False):
     weights = OrderedDict()
     with open(file, "rt") as f:
         for line in f:
-            line = line.strip()
+            line = line.rstrip()
             unit, weight = line.split("\t")
             weights[unit] = float(weight)
             if tensor:
@@ -71,3 +75,8 @@ def load_forever(dataloader):
     while True:
         for batch in dataloader:
             yield batch
+
+def load_model(model_name, device):
+    config = BertConfig.from_json_file(os.path.join(model_name, "config.json"))
+    model = BertForMaskedLM.from_pretrained(model_name)
+    return model, config

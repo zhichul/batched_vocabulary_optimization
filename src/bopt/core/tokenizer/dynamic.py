@@ -109,13 +109,15 @@ class LatticeDPMixin:
         """Essentially forward but with a more tricky semiring"""
         B, M, L= transition_matrix.size()
 
+        # alleviate overflow and underflow
+        transition_matrix = transition_matrix.double()
+
         bmask: torch.BoolTensor = mask.to(torch.bool)
         edge_log_alphas: torch.FloatTensor = torch.ones_like(transition_matrix).fill_(-INF)
         edge_log_alphas[bmask] = 0.0
         edge_log_alphas += transition_matrix
-        edge_entropy: torch.FloatTensor = torch.zeros_like(transition_matrix) # diff
+        edge_entropy: torch.FloatTensor = torch.zeros_like(transition_matrix).double() # diff
         entropy_transition_matrix: torch.FloatTensor = - transition_matrix * transition_matrix.exp() * mask # diff -plogp
-        code.interact(local=locals())
         log_alphas: List[torch.FloatTensor] = [mask.new_zeros(B)]
         entropies: List[torch.FloatTensor] = [mask.new_zeros(B)] # diff
         for i in range(L):
@@ -137,12 +139,15 @@ class LatticeDPMixin:
         """Essentially forward but with a more tricky semiring"""
         B, M, L= transition_matrix.size()
 
+        # alleviate overflow and underflow
+        transition_matrix = transition_matrix.double()
+
         # adjusting for underflow
         bmask: torch.BoolTensor = mask.to(torch.bool)
         edge_log_alphas: torch.FloatTensor = torch.ones_like(transition_matrix).fill_(-INF)
         edge_log_alphas[bmask] = 0.0
         edge_log_alphas += transition_matrix
-        edge_expected_value: torch.FloatTensor = torch.zeros_like(transition_matrix) # diff
+        edge_expected_value: torch.FloatTensor = torch.zeros_like(transition_matrix).double() # diff
         expected_value_transition_matrix: torch.FloatTensor = value_matrix * transition_matrix.exp() # diff pv
 
         log_alphas: List[torch.FloatTensor] = [mask.new_zeros(B)]

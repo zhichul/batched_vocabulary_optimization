@@ -21,6 +21,8 @@ class TokenizationMixin:
         self.vocab_list = vocab
         self.csp = continuing_subword_prefix
         self.pad_token = pad_token
+        self.bos_token = "[BOS]"
+        self.eos_token = "[EOS]"
         self.node_token = node_token
         self.max_unit_length = min(max_unit_length, max(len(u) for u in vocab))
 
@@ -31,6 +33,8 @@ class TokenizationMixin:
         # some bookkeeping
         self.pad_index = vocab.index(pad_token)
         self.node_index = vocab.index(node_token)
+        self.bos_index = vocab.index(self.bos_token)
+        self.eos_index = vocab.index(self.eos_token)
         self.specials_indices = [vocab.index(special) for special in specials]
         self.singleton_indices = [vocab.index(u) for u in vocab if self.len_c(u) == 1]
         self.constant_indices = sorted(list(set([self.pad_index] + self.specials_indices + self.singleton_indices)))
@@ -76,7 +80,7 @@ class TokenizationMixin:
             packed_chunks.append(packed_chunk)
         return packed_chunks
 
-    def integerize_packed_chunks(self, packed_chunks: List[List[str]], M:int, L:int):
+    def integerize_packed_chunks(self, packed_chunks: List[List[str]], M:int, L:int, pos_length=False):
         E = (L * (L+1))//2 - ((L-M) * (L-M+1)) // 2
         N = len(packed_chunks)
         # encoder part
@@ -313,7 +317,7 @@ class TokenizationMixin:
         [ hate        ]
         then flip ^ left to right
         """
-        total_length = sum(self.len_c(chunk) for chunk in packed_chunk)
+        total_length = sum(self.len_type(chunk) for chunk in packed_chunk)
         if total_length > L:
             raise ValueError(f"chunk length of {packed_chunk} is greater than allowed max chunk length {L}")
         fwd_ids, fwd_mask, bwd_ids, bwd_mask = self.init_transitions_and_masks(M, L, device=device)
@@ -335,3 +339,6 @@ class TokenizationMixin:
         if remove_csp and self.csp is not None and unit.startswith(self.csp):
             return unit[len(self.csp):]
         return unit
+
+    def is_padding(self, id: int):
+        return id == self.pad_index or id == self.bos_index or id == self.eos_index or id == self.node_index

@@ -205,10 +205,7 @@ def preprocess_language_modeling_with_viterbi_lattices_dataset(data_file: str,
             # code.interact(local=locals())
             # for t in (ids, mask, pos_ids, lm_ids, lm_mask, lm_pos_ids, fwd_ids, fwd_ms, lengths, bwd_ids, bwd_ms, bwd_lengths, mmask, emask, causal_mask, binary_mask):
             #     print(causal_mask.size())
-
-            with open(item_name, "wb") as f:
-                pickle.dump(
-                    {"input_ids": ids.tolist() + lm_ids.tolist(),
+            dd= {"input_ids": ids.tolist() + lm_ids.tolist(),
                      "pos_ids": pos_ids.tolist() + lm_pos_ids.tolist(),
                      "input_mask": mask.tolist() + lm_mask.tolist(),
                      "text":text_str,
@@ -223,12 +220,14 @@ def preprocess_language_modeling_with_viterbi_lattices_dataset(data_file: str,
                      "emask": emask.tolist(),
                      "binary_mask": binary_mask.tolist(),
                      "text_str": text_str,
-                     }, file=f)
+                     }
+            with open(item_name, "wb") as f:
+                pickle.dump(dd, file=f)
     input_tokenizer.to(device)
             # code.interact(local=locals())
 
 
-def preprocess_language_modeling_with_lattices_output_viterbi_dataset(data_file: str,
+def preprocess_language_modeling_with_lattices_output_viterbi_dataset(args, data_file: str,
                                                        cache_dir: str,
                                                        input_tokenizer: Tokenizer,
                                                        output_vocab: Integerizer,

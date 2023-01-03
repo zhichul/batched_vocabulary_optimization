@@ -103,6 +103,7 @@ class LatticeAttentionMixin:
         em_ = ea + eb - td # [B, L, E] this is the (log of) the sum of all paths through every edge, with L different
                             # lattice ending positions
         # code.interact(local=locals())
+        # code.interact(local=locals())
         # make conditionals matrix, encoded as A_ij = attention from ith row (src) -> to jth column (tgt)
         # given src tgt (src always guaranteed to be in front of target)
         # compute the numerator of the conditional probability
@@ -194,7 +195,9 @@ class LatticeAttentionMixin:
 
     def tile_lm(self, edge_marginals: torch.FloatTensor, log_betas: torch.FloatTensor, marginals: torch.FloatTensor, attentions: torch.FloatTensor, batch_size: int, num_blocks: int, M: int, L: int, mask: torch.FloatTensor):
         em = edge_marginals - log_betas[..., None]
-        bottom_left = self.tile_node(marginals, em, batch_size, num_blocks, M, L)#marginals.reshape(batch_size, 1, -1).expand(batch_size, num_blocks * L, attentions.size(-1)) # batch NL NE
+        # code.interact(local=locals())
+        bottom_left = self.tile_node(marginals, em, batch_size, num_blocks, M, L)
+        # bottom_left = marginals.reshape(batch_size, 1, -1).expand(batch_size, num_blocks * L, attentions.size(-1)) # batch NL NE
         bottom_left = bottom_left.roll(1, -2)
         # code.interact(local=locals())
         top_right = torch.ones_like(bottom_left).reshape(batch_size, bottom_left.size(-1), bottom_left.size(-2)) * -INF # botch NE NL
