@@ -189,6 +189,9 @@ def preprocess_datasets(args, tokenizer, input_vocab, output_vocab):
                                                                       cache_dir,
                                                                       tokenizer,
                                                                       output_vocab,
+                                                                      args.max_blocks if name == "train" or args.eval_max_blocks is None else args.eval_max_blocks,
+                                                                      args.max_block_length if name == "train" or args.eval_max_block_length is None else args.eval_max_block_length,
+                                                                      args.max_unit_length if name == "train" or args.eval_max_unit_length is None else args.eval_max_unit_length,
                                                                       args.max_length if name == "train" or args.eval_max_length is None else args.eval_max_length,
                                                                       pos_length=args.pos_length)
                     else:
@@ -196,6 +199,9 @@ def preprocess_datasets(args, tokenizer, input_vocab, output_vocab):
                                                                       cache_dir,
                                                                       tokenizer,
                                                                       output_vocab,
+                                                                      args.max_blocks if name == "train" or args.eval_max_blocks is None else args.eval_max_blocks,
+                                                                      args.max_block_length if name == "train" or args.eval_max_block_length is None else args.eval_max_block_length,
+                                                                      args.max_unit_length if name == "train" or args.eval_max_unit_length is None else args.eval_max_unit_length,
                                                                       args.max_length if name == "train" or args.eval_max_length is None else args.eval_max_length)
             if args.vopt:
                 if args.output_viterbi:

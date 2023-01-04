@@ -14,16 +14,26 @@ def clear_cache(cache_dir: str):
 def pretokenize(text_str: str) -> List[str]:
     return ["[BOS]"] + text_str.split(" ") + ["[EOS]"]
 
-def truncated_and_pad_packed_chunks(packed_chunks: List[PackedChunk], max_blocks: int) -> List[PackedChunk]:
-    if len(packed_chunks) > max_blocks:
-        print(f"[WARNING] Truncating {packed_chunks} to {' '.join(sum(packed_chunks[:max_blocks], []))}")
-    elif len(packed_chunks) < max_blocks:
-        packed_chunks += [[]] * (max_blocks - len(packed_chunks)) # add padding if needed
-    # always truncate to max_blocks
-    packed_chunks = packed_chunks[:max_blocks]
-    return packed_chunks
+def truncated_and_pad_packed_chunks(tokenizer: Tokenizer, packed_chunks: List[PackedChunk], max_blocks: int = None, max_chars: int = None, types=False) -> List[PackedChunk]:
+    block_count = 0
+    char_count = 0
+    kept_chunks = []
+    for chunk in packed_chunks:
+        if types: chunk_length = sum(tokenizer.len_type(subword_type) for subword_type in chunk)
+        else: chunk_length = tokenizer.len_p(chunk)
+        if (max_blocks is not None and block_count + 1 > max_blocks) or \
+                (max_chars is not None and char_count + chunk_length > max_chars):
+            print(f"[WARNING] Truncating {packed_chunks} to {' '.join(sum(kept_chunks, []))}")
+            break
+        kept_chunks.append(chunk)
+        char_count += chunk_length
+        block_count += 1
 
-def viterbi_tokenize(tokenizer: Tokenizer, tokens: List[str]) -> List[List[str]]:
+    if max_blocks is not None and len(kept_chunks) < max_blocks:
+        kept_chunks += [[]] * (max_blocks - len(kept_chunks)) # add padding if needed
+    return kept_chunks
+
+def viterbi_tokenize(tokenizer: Tokenizer, tokens: List[str], remove_csp=False) -> List[List[str]]:
     """
     Returns a list of lists, one for each token, containing its viterbi segmentation, with continuing subword prefix added
     """
@@ -32,7 +42,7 @@ def viterbi_tokenize(tokenizer: Tokenizer, tokens: List[str]) -> List[List[str]]
     max_log_alpha, _, backpointers = tokenizer.viterbi_algorithm(fwd_ts, fwd_ms, lengths)
     log_alpha, _ = tokenizer.forward_algorithm(fwd_ts, fwd_ms, lengths)
     word_ids = tokenizer.decode_backpointers(fwd_ids, lengths, backpointers)
-    return [[tokenizer.id2str(id, remove_csp=False) for id in word_id] for word_id in word_ids]
+    return [[tokenizer.id2str(id, remove_csp=remove_csp) for id in word_id] for word_id in word_ids]
 
 def pack_viterbi_chunks(kept_chunks, input_tokenizations) -> List[PackedChunk]:
     """
@@ -53,3 +63,11 @@ def pack_viterbi_chunks(kept_chunks, input_tokenizations) -> List[PackedChunk]:
             pos += 1
         viterbi_packed_chunks.append(new_packed_chunk)
     return viterbi_packed_chunks
+
+def prefix_sum(l):
+    cumsum = 0
+    out = []
+    for item in l:
+        cumsum += item
+        out.append(cumsum)
+    return out

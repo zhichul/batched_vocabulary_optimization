@@ -52,8 +52,8 @@ def preprocess_language_modeling_with_lattices_dataset(
             input_tokens = pretokenize(text_str)
 
             # pack input into chunks
-            packed_chunkss = input_tokenizer.pack_chunks(input_tokens, max_block_length)
-            kept_chunks = truncated_and_pad_packed_chunks(packed_chunkss, max_blocks)
+            packed_chunks = input_tokenizer.pack_chunks(input_tokens, max_block_length)
+            kept_chunks = truncated_and_pad_packed_chunks(input_tokenizer, packed_chunks, max_blocks)
             ntokens = [len(chunk) for chunk in kept_chunks]
 
             # encode the chunks into lattice / serial versions
@@ -103,8 +103,8 @@ def preprocess_language_modeling_with_viterbi_lattices_dataset(
             input_tokens = pretokenize(text_str)
 
             # pack input into chunks
-            packed_chunkss = input_tokenizer.pack_chunks(input_tokens, max_block_length)
-            kept_chunks = truncated_and_pad_packed_chunks(packed_chunkss, max_blocks)
+            packed_chunks = input_tokenizer.pack_chunks(input_tokens, max_block_length)
+            kept_chunks = truncated_and_pad_packed_chunks(input_tokenizer, packed_chunks, max_blocks)
             ntokens = [len(chunk) for chunk in kept_chunks]
 
             # viterbi tokenize
@@ -156,8 +156,8 @@ def preprocess_language_modeling_with_lattices_output_viterbi_dataset(args, data
             input_tokens = pretokenize(text_str)
 
             # pack input into chunks
-            packed_chunkss = input_tokenizer.pack_chunks(input_tokens, max_block_length)
-            kept_chunks = truncated_and_pad_packed_chunks(packed_chunkss, max_blocks)
+            packed_chunks = input_tokenizer.pack_chunks(input_tokens, max_block_length)
+            kept_chunks = truncated_and_pad_packed_chunks(input_tokenizer, packed_chunks, max_blocks)
             ntokens = [len(chunk) for chunk in kept_chunks]
 
             # viterbi tokenize

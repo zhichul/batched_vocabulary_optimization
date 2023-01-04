@@ -1,68 +1,55 @@
-import csv
-import json
-import os
-import pickle
-import sys
-from pathlib import Path
-
-import code
-from typing import List
-
-import torch
-import glob
-from tokenizers.pre_tokenizers import Whitespace
-from torch.utils.data import RandomSampler, DataLoader
-
 from tqdm import tqdm
-
 from bopt.core.integerize import Integerizer
 from bopt.core.tokenizer import Tokenizer
-from bopt.core.tokenizer.tokenization import TokenizationMixin
-from bopt.core.utils import increasing_roll_left
 from bopt.data.datasets import LazyDataset
-from bopt.data.utils import load_vocab, load_weights, constant_initializer
+from bopt.data.language_modeling.utils import clear_cache, viterbi_tokenize, pretokenize, pack_viterbi_chunks, \
+    truncated_and_pad_packed_chunks, prefix_sum
 
+import os
+import pickle
+import torch
+import glob
+
+
+"""
 MAX_BLOCKS = 10 # N: Number of words roughly in a sentence
 MAX_BLOCK_LENGTH = 20 # L: number of characters in a block
 MAX_UNIT_LENGTH = 20 # M: number of characters in a candidate unit
 # max number of edges in a lattice for a block
 MAX_BLOCK_TOKENS = (MAX_BLOCK_LENGTH * (MAX_BLOCK_LENGTH + 1)) // 2 - ((MAX_BLOCK_LENGTH - MAX_UNIT_LENGTH) * (MAX_BLOCK_LENGTH - MAX_UNIT_LENGTH + 1)) // 2
-
+"""
 def preprocess_language_modeling_with_unigram_dataset(data_file: str,
-                   cache_dir: str,
-                   input_tokenizer: Tokenizer,
-                   output_vocab: Integerizer,
-                   max_length: int):
-    for f in glob.glob(f'{cache_dir}/*'):
-        os.remove(f)
-    with open(data_file, encoding='utf_8') as textfile:
+                                                      cache_dir: str,
+                                                      input_tokenizer: Tokenizer,
+                                                      output_vocab: Integerizer,
+                                                      max_blocks: int,
+                                                      max_block_length: int,
+                                                      max_unit_length: int,
+                                                      max_length : int,
+                                                      encoding: str = "utf-8"):
+    clear_cache(cache_dir)
+
+    with open(data_file, encoding=encoding) as textfile:
         for i, line in enumerate(tqdm(textfile)):
             text_str = line.strip()
-            input_tokens = ["[BOS]"] + text_str.split(" ") + ["[EOS]"]
+            input_tokens = pretokenize(text_str)
 
-            # viterbi segmentation
-            fwd_ids, fwd_ms, lengths, bwd_ids, bwd_ms, bwd_lengths, mmask, emask = input_tokenizer.encode_batch(input_tokens, input_tokenizer.max_unit_length)
-            fwd_ts = input_tokenizer.get_weights(fwd_ids)
-            _, _, backpointers = input_tokenizer.viterbi_algorithm(fwd_ts, fwd_ms, lengths)
-            word_ids = input_tokenizer.decode_backpointers(fwd_ids, lengths, backpointers)
+            # pack input into chunks
+            packed_chunks = input_tokenizer.pack_chunks(input_tokens, max_block_length)
+            kept_chunks = truncated_and_pad_packed_chunks(input_tokenizer, packed_chunks, max_blocks)
+            ntokens = [len(chunk) for chunk in kept_chunks]
 
-            # truncate if necessary
-            input_ids = []
-            wcount = 0
-            for word_id in enumerate(word_ids):
-                if len(input_ids) + len(word_id) > max_length:
-                    print(f"[WARNING] Truncating {input_tokens} to {' '.join(sum(input_tokens[:wcount + 1], []))}")
-                    break
-                input_ids.extend(word_id)
-                wcount += 1
-            input_subwords = [input_tokenizer.vocab[id] for id in input_ids]
-            length = sum([input_tokenizer.len_type(token) for token in input_tokens[:wcount + 1]])
-            ntokens = wcount
+            # viterbi tokenize
+            input_tokenizations = viterbi_tokenize(input_tokenizer, input_tokens)
+            viterbi_chunks = pack_viterbi_chunks(kept_chunks, input_tokenizations)
+            length = sum([input_tokenizer.len_type(subword_type) for chunk in viterbi_chunks for subword_type in chunk])
 
-            # pad if necessary
-            if len(input_ids) < max_length:
+            # integerize and pad if necessary
+            input_ids = [input_tokenizer.vocab.index(subword_type) for chunk in viterbi_chunks for subword_type in chunk]
+            if len(input_ids) <= max_length:
                 input_ids += [input_tokenizer.pad_index] * (max_length - len(input_ids))
-                input_subwords += [input_tokenizer.pad_token] * (max_length - len(input_subwords))
+            else:
+                raise ValueError(f"{viterbi_chunks}\n{max_length}\n{input_ids}")
 
             # pos ids, labels, and mask
             pos_ids = list(range(max_length))
@@ -71,91 +58,77 @@ def preprocess_language_modeling_with_unigram_dataset(data_file: str,
 
             # log to file
             item_name = os.path.join(cache_dir, f"{i}.pkl")
-            dd =  {"input_ids": input_ids,
+
+            with open(item_name, "wb") as f:
+                pickle.dump(
+                    {"input_ids": input_ids,
                      "pos_ids": pos_ids,
                      "input_mask": mask,
                      "labels": labels,
                      "text": text_str,
-                     "length": [length], # in terms of characters
+                     "length": [length],  # in terms of characters
                      "ntokens": [ntokens]
-                     }
-            # print(json.dumps(dd, indent=4))
-            # code.interact(local=locals())
-            with open(item_name, "wb") as f:
-                pickle.dump(
-                   dd, file=f)
-
-def prefix_sum(l):
-    cumsum = 0
-    out = []
-    for item in l:
-        cumsum += item
-        out.append(cumsum)
-    return out
+                     }, file=f)
 
 def preprocess_language_modeling_with_unigram_node_dataset(data_file: str,
                    cache_dir: str,
                    input_tokenizer: Tokenizer,
                    output_vocab: Integerizer,
+                   max_blocks: int,
+                   max_block_length: int,
+                   max_unit_length: int,
                    max_length: int,
+                   encoding: str = "utf-8",
                    pos_length: bool = False):
     max_length = max_length // 2
-    for f in glob.glob(f'{cache_dir}/*'):
-        os.remove(f)
-    with open(data_file, encoding='utf_8') as textfile:
+    
+    clear_cache(cache_dir)
+    
+    with open(data_file, encoding=encoding) as textfile:
         for i, line in enumerate(tqdm(textfile)):
             text_str = line.strip()
-            input_tokens = ["[BOS]"] + text_str.split(" ") + ["[EOS]"]
+            input_tokens = pretokenize(text_str)
 
-            # viterbi segmentation
-            fwd_ids, fwd_ms, lengths, bwd_ids, bwd_ms, bwd_lengths, mmask, emask = input_tokenizer.encode_batch(input_tokens, input_tokenizer.max_unit_length)
-            fwd_ts = input_tokenizer.get_weights(fwd_ids)
-            _, _, backpointers = input_tokenizer.viterbi_algorithm(fwd_ts, fwd_ms, lengths)
-            word_ids = input_tokenizer.decode_backpointers(fwd_ids, lengths, backpointers)
+            # pack input into chunks
+            packed_chunks = input_tokenizer.pack_chunks(input_tokens, max_block_length)
+            kept_chunks = truncated_and_pad_packed_chunks(input_tokenizer, packed_chunks, max_blocks)
+            ntokens = [len(chunk) for chunk in kept_chunks]
 
-            # truncate if necessary
-            input_ids = []
-            wcount = 0
-            for word_id in word_ids:
-                if len(input_ids) + len(word_id) > max_length:
-                    print(f"[WARNING] Truncating {input_tokens} to {' '.join(input_tokens[:wcount + 1])}")
-                    break
-                input_ids.extend(word_id)
-                wcount += 1
-            input_subwords = [input_tokenizer.vocab[id] for id in input_ids]
-            length = sum([input_tokenizer.len_type(token) for token in input_tokens[:wcount + 1]])
-            pos_increments = [0] + [input_tokenizer.len_type(token) for token in input_subwords][:-1]
-            pos_ids = prefix_sum(pos_increments)
-            if pos_length:
-                pos_ids = pos_increments
-            ntokens = wcount
-            # if text_str.startswith("downgraded by moody 's were houston"):
-            #     print(json.dumps(dd, indent=4))
-            #     code.interact(local=locals())
+            # viterbi tokenize
+            input_tokenizations = viterbi_tokenize(input_tokenizer, input_tokens)
+            viterbi_chunks = pack_viterbi_chunks(kept_chunks, input_tokenizations)
+            length = sum([input_tokenizer.len_type(subword_type) for chunk in viterbi_chunks for subword_type in chunk])
+
+            # integerize and pos_ids
+            input_ids = [input_tokenizer.vocab.index(subword_type) for chunk in viterbi_chunks for subword_type in chunk]
+            pos_increments = [0] + [input_tokenizer.len_type(subword_type)  for chunk in viterbi_chunks for subword_type in chunk][:-1]
+            pos_ids = prefix_sum(pos_increments) if not pos_length else pos_increments
+
+            
+            assert len(pos_ids) == len(input_ids)
             # pad if necessary
-            if len(input_ids) < max_length:
+            if len(input_ids) <= max_length:
                 input_ids += [input_tokenizer.pad_index] * (max_length - len(input_ids))
-                input_subwords += [input_tokenizer.pad_token] * (max_length - len(input_subwords))
                 pos_ids += [0] * (max_length - len(pos_ids))
+            else:
+                raise ValueError(f"{viterbi_chunks}\n{max_length}\n{input_ids}")
 
-            # pos ids, labels, and mask
+            # labels, and mask
             labels = [id if id != input_tokenizer.pad_index else -100 for id in input_ids[1:]] + [-100]
             mask = [int(id != input_tokenizer.pad_index) for id in input_ids]
 
             # log to file
             item_name = os.path.join(cache_dir, f"{i}.pkl")
-            dd = {"input_ids": input_ids + [input_tokenizer.node_index for _ in input_ids],
+            with open(item_name, "wb") as f:
+                pickle.dump(
+                    {"input_ids": input_ids + [input_tokenizer.node_index for _ in input_ids],
                      "pos_ids": pos_ids + [pos_id + 1 for pos_id in pos_ids],
                      "input_mask": mask + mask,
                      "labels": [-100] * len(labels) + labels,
                      "text": text_str,
                      "length": [length], # in terms of characters
                      "ntokens": [ntokens]
-                     }
-            # code.interact(local=locals())
-            with open(item_name, "wb") as f:
-                pickle.dump(
-                    dd, file=f)
+                     }, file=f)
 
 
 
