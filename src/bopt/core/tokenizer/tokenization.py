@@ -1,10 +1,11 @@
-from typing import List, Tuple, Any, Callable, TypeVar, Set, Optional
+from typing import List, Tuple, Callable, TypeVar, Set
 
 import torch
 
 from bopt.core.integerize import Integerizer
 
 T = TypeVar("T", str, List[str])
+PackedChunk = TypeVar("PackedChunk", bound=List[str])
 
 class TokenizationMixin:
 
@@ -80,7 +81,7 @@ class TokenizationMixin:
             packed_chunks.append(packed_chunk)
         return packed_chunks
 
-    def integerize_packed_chunks(self, packed_chunks: List[List[str]], M:int, L:int, pos_length=False):
+    def integerize_packed_chunks(self, packed_chunks: List[List[str]], M:int, L:int):
         E = (L * (L+1))//2 - ((L-M) * (L-M+1)) // 2
         N = len(packed_chunks)
         # encoder part

@@ -182,13 +182,6 @@ class LanguageModelingUnigramDataset(LazyDataset):
                 ex["text"])
         return ret
 
-def viterbi_tokenize(tokenizer: Tokenizer, tokens: List[str]):
-    fwd_ids, fwd_ms, lengths, bwd_ids, bwd_ms, bwd_lengths, mmask, emask = tokenizer.encode_batch(tokens, tokenizer.max_unit_length)
-    fwd_ts = tokenizer.get_weights(fwd_ids)
-    max_log_alpha, _, backpointers = tokenizer.viterbi_algorithm(fwd_ts, fwd_ms, lengths)
-    log_alpha, _ = tokenizer.forward_algorithm(fwd_ts, fwd_ms, lengths)
-    word_ids = tokenizer.decode_backpointers(fwd_ids, lengths, backpointers)
-    return [[tokenizer.id2str(id, remove_csp=False) for id in word_id] for word_id in word_ids]
 
 def tokenize_language_modeling_with_unigram_dataset(data_file: str, input_tokenizer: Tokenizer):
     with open(data_file, encoding='utf_8') as textfile:
