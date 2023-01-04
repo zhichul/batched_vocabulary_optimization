@@ -1,0 +1,5 @@
+import numpy as np
+
+a=model.bert.embeddings.word_embeddings.weight.detach().cpu().numpy()
+a=a/np.linalg.norm(a, axis=-1)[:,None]
+[(tokenizer.id2str(i), dp)for i, dp in sorted(enumerate(a @ a[85]), key=lambda x:x[1], reverse=True)[:10]]

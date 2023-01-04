@@ -1,0 +1,1 @@
+entropy regularizer (`\_ shaped schedule) + bias renorm + group lasso

@@ -10,7 +10,7 @@ for file in ["/export/a01/corpora/ptb/ptb.train.txt", "/export/a01/corpora/ptb/p
     lines = [l.strip().split(" ") for l in lines]
     chars = tuple(set(char for line in lines for token in line for char in token))
 
-dir = "/export/a01/corpora/ptb/"
+dir = "/export/a01/corpora/ptb/new"
 files = [os.path.join(dir, "ptb.train.txt")]
 cutoff = 8
 package_substring_vocab(dir, files, max_unit_size=8, continuing_subword_prefix="@@", tokenizer=" ")

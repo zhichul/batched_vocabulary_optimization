@@ -48,14 +48,16 @@ def preprocess_language_modeling_with_unigram_dataset(data_file: str,
 
             # truncate if necessary
             input_ids = []
-            for j, word_id in enumerate(word_ids):
+            wcount = 0
+            for word_id in enumerate(word_ids):
                 if len(input_ids) + len(word_id) > max_length:
-                    print(f"[WARNING] Truncating {input_tokens} to {' '.join(sum(input_tokens[:i], []))}")
+                    print(f"[WARNING] Truncating {input_tokens} to {' '.join(sum(input_tokens[:wcount + 1], []))}")
                     break
                 input_ids.extend(word_id)
+                wcount += 1
             input_subwords = [input_tokenizer.vocab[id] for id in input_ids]
-            length = sum([input_tokenizer.len_type(token) for token in input_tokens[:j]])
-            ntokens = j
+            length = sum([input_tokenizer.len_type(token) for token in input_tokens[:wcount + 1]])
+            ntokens = wcount
 
             # pad if necessary
             if len(input_ids) < max_length:
@@ -113,18 +115,20 @@ def preprocess_language_modeling_with_unigram_node_dataset(data_file: str,
 
             # truncate if necessary
             input_ids = []
-            for j, word_id in enumerate(word_ids):
+            wcount = 0
+            for word_id in word_ids:
                 if len(input_ids) + len(word_id) > max_length:
-                    print(f"[WARNING] Truncating {input_tokens} to {' '.join(input_tokens[:j])}")
+                    print(f"[WARNING] Truncating {input_tokens} to {' '.join(input_tokens[:wcount + 1])}")
                     break
                 input_ids.extend(word_id)
+                wcount += 1
             input_subwords = [input_tokenizer.vocab[id] for id in input_ids]
-            length = sum([input_tokenizer.len_type(token) for token in input_tokens[:j]])
+            length = sum([input_tokenizer.len_type(token) for token in input_tokens[:wcount + 1]])
             pos_increments = [0] + [input_tokenizer.len_type(token) for token in input_subwords][:-1]
             pos_ids = prefix_sum(pos_increments)
             if pos_length:
                 pos_ids = pos_increments
-            ntokens = j
+            ntokens = wcount
             # if text_str.startswith("downgraded by moody 's were houston"):
             #     print(json.dumps(dd, indent=4))
             #     code.interact(local=locals())

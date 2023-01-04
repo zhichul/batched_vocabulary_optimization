@@ -1,0 +1,1 @@
+output viterbi with fixed point

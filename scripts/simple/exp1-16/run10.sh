@@ -43,9 +43,9 @@ CUDA_VISIBLE_DEVICES=1 python3 -O -um bopt.run \
     --l1 0.0 \
     --continuing_subword_prefix @@ \
     --task language_modeling \
-    --entropic -10.0 \
-    --entropy_start 0 \
-    --entropy_end 1 \
+    --entropic -${ENT} \
+    --entropy_start -1 \
+    --entropy_end 0 \
     --max_blocks 4 \
     --max_block_length 32 \
     --max_unit_length 8 \
@@ -54,7 +54,7 @@ CUDA_VISIBLE_DEVICES=1 python3 -O -um bopt.run \
     --length_normalized_initialization \
     --weights_learning_rate 0.0 \
     --marginal_temperature 10000.0 \
-    --debug_fixed_point
+    --debug_fixed_point \
 
 done
 done

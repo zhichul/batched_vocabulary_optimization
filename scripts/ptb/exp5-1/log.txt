@@ -1,0 +1,26 @@
+# conda environments:
+#
+                         /home/blu/anaconda3
+base                  *  /home/blu/anaconda3/envs/dl22
+                         /home/blu/anaconda3/envs/jhu
+                         /home/blu/anaconda3/envs/notebook
+                         /home/blu/anaconda3/envs/tokenizers
+
+CUDA_VISIBLE_DEVICES=
+Please hit enter if you want to overwrite the directory...Eval loss at step 100: avg = 1.2408218647201716, loss = 408005.80473542213, N = 328819
+Eval loss at step 200: avg = 1.196346829509064, loss = 393381.5681323409, N = 328819
+Eval loss at step 300: avg = 1.1470929724177747, loss = 377185.96409744024, N = 328819
+Eval loss at step 400: avg = 1.073013574395961, loss = 352827.25051930547, N = 328819
+Eval loss at step 500: avg = 1.0201754259615219, loss = 335453.0633892417, N = 328819
+Eval loss at step 600: avg = 0.9881916704791133, loss = 324936.19689527154, N = 328819
+Eval loss at step 700: avg = 0.9607813510696895, loss = 315923.16307738423, N = 328819
+Eval loss at step 800: avg = 0.9421973252671203, loss = 309812.38229700923, N = 328819
+Eval loss at step 900: avg = 0.9233022624074209, loss = 303599.3266225457, N = 328819
+Eval loss at step 1000: avg = 0.912647042963362, loss = 300095.68802016973, N = 328819
+Eval loss at step 1100: avg = 0.899723150266373, loss = 295846.0665474385, N = 328819
+Eval loss at step 1200: avg = 0.8893601008447056, loss = 292438.49899965525, N = 328819
+Eval loss at step 1300: avg = 0.8814944738228748, loss = 289852.1313879639, N = 328819
+Eval loss at step 1400: avg = 0.8947740422709618, loss = 294218.7058054954, N = 328819
+Eval loss at step 1500: avg = 0.886636893658164, loss = 291543.0567357838, N = 328819
+Eval loss at step 1600: avg = 0.8806712956449667, loss = 289581.4547626823, N = 328819
+>>> 

@@ -1,0 +1,1 @@
+entropy regularizer (`\_ shaped schedule) + full attention + bias renorm
