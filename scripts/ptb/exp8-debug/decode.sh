@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-#$ -wd /home/zlu39/jhu/bopt/scripts/ptb/exp8-1
+#$ -wd /home/zlu39/jhu/bopt/scripts/ptb/exp3-1
 #$ -V
-#$ -N s3e8-1
+#$ -N s3e3-1
 #$ -j y -o /export/c01/zlu39/jobs/$JOB_NAME-$JOB_ID.out
 #$ -M zlu39@jhu.edu
 #$ -m e
@@ -12,28 +12,28 @@ source /home/gqin2/scripts/acquire-gpus 1
 conda env list
 echo "CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES}"
 
-EXPID="8-1"
+EXPID="3-1"
 mkdir -p ${BLU_ARTIFACTS}/bopt/ptb/exp${EXPID}
 DATA_PREFIX=${BLU_CORPORA}/ptb
 ARTIFACT_PREFIX=${BLU_ARTIFACTS}/bopt/ptb/exp${EXPID}
 SCRIPT_PREFIX=${HOME}/jhu/bopt/scripts/ptb/exp${EXPID}
-for SEED in 46
+for SEED in 44
 do
 for SIZE in 768
 do
 for GL in 0.01
 do
-CUDA_VISIBLE_DEVICES=0 python3 -O -um bopt.run \
+for CKPT in 6000
+do
+CUDA_VISIBLE_DEVICES=1 python3 -O -um bopt.run \
     --seed ${SEED} \
-    --train_dataset ${DATA_PREFIX}/ptb.valid.128.txt \
-    --eval_dataset ${DATA_PREFIX}/ptb.valid.128.txt \
-    --input_vocab ${DATA_PREFIX}/spm-unigram-vocab-10000.txt \
-    --output_vocab ${DATA_PREFIX}/spm-unigram-vocab-10000.txt \
-    --weights_file ${DATA_PREFIX}/spm-unigram-weights-10000.txt \
+    --train_dataset ${DATA_PREFIX}/ptb.train.txt \
+    --eval_dataset ${DATA_PREFIX}/ptb.train.txt \
+    --input_vocab ${DATA_PREFIX}/substring8-vocab-threshold=None.txt \
+    --output_vocab ${DATA_PREFIX}/substring8-vocab-threshold=None.txt \
     --config ${SCRIPT_PREFIX}/config${SIZE}.json \
     --output_dir ${ARTIFACT_PREFIX}/${SEED}/${GL}/${SIZE}/ \
-    --overwrite_output_dir --overwrite_cache \
-    --do_train --do_eval \
+    --overwrite_output_dir \
     --vopt \
     --bias_mode albo \
     --train_epochs 150 \
@@ -42,7 +42,8 @@ CUDA_VISIBLE_DEVICES=0 python3 -O -um bopt.run \
     --save_epochs 10 \
     --save_steps 200  \
     --train_batch_size 126 \
-    --gpu_batch_size 4 \
+    --gpu_batch_size 2 \
+    --continuing_subword_prefix @@ \
     --task language_modeling \
     --entropic -10.0 \
     --entropy_start -1 \
@@ -54,17 +55,16 @@ CUDA_VISIBLE_DEVICES=0 python3 -O -um bopt.run \
     --max_unit_length 8 \
     --warmup_epochs 1 \
     --weights_learning_rate 0.0 \
+    --debug_fixed_point \
     --group_lasso ${GL} \
     --length_normalized_initialization \
-    --specials "[UNK]" "[CLS]" "[SEP]" "[PAD]" "[MASK]" "[WBD]" "[SP1]" "[SP2]" "[SP3]" "[SP4]" "[SP5]" "[BOS]" "[EOS]" "<unk>" \
-    --debug_viterbi_lattice \
-    --normalize_by_tokens
-    #--overwrite_cache \
-    #--continuing_subword_prefix @@ \
-#    --start_step 4000 \
-#    --model_name
+    --constant_normalization 20.91 \
+    --do_decode \
+    --decode_remove_csp \
+    --decode_remove_padding \
+    --model_name ${ARTIFACT_PREFIX}/${SEED}/${GL}/${SIZE}/checkpoint-${CKPT} \
 
-
+done
 done
 done
 done

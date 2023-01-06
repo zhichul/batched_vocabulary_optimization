@@ -2,7 +2,8 @@
 import sys
 import code
 from collections import defaultdict
-PERMISSIVE=True
+PERMISSIVE=False
+MONO=True
 mono = defaultdict(set)
 
 cunt =  0
@@ -188,10 +189,30 @@ def get_segmented_strings(boundary_vocab):
             alternate.reverse()
             yield (surface, alternate)
 
+def extract_mono(eml_path, emw_path):
+    vocab = []
+    with open(eml_path) as f:
+        for line in f:
+            chunks = line.rstrip().split('\\')
+            surface = chunks[1]
+            imm = chunks[11]
+            morphstatus = chunks[3]
+            trans = chunks[17]
+            if ' ' in surface:
+                continue
+            imm_segments = imm.split('+')
+            if len(imm_segments) == 1:
+                vocab.append(surface)
+    return [(w.lower(), [w.lower()]) for w in vocab]
+
 if __name__ == "__main__":
-    v = boundaries_from_celex(sys.argv[1]+'/english/eml/eml.cd', sys.argv[1]+'/english/emw/emw.cd')
+    if not MONO:
+        v = boundaries_from_celex(sys.argv[1]+'/english/eml/eml.cd', sys.argv[1]+'/english/emw/emw.cd')
+        pairs = get_segmented_strings(v)
+    else:
+        pairs = extract_mono(sys.argv[1]+'/english/eml/eml.cd', sys.argv[1]+'/english/emw/emw.cd')
     with open(sys.argv[2], mode='w') as out_f:
-        for surface, segmentation in get_segmented_strings(v):
+        for surface, segmentation in pairs:
             out_f.write(f'{surface}\t{" ".join(segmentation)}\n')
 
 

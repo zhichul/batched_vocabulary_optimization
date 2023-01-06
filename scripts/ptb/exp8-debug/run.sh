@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-#$ -wd /home/zlu39/jhu/bopt/scripts/ptb/exp8-1
+#$ -wd /home/zlu39/jhu/bopt/scripts/ptb/exp8-debug
 #$ -V
-#$ -N s3e8-1
+#$ -N s3e8-debug
 #$ -j y -o /export/c01/zlu39/jobs/$JOB_NAME-$JOB_ID.out
 #$ -M zlu39@jhu.edu
 #$ -m e
@@ -12,16 +12,14 @@ source /home/gqin2/scripts/acquire-gpus 1
 conda env list
 echo "CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES}"
 
-EXPID="8-1"
+EXPID="8-debug"
 mkdir -p ${BLU_ARTIFACTS}/bopt/ptb/exp${EXPID}
 DATA_PREFIX=${BLU_CORPORA}/ptb
 ARTIFACT_PREFIX=${BLU_ARTIFACTS}/bopt/ptb/exp${EXPID}
 SCRIPT_PREFIX=${HOME}/jhu/bopt/scripts/ptb/exp${EXPID}
-for SEED in 46
+for SEED in 44
 do
 for SIZE in 768
-do
-for GL in 0.01
 do
 CUDA_VISIBLE_DEVICES=0 python3 -O -um bopt.run \
     --seed ${SEED} \
@@ -31,40 +29,26 @@ CUDA_VISIBLE_DEVICES=0 python3 -O -um bopt.run \
     --output_vocab ${DATA_PREFIX}/spm-unigram-vocab-10000.txt \
     --weights_file ${DATA_PREFIX}/spm-unigram-weights-10000.txt \
     --config ${SCRIPT_PREFIX}/config${SIZE}.json \
-    --output_dir ${ARTIFACT_PREFIX}/${SEED}/${GL}/${SIZE}/ \
-    --overwrite_output_dir --overwrite_cache \
+    --output_dir ${ARTIFACT_PREFIX}/${SEED}/${SIZE}/ \
+    --overwrite_output_dir \
     --do_train --do_eval \
     --vopt \
     --bias_mode albo \
-    --train_epochs 150 \
+    --train_epochs 125 \
     --eval_epochs 1 \
-    --eval_steps 100  \
-    --save_epochs 10 \
-    --save_steps 200  \
-    --train_batch_size 126 \
+    --save_epochs 1 \
+    --train_batch_size 128 \
     --gpu_batch_size 4 \
     --task language_modeling \
-    --entropic -10.0 \
-    --entropy_start -1 \
-    --entropy_end 0 \
-    --entropy_start_dec 1 \
-    --entropy_end_dec 3 \
     --max_blocks 6 \
     --max_block_length 32 \
     --max_unit_length 8 \
     --warmup_epochs 1 \
     --weights_learning_rate 0.0 \
-    --group_lasso ${GL} \
-    --length_normalized_initialization \
-    --specials "[UNK]" "[CLS]" "[SEP]" "[PAD]" "[MASK]" "[WBD]" "[SP1]" "[SP2]" "[SP3]" "[SP4]" "[SP5]" "[BOS]" "[EOS]" "<unk>" \
+    --normalize_by_tokens \
     --debug_viterbi_lattice \
-    --normalize_by_tokens
-    #--overwrite_cache \
-    #--continuing_subword_prefix @@ \
-#    --start_step 4000 \
-#    --model_name
+    --specials "[UNK]" "[CLS]" "[SEP]" "[PAD]" "[MASK]" "[WBD]" "[SP1]" "[SP2]" "[SP3]" "[SP4]" "[SP5]" "[BOS]" "[EOS]" "<unk>" \
 
 
-done
 done
 done

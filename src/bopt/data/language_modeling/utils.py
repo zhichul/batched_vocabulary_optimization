@@ -1,5 +1,7 @@
+import code
 import glob
 import os
+from collections import defaultdict
 from typing import List
 
 from bopt.core.tokenizer import Tokenizer
@@ -62,7 +64,7 @@ def pack_viterbi_chunks(kept_chunks, input_tokenizations) -> List[PackedChunk]:
             new_packed_chunk.extend(input_tokenizations[pos])
             pos += 1
         viterbi_packed_chunks.append(new_packed_chunk)
-    return viterbi_packed_chunks
+    return viterbi_packed_chunks, pos
 
 def prefix_sum(l):
     cumsum = 0
@@ -71,3 +73,47 @@ def prefix_sum(l):
         cumsum += item
         out.append(cumsum)
     return out
+
+def load_segmentation_dictionary(*files: List[str]):
+    dictionary = defaultdict(set)
+    for file in files:
+        with open(file, "rt") as f:
+            for line in f:
+                line = line.strip()
+                word, segmentation = line.split("\t")
+                subunits = tuple(segmentation.split(" "))
+                dictionary[word].add(subunits)
+    sorted_dict = {word: sorted(list(segmentations), key=lambda x: len(x)) for word, segmentations in dictionary.items()}
+    # sorted by number of units from small to large
+    return sorted_dict
+
+def use_gold_segmentations(tokenizer, input_tokens, input_tokenizations, segmentation_dictionary):
+    is_gold = [0] * len(input_tokens)
+    is_matching = [0] * len(input_tokens)
+    is_ambiguous = [0] * len(input_tokens)
+    replaced = [0] * len(input_tokens)
+    output_tokenizations = []
+    if segmentation_dictionary is None:
+        return input_tokenizations[:], is_gold, is_ambiguous, replaced
+    for i, (token, tokenization) in enumerate(zip(input_tokens, input_tokenizations)):
+        ig = int(token in segmentation_dictionary)
+        ia = int(ig and len(segmentation_dictionary[token]) > 1)
+        r = 0
+        im = 0
+        if ig:
+            for segmentation_option in segmentation_dictionary[token]:
+                seg = [subword if j == 0 else (tokenizer.csp + subword if tokenizer.csp else subword) for j, subword in enumerate(segmentation_option)]
+                if all(piece in tokenizer.vocab for piece in seg):
+                    r = 1
+                    output_tokenizations.append(seg)
+                    im = int(seg == tokenization)
+                    break
+            if r == 0:
+                output_tokenizations.append(tokenization)
+        else:
+            output_tokenizations.append(tokenization)
+        replaced[i] = r
+        is_gold[i] = ig
+        is_ambiguous[i] = ia
+        is_matching[i] = im
+    return output_tokenizations, is_gold, is_ambiguous, is_matching, replaced

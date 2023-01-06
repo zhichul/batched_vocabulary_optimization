@@ -109,7 +109,7 @@ def preprocess_language_modeling_with_viterbi_lattices_dataset(
 
             # viterbi tokenize
             input_tokenizations = viterbi_tokenize(input_tokenizer, input_tokens)
-            viterbi_chunks = pack_viterbi_chunks(kept_chunks, input_tokenizations)
+            viterbi_chunks, _ = pack_viterbi_chunks(kept_chunks, input_tokenizations)
 
             # encode the chunks into lattice / serial versions
             fwd_ids, fwd_ms, lengths, bwd_ids, bwd_ms, bwd_lengths, mmask, emask = input_tokenizer.encode_packed_batch(viterbi_chunks, max_unit_length, max_block_length, compact=True, verbatim=True)
@@ -162,7 +162,7 @@ def preprocess_language_modeling_with_lattices_output_viterbi_dataset(args, data
 
             # viterbi tokenize
             input_tokenizations = viterbi_tokenize(input_tokenizer, input_tokens)
-            viterbi_chunks = pack_viterbi_chunks(kept_chunks, input_tokenizations)
+            viterbi_chunks, _ = pack_viterbi_chunks(kept_chunks, input_tokenizations)
 
             # encode the chunks into lattice / serial versions
             fwd_ids, fwd_ms, lengths, bwd_ids, bwd_ms, bwd_lengths, mmask, emask = input_tokenizer.encode_packed_batch(kept_chunks, max_unit_length, max_block_length, compact=True)

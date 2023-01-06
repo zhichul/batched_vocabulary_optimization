@@ -15,6 +15,7 @@ def parse_args():
     parser.add_argument('--continuing_subword_prefix', type=str)
     parser.add_argument('--output_vocab', type=str, default=None, help="If not the same as input vocab.")
     parser.add_argument('--weights_file', type=str, default=None, help="If not using default initialization.")
+    parser.add_argument('--segmentation_dictionary', type=str, default=None, nargs="+", help="only used with viterbi mode, forces tokenization to match dict if in dict")
 
     parser.add_argument("--do_train", action='store_true', help="Whether to run training.")
     parser.add_argument("--do_tokenize", action='store_true', help="Whether to run tokenization.")

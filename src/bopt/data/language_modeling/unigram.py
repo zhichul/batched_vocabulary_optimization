@@ -1,9 +1,11 @@
+import json
+
 from tqdm import tqdm
 from bopt.core.integerize import Integerizer
 from bopt.core.tokenizer import Tokenizer
 from bopt.data.datasets import LazyDataset
 from bopt.data.language_modeling.utils import clear_cache, viterbi_tokenize, pretokenize, pack_viterbi_chunks, \
-    truncated_and_pad_packed_chunks, prefix_sum
+    truncated_and_pad_packed_chunks, prefix_sum, load_segmentation_dictionary, use_gold_segmentations
 
 import os
 import pickle
@@ -18,7 +20,11 @@ MAX_UNIT_LENGTH = 20 # M: number of characters in a candidate unit
 # max number of edges in a lattice for a block
 MAX_BLOCK_TOKENS = (MAX_BLOCK_LENGTH * (MAX_BLOCK_LENGTH + 1)) // 2 - ((MAX_BLOCK_LENGTH - MAX_UNIT_LENGTH) * (MAX_BLOCK_LENGTH - MAX_UNIT_LENGTH + 1)) // 2
 """
-def preprocess_language_modeling_with_unigram_dataset(data_file: str,
+
+
+
+def preprocess_language_modeling_with_unigram_dataset(args,
+                                                      data_file: str,
                                                       cache_dir: str,
                                                       input_tokenizer: Tokenizer,
                                                       output_vocab: Integerizer,
@@ -28,7 +34,15 @@ def preprocess_language_modeling_with_unigram_dataset(data_file: str,
                                                       max_length : int,
                                                       encoding: str = "utf-8"):
     clear_cache(cache_dir)
-
+    total_tokens = 0
+    replaced_tokens = 0
+    is_gold_tokens = 0
+    is_ambiguous_tokens = 0
+    is_matching_tokens = 0
+    if args.segmentation_dictionary is not None:
+        segmentation_dictionary = load_segmentation_dictionary(*args.segmentation_dictionary)
+    else:
+        segmentation_dictionary = None
     with open(data_file, encoding=encoding) as textfile:
         for i, line in enumerate(tqdm(textfile)):
             text_str = line.strip()
@@ -41,15 +55,24 @@ def preprocess_language_modeling_with_unigram_dataset(data_file: str,
 
             # viterbi tokenize
             input_tokenizations = viterbi_tokenize(input_tokenizer, input_tokens)
-            viterbi_chunks = pack_viterbi_chunks(kept_chunks, input_tokenizations)
+            input_tokenizations, is_gold, is_ambiguous, is_matching, replaced = use_gold_segmentations(input_tokenizer, input_tokens, input_tokenizations, segmentation_dictionary)
+            viterbi_chunks, viterbi_tokens = pack_viterbi_chunks(kept_chunks, input_tokenizations)
             length = sum([input_tokenizer.len_type(subword_type) for chunk in viterbi_chunks for subword_type in chunk])
+
+            # bookkeeping
+            assert viterbi_tokens == ntokens
+            total_tokens += viterbi_tokens
+            replaced_tokens += sum(replaced[:viterbi_tokens])
+            is_gold_tokens += sum(is_gold[:viterbi_tokens])
+            is_ambiguous_tokens += sum(is_ambiguous[:viterbi_tokens])
+            is_matching_tokens += sum(is_matching[:viterbi_tokens])
 
             # integerize and pad if necessary
             input_ids = [input_tokenizer.vocab.index(subword_type) for chunk in viterbi_chunks for subword_type in chunk]
             if len(input_ids) <= max_length:
                 input_ids += [input_tokenizer.pad_index] * (max_length - len(input_ids))
             else:
-                raise ValueError(f"{viterbi_chunks}\n{max_length}\n{input_ids}")
+                raise ValueError(f"{text_str}\n{viterbi_chunks}\n{max_length}\n{input_ids}")
 
             # pos ids, labels, and mask
             pos_ids = list(range(max_length))
@@ -69,6 +92,21 @@ def preprocess_language_modeling_with_unigram_dataset(data_file: str,
                      "length": [length],  # in terms of characters
                      "ntokens": [ntokens]
                      }, file=f)
+    msg = (f"Segmentation dictionary is {args.segmentation_dictionary}, {total_tokens} tokens, "
+          f"{replaced_tokens} ({replaced_tokens / total_tokens}) replaced, "
+          f"{is_gold_tokens} ({is_gold_tokens / total_tokens}) gold, "
+          f"{is_ambiguous_tokens} ({is_ambiguous_tokens / total_tokens}) ambiguous."
+          f"{is_matching_tokens} ({is_matching_tokens / replaced_tokens}) matching out of replaced.")
+    print(msg)
+    with open(f"{cache_dir}.meta.json", "wt") as meta_file:
+        print(json.dumps({
+            "segmentation_dictionary": args.segmentation_dictionary,
+            "total_tokens": total_tokens,
+            "replaced_tokens": replaced_tokens,
+            "is_gold_tokens": is_gold_tokens,
+            "is_ambiguous_tokens": is_ambiguous_tokens,
+            "is_matching_tokens": is_matching_tokens
+        }, indent=4), file=meta_file)
 
 def preprocess_language_modeling_with_unigram_node_dataset(data_file: str,
                    cache_dir: str,

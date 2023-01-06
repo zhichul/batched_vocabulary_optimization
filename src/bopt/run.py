@@ -195,7 +195,8 @@ def preprocess_datasets(args, tokenizer, input_vocab, output_vocab):
                                                                       args.max_length if name == "train" or args.eval_max_length is None else args.eval_max_length,
                                                                       pos_length=args.pos_length)
                     else:
-                        preprocess_language_modeling_with_unigram_dataset(data,
+                        preprocess_language_modeling_with_unigram_dataset(args,
+                                                                      data,
                                                                       cache_dir,
                                                                       tokenizer,
                                                                       output_vocab,
