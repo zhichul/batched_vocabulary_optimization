@@ -75,6 +75,8 @@ def parse_args():
     parser.add_argument('--decode_remove_padding', action='store_true')
     parser.add_argument('--pos_length', action='store_true')
     parser.add_argument('--no_pos', action='store_true')
+    parser.add_argument('--unigram_expert', action='store_true')
+    parser.add_argument('--fixed_unigram_expert', action='store_true')
 
     parser.add_argument('--max_blocks', type=int)
     parser.add_argument('--max_block_length', type=int)

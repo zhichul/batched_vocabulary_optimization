@@ -8,19 +8,18 @@ for SEED in 44
 do
 for SIZE in 768
 do
-for LR in 0.006 0.06 0.002 0.2
+for LR in 0.02
 do
-CUDA_VISIBLE_DEVICES=0 python3 -O -um bopt.run \
+CUDA_VISIBLE_DEVICES=1 python3 -O -um bopt.run \
     --seed ${SEED} \
     --train_dataset ${DATA_PREFIX}/ptb.train.txt \
     --eval_dataset ${DATA_PREFIX}/ptb.valid.txt \
     --input_vocab ${DATA_PREFIX}/spm-unigram-vocab-10000.txt \
     --output_vocab ${DATA_PREFIX}/spm-unigram-vocab-10000.txt \
-    --weights_file ${DATA_PREFIX}/spm-unigram-weights-10000.txt \
     --config ${SCRIPT_PREFIX}/config${SIZE}.json \
     --output_dir ${ARTIFACT_PREFIX}/${SEED}/${GL}/${SIZE}/${LR} \
     --overwrite_output_dir \
-    --do_train --do_eval \
+    --do_eval \
     --vopt \
     --bias_mode albo \
     --train_epochs 40 \
@@ -39,7 +38,12 @@ CUDA_VISIBLE_DEVICES=0 python3 -O -um bopt.run \
     --length_normalized_initialization \
     --constant_normalization 20.91 \
     --specials "[UNK]" "[CLS]" "[SEP]" "[PAD]" "[MASK]" "[WBD]" "[SP1]" "[SP2]" "[SP3]" "[SP4]" "[SP5]" "[BOS]" "[EOS]" "<unk>" \
-    --quiet
+    --do_decode \
+    --decode_remove_csp \
+    --decode_remove_padding \
+    --model_name ${ARTIFACT_PREFIX}/${SEED}/${GL}/${SIZE}/${LR}/checkpoint-5200 \
+    --weights_file ${ARTIFACT_PREFIX}/${SEED}/${GL}/${SIZE}/${LR}/checkpoint-5200/learned_vocab.txt \
+
 
 done
 done

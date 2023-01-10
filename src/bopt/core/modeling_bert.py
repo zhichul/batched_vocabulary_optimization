@@ -177,6 +177,7 @@ class BertConfig(PretrainedConfig):
         position_embedding_type="absolute",
         use_cache=True,
         override_output_vocab_size=None,
+        product_of_experts=None,
         **kwargs
     ):
         super().__init__(pad_token_id=pad_token_id, **kwargs)
@@ -197,6 +198,7 @@ class BertConfig(PretrainedConfig):
         self.position_embedding_type = position_embedding_type
         self.use_cache = use_cache
         self.override_output_vocab_size = override_output_vocab_size
+        self.product_of_experts = product_of_experts
 
 
 def load_tf_weights_in_bert(model, config, tf_checkpoint_path):
@@ -811,9 +813,14 @@ class BertLMPredictionHead(nn.Module):
         # Need a link between the two variables so that the bias is correctly resized with `resize_token_embeddings`
         self.decoder.bias = self.bias
 
-    def forward(self, hidden_states):
+        if config.product_of_experts:
+            self.expert_coefficient = nn.Parameter(torch.tensor(1.0))
+
+    def forward(self, hidden_states, unigram_expert=None):
         hidden_states = self.transform(hidden_states)
         hidden_states = self.decoder(hidden_states)
+        if unigram_expert is not None:
+            hidden_states = hidden_states + self.expert_coefficient * unigram_expert[None, None, :]
         return hidden_states
 
 
@@ -822,8 +829,8 @@ class BertOnlyMLMHead(nn.Module):
         super().__init__()
         self.predictions = BertLMPredictionHead(config)
 
-    def forward(self, sequence_output):
-        prediction_scores = self.predictions(sequence_output)
+    def forward(self, sequence_output, unigram_expert=None):
+        prediction_scores = self.predictions(sequence_output, unigram_expert=unigram_expert)
         return prediction_scores
 
 
@@ -1456,7 +1463,8 @@ class BertForMaskedLM(BertPreTrainedModel):
         output_attentions=None,
         output_hidden_states=None,
         return_dict=None,
-        attn_bias=None
+        attn_bias=None,
+        unigram_expert=None,
     ):
         r"""
         labels (:obj:`torch.LongTensor` of shape :obj:`(batch_size, sequence_length)`, `optional`):
@@ -1484,7 +1492,7 @@ class BertForMaskedLM(BertPreTrainedModel):
         )
 
         sequence_output = outputs[0]
-        prediction_scores = self.cls(sequence_output)
+        prediction_scores = self.cls(sequence_output, unigram_expert=unigram_expert)
 
         masked_lm_loss = None
         if labels is not None:

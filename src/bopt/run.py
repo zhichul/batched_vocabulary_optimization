@@ -292,6 +292,11 @@ def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, train_dataloader: D
     step = 0
     entropic_weight = 0
     prev_counts = prev_log_marginal_counts = prev_lmc = prev_type_ent = None
+    out_vocab_count = model.cls.predictions.bias.numel()
+    expert_padding = torch.tensor([-INF] * (out_vocab_count - len(tokenizer.vocab)),device=device)
+    unigram_expert = None if not args.unigram_expert else torch.cat([torch.log_softmax(tokenizer.weights.weight.reshape(-1), dim=-1), expert_padding], dim=-1)
+    if args.fixed_unigram_expert:
+        unigram_expert = unigram_expert.detach()
     for epoch in range(args.train_epochs):
         if args.entropic != 0:
             if epoch < args.entropy_start_dec:
@@ -316,7 +321,7 @@ def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, train_dataloader: D
                 loss, ent, lengths, ntokens, out_marginals, out_units = morpheme_prediction_lattice_step(args, batch, tokenizer, model, device)
             elif args.task == "language_modeling":
                 if args.vopt:
-                    loss, ent, lengths, ntokens, out_marginals, out_units = language_modeling_lattice_step(args, batch, tokenizer, model, device)
+                    loss, ent, lengths, ntokens, out_marginals, out_units = language_modeling_lattice_step(args, batch, tokenizer, model, device, unigram_expert=unigram_expert)
                 else:
                     loss, ent, lengths, ntokens, out_marginals, out_units = language_modeling_unigram_step(args, batch, tokenizer, model, device)
             else:
@@ -351,7 +356,8 @@ def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, train_dataloader: D
                             f"TEnt {-42.0 if prev_type_ent is None else prev_type_ent.item():<6.4f} " \
                             f"GnormM {(sum([(param.grad ** 2).sum() for param in list(model.parameters()) if param.grad is not None], torch.tensor(0, device=device))**0.5).item():<6.4f} " \
                             f"GnormV {(sum([(param.grad ** 2).sum() for param in list(tokenizer.parameters()) if param.grad is not None], torch.tensor(0, device=device)) ** 0.5).item():<6.4f} " \
-                            f"LR " + " ".join([f"{param_group['lr']:<6.4f}" for param_group in optimizer.param_groups])
+                            f"LR " + " ".join([f"{param_group['lr']:<6.4f}" for param_group in optimizer.param_groups]) + " " \
+                            f"EPC = {model.cls.predictions.expert_coefficient.item() if args.unigram_expert else -42.0}"
             # step
             if (bn + 1) % ( args.train_batch_size // args.gpu_batch_size) == 0:
                 # clip grad
@@ -380,7 +386,8 @@ def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, train_dataloader: D
                         else:
                             eval_loss_avg_c, eval_loss_avg_t, eval_loss, eval_NC, eval_NT = language_modeling_unigram_loop(args, eval_dataloader,
                                                                                               tokenizer, model, device)
-                        logger.info(f"Eval loss at step {step}: avgc = {eval_loss_avg_c}, avgt = {eval_loss_avg_t}, loss = {eval_loss}, NC = {eval_NC}, NT = {eval_NT}")
+                        logger.info(f"Eval loss at step {step}: avgc = {eval_loss_avg_c}, avgt = {eval_loss_avg_t}, loss = {eval_loss}, NC = {eval_NC}, NT = {eval_NT}, "
+                                    f"EPC = {model.cls.predictions.expert_coefficient.item() if args.unigram_expert else -42.0}")
                         with open(os.path.join(args.output_dir, "log.json"), "a") as f:
                             print(json.dumps({
                                 "step": step,
@@ -393,12 +400,16 @@ def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, train_dataloader: D
                                 "train_ent": epoch_e / epoch_examples,
                                 "train_l1": epoch_l1 / epoch_examples,
                                 "group_lasso": epoch_gl / epoch_examples,
-                                "type_entropy": -42.0 if prev_type_ent is None else prev_type_ent.item()
+                                "type_entropy": -42.0 if prev_type_ent is None else prev_type_ent.item(),
+                                "expert_coefficient": model.cls.predictions.expert_coefficient.item() if args.unigram_expert else -42.0
                             }), file=f)
                     else:
                         raise ValueError
                 if (step % args.save_steps) == 0:
                     save_checkpoint(args, epoch, step, model, tokenizer, optimizer)
+
+                if args.unigram_expert and not args.fixed_unigram_expert:
+                    unigram_expert = torch.cat([torch.log_softmax(tokenizer.weights.weight.reshape(-1), dim=-1), expert_padding], dim=-1)
         prev_log_marginal_counts = log_marginal_counts
         prev_counts = counts
         prev_lmc = lmc

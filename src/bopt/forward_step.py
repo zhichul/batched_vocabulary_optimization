@@ -29,7 +29,7 @@ def morpheme_prediction_lattice_step(args, batch, tokenizer, model, device):
     loss = losses[0] * args.main_loss_multiplier
     return loss, ent, lengths, None, None, None
 
-def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=False, decode=False, decode_remove_csp=True, decode_remove_padding=True):
+def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=False, decode=False, decode_remove_csp=True, decode_remove_padding=True, unigram_expert=None):
     """
 
     Args:
@@ -121,7 +121,7 @@ def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=F
                                          bwd_ids, bwd_ms, bwd_lengths,
                                          mmask, emask, None, lm=True, lm_mask=global_mask, fwd_ts=output_fwd_ts, bwd_ts=output_bwd_ts, marginal_temperature=args.marginal_temperature)
                 # run model
-                losses = model(input_ids=input_ids, position_ids=pos_ids, attn_bias=a if args.vopt else None, return_dict=True)
+                losses = model(input_ids=input_ids, position_ids=pos_ids, attn_bias=a if args.vopt else None, return_dict=True, unigram_expert=unigram_expert)
 
                 # get indices
                 indices = increasing_roll_left(output_fwd_ids, tokenizer.pad_index).transpose(-1, -2).reshape(batch_size, N * L,M)  # batch x NL x M
@@ -166,7 +166,7 @@ def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=F
                                  bwd_ids, bwd_ms, bwd_lengths,
                                  mmask, emask, None, lm=True, lm_mask=global_mask, fwd_ts=output_fwd_ts, bwd_ts=output_bwd_ts, marginal_temperature=args.marginal_temperature)
         # run model
-        losses = model(input_ids=input_ids, position_ids=pos_ids, attn_bias=a if args.vopt else None, return_dict=True)
+        losses = model(input_ids=input_ids, position_ids=pos_ids, attn_bias=a if args.vopt else None, return_dict=True, unigram_expert=unigram_expert)
 
         # get indices
         indices = increasing_roll_left(output_fwd_ids, tokenizer.pad_index).transpose(-1, -2).reshape(batch_size, N * L, M) # batch x NL x M
@@ -201,7 +201,7 @@ def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=F
                                  bwd_ids, bwd_ms, bwd_lengths,
                                  mmask, emask, None, lm=True, lm_mask=global_mask, fwd_ts=output_fwd_ts, bwd_ts=output_bwd_ts, marginal_temperature=args.marginal_temperature)
     # run model
-    losses = model(input_ids=input_ids, position_ids=pos_ids, attn_bias=a if args.vopt else None, return_dict=True)
+    losses = model(input_ids=input_ids, position_ids=pos_ids, attn_bias=a if args.vopt else None, return_dict=True, unigram_expert=unigram_expert)
 
     # get indices
     indices = increasing_roll_left(f_output_fwd_ids, tokenizer.pad_index).transpose(-1, -2).reshape(batch_size, N * L, M) # batch x NL x M

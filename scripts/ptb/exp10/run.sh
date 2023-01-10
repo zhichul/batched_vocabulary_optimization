@@ -21,7 +21,7 @@ CUDA_VISIBLE_DEVICES=1 python3 -O -um bopt.run \
     --config ${SCRIPT_PREFIX}/config${SIZE}.json \
     --output_dir ${ARTIFACT_PREFIX}/${SEED}/${SIZE}/${VSIZE} \
     --overwrite_output_dir --overwrite_cache \
-    --do_train --do_eval \
+    --do_train \
     --train_epochs 30 \
     --eval_epochs 1 \
     --save_epochs 10 \
@@ -35,7 +35,7 @@ CUDA_VISIBLE_DEVICES=1 python3 -O -um bopt.run \
     --max_unit_length 8 \
     --max_length 128 \
     --specials "[UNK]" "[CLS]" "[SEP]" "[PAD]" "[MASK]" "[WBD]" "[SP1]" "[SP2]" "[SP3]" "[SP4]" "[SP5]" "[BOS]" "[EOS]" "<unk>" \
-    --quiet
+    --quiet \
 
 
 done

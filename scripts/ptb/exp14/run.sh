@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-EXPID="12"
+EXPID="14"
 mkdir -p ${BLU_ARTIFACTS}/bopt/ptb/exp${EXPID}
 DATA_PREFIX=${BLU_CORPORA}/ptb
 ARTIFACT_PREFIX=${BLU_ARTIFACTS}/bopt/ptb/exp${EXPID}
@@ -8,9 +8,9 @@ for SEED in 44
 do
 for SIZE in 768
 do
-for LR in 0.006 0.06 0.002 0.2
+for LR in 0.02
 do
-CUDA_VISIBLE_DEVICES=0 python3 -O -um bopt.run \
+CUDA_VISIBLE_DEVICES=1 python3 -O -um bopt.run \
     --seed ${SEED} \
     --train_dataset ${DATA_PREFIX}/ptb.train.txt \
     --eval_dataset ${DATA_PREFIX}/ptb.valid.txt \
@@ -19,7 +19,7 @@ CUDA_VISIBLE_DEVICES=0 python3 -O -um bopt.run \
     --weights_file ${DATA_PREFIX}/spm-unigram-weights-10000.txt \
     --config ${SCRIPT_PREFIX}/config${SIZE}.json \
     --output_dir ${ARTIFACT_PREFIX}/${SEED}/${GL}/${SIZE}/${LR} \
-    --overwrite_output_dir \
+    --overwrite_output_dir --overwrite_cache \
     --do_train --do_eval \
     --vopt \
     --bias_mode albo \
@@ -39,6 +39,8 @@ CUDA_VISIBLE_DEVICES=0 python3 -O -um bopt.run \
     --length_normalized_initialization \
     --constant_normalization 20.91 \
     --specials "[UNK]" "[CLS]" "[SEP]" "[PAD]" "[MASK]" "[WBD]" "[SP1]" "[SP2]" "[SP3]" "[SP4]" "[SP5]" "[BOS]" "[EOS]" "<unk>" \
+    --unigram_expert \
+    --fixed_unigram_expert \
     --quiet
 
 done

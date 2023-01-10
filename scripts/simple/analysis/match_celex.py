@@ -115,3 +115,10 @@ with open(sys.argv[2], "rt") as forig:
             code.interact(local=locals())
         except:
             exit()
+
+# check unique vocab used in tokenization
+# len(set(sum((seg.split("-") for word in segmentations for seg in segmentations[word]), [])))
+# check expected length of tokenization
+# sum(sorted([sum(len(seg.split("-")) * segmentations[word][seg] for seg in segmentations[word]) for word in segmentations]))  / sum(sorted([sum(segmentations[word].values()) for word in segmentations]))
+# check number of tokens of a particular ambiguity
+# sum(sorted([sum(segmentations[word].values()) for word in segmentations if len(segmentations[word] ) == 1]))
