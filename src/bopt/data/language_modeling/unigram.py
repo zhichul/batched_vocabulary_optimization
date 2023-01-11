@@ -96,7 +96,7 @@ def preprocess_language_modeling_with_unigram_dataset(args,
           f"{replaced_tokens} ({replaced_tokens / total_tokens}) replaced, "
           f"{is_gold_tokens} ({is_gold_tokens / total_tokens}) gold, "
           f"{is_ambiguous_tokens} ({is_ambiguous_tokens / total_tokens}) ambiguous."
-          f"{is_matching_tokens} ({is_matching_tokens / replaced_tokens}) matching out of replaced.")
+          f"{is_matching_tokens} ({(is_matching_tokens / replaced_tokens) if replaced_tokens > 0 else 0.0}) matching out of replaced.")
     print(msg)
     with open(f"{cache_dir}.meta.json", "wt") as meta_file:
         print(json.dumps({

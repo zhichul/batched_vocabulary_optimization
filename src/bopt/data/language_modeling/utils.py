@@ -94,7 +94,7 @@ def use_gold_segmentations(tokenizer, input_tokens, input_tokenizations, segment
     replaced = [0] * len(input_tokens)
     output_tokenizations = []
     if segmentation_dictionary is None:
-        return input_tokenizations[:], is_gold, is_ambiguous, replaced
+        return input_tokenizations[:], is_gold, is_ambiguous, is_matching, replaced
     for i, (token, tokenization) in enumerate(zip(input_tokens, input_tokenizations)):
         ig = int(token in segmentation_dictionary)
         ia = int(ig and len(segmentation_dictionary[token]) > 1)

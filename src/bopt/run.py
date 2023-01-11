@@ -288,6 +288,7 @@ def save_checkpoint(args, epoch, step, model, tokenizer, optimizer):
 
 def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, train_dataloader: DataLoader,eval_dataloader: DataLoader, optimizer, lr_scheduler, device="cpu"):
     logger.info("Training...")
+    model.train()
     bn = 0
     step = 0
     entropic_weight = 0
@@ -380,12 +381,14 @@ def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, train_dataloader: D
                     if args.task == "morpheme_prediction":
                         pass
                     elif args.task == "language_modeling":
+                        model.eval()
                         if args.vopt:
                             eval_loss_avg_c, eval_loss_avg_t, eval_loss, eval_NC, eval_NT = language_modeling_lattice_loop(args, eval_dataloader, tokenizer,
                                                                                                                        model, device)
                         else:
                             eval_loss_avg_c, eval_loss_avg_t, eval_loss, eval_NC, eval_NT = language_modeling_unigram_loop(args, eval_dataloader,
                                                                                               tokenizer, model, device)
+                        model.train()
                         logger.info(f"Eval loss at step {step}: avgc = {eval_loss_avg_c}, avgt = {eval_loss_avg_t}, loss = {eval_loss}, NC = {eval_NC}, NT = {eval_NT}, "
                                     f"EPC = {model.cls.predictions.expert_coefficient.item() if args.unigram_expert else -42.0}")
                         with open(os.path.join(args.output_dir, "log.json"), "a") as f:
