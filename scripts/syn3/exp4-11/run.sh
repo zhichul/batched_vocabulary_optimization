@@ -51,8 +51,6 @@ CUDA_VISIBLE_DEVICES=0 python3 -O -um bopt.run \
     --max_block_length 12 \
     --max_unit_length 9 \
     --specials "[UNK]" "[CLS]" "[SEP]" "[PAD]" "[MASK]" "[WBD]" "[SP1]" "[SP2]" "[SP3]" "[SP4]" "[SP5]" \
-    --data_num_workers 1
-
 done
 done
 done
