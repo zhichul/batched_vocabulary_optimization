@@ -5,7 +5,9 @@ field = sys.argv[2]
 BEST = {
     "avg_token": "min",
     "train_loss": "min",
-    "zero_one_loss": "max"
+    "zero_one_loss": "max",
+    "expected_zero_one_loss": "max",
+    "log_loss": "min",
 }
 STEP="step"
 
