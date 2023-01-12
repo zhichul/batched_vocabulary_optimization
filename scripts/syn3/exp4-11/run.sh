@@ -31,12 +31,13 @@ CUDA_VISIBLE_DEVICES=0 python3 -O -um bopt.run \
     --output_vocab ${DATA_PREFIX}/output_vocab.txt \
     --config ${SCRIPT_PREFIX}/config${SIZE}.json \
     --output_dir ${ARTIFACT_PREFIX}/${SEED}/${L1}/${SIZE}/ \
-    --overwrite_output_dir  --overwrite_cache \
+    --overwrite_output_dir \
     --do_train --do_eval \
     --vopt \
     --bias_mode albo \
     --train_epochs 300 \
-    --eval_epochs 10 \
+    --eval_steps 20 \
+    --save_steps 10000000 \
     --save_epochs 10 \
     --train_batch_size 1024 \
     --gpu_batch_size 128 \
@@ -48,7 +49,10 @@ CUDA_VISIBLE_DEVICES=0 python3 -O -um bopt.run \
     --entropy_end 225 \
     --max_blocks 1 \
     --max_block_length 12 \
-    --max_unit_length 9
+    --max_unit_length 9 \
+    --specials "[UNK]" "[CLS]" "[SEP]" "[PAD]" "[MASK]" "[WBD]" "[SP1]" "[SP2]" "[SP3]" "[SP4]" "[SP5]" \
+    --data_num_workers 12
+
 done
 done
 done

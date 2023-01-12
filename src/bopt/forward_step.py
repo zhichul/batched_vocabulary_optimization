@@ -27,7 +27,8 @@ def morpheme_prediction_lattice_step(args, batch, tokenizer, model, device):
 
     # get loss
     loss = losses[0] * args.main_loss_multiplier
-    return loss, ent, lengths, None, None, None
+    logits = losses[1]
+    return logits, loss, ent, lengths, None, None, None
 
 def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=False, decode=False, decode_remove_csp=True, decode_remove_padding=True, unigram_expert=None):
     """
@@ -284,7 +285,7 @@ def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=F
 
     if DEBUG:
         code.interact(local=locals())
-    return loss, ent, lengths, ntokens, om_list, unit_list
+    return None, loss, ent, lengths, ntokens, om_list, unit_list
 
 def language_modeling_unigram_step(args, batch, tokenizer, model, device):
     batch = [t.to(device) if isinstance(t, torch.Tensor) else t for t in batch]
@@ -305,4 +306,4 @@ def language_modeling_unigram_step(args, batch, tokenizer, model, device):
 
     # get loss
     loss = losses[0] * args.main_loss_multiplier
-    return loss, None, lengths, ntokens, None, None # sum of mask is the number of tokens
+    return None, loss, None, lengths, ntokens, None, None # sum of mask is the number of tokens

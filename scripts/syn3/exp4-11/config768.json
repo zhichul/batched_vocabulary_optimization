@@ -16,6 +16,6 @@
   "type_vocab_size": 2,
   "use_cache": false,
   "vocab_size": 8614,
-  "override_output_vocab_size": 200,
+  "override_output_vocab_size": 134,
   "tie_word_embeddings": false
 }

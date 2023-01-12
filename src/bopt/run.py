@@ -19,7 +19,7 @@ from bopt.data.language_modeling.unigram import preprocess_language_modeling_wit
 from bopt.forward_step import morpheme_prediction_lattice_step, language_modeling_lattice_step, \
     language_modeling_unigram_step
 from bopt.forward_loop import language_modeling_lattice_loop, language_modeling_unigram_loop, \
-    language_modeling_lattice_decode_loop, language_modeling_unigram_decode_loop
+    language_modeling_lattice_decode_loop, language_modeling_unigram_decode_loop, morpheme_prediction_lattice_loop, morpheme_prediction_unigram_loop
 
 from bopt.arguments import parse_args
 from bopt.core.tokenizer import Tokenizer
@@ -319,12 +319,12 @@ def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, train_dataloader: D
             batch_size = batch[0].size(0)
 
             if args.task == "morpheme_prediction":
-                loss, ent, lengths, ntokens, out_marginals, out_units = morpheme_prediction_lattice_step(args, batch, tokenizer, model, device)
+                _, loss, ent, lengths, ntokens, out_marginals, out_units = morpheme_prediction_lattice_step(args, batch, tokenizer, model, device)
             elif args.task == "language_modeling":
                 if args.vopt:
-                    loss, ent, lengths, ntokens, out_marginals, out_units = language_modeling_lattice_step(args, batch, tokenizer, model, device, unigram_expert=unigram_expert)
+                    _, loss, ent, lengths, ntokens, out_marginals, out_units = language_modeling_lattice_step(args, batch, tokenizer, model, device, unigram_expert=unigram_expert)
                 else:
-                    loss, ent, lengths, ntokens, out_marginals, out_units = language_modeling_unigram_step(args, batch, tokenizer, model, device)
+                    _, loss, ent, lengths, ntokens, out_marginals, out_units = language_modeling_unigram_step(args, batch, tokenizer, model, device)
             else:
                 raise ValueError
 
@@ -378,17 +378,32 @@ def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, train_dataloader: D
                     code.interact(local=locals())
                 # evaluate
                 if (step % args.eval_steps) == 0:
+                    model.eval()
                     if args.task == "morpheme_prediction":
-                        pass
+                        if args.vopt:
+                            eval_loss_log, eval_loss_zero_one, eval_loss_expected_zero_one, example_total, num_predictions = morpheme_prediction_lattice_loop(args, eval_dataloader, tokenizer, model, device)
+                        else:
+                            morpheme_prediction_unigram_loop(args, eval_dataloader, tokenizer, model, device)
+                        logger.info(f"Eval loss at step {step}: loss = {eval_loss_log}, 0/1: {eval_loss_zero_one}, E[0/1]: {eval_loss_expected_zero_one}, ex = {example_total}, pred = {num_predictions}")
+                        with open(os.path.join(args.output_dir, "log.json"), "a") as f:
+                            print(json.dumps({
+                                "step": step,
+                                "log_loss": eval_loss_log,
+                                "zero_one_loss": eval_loss_zero_one,
+                                "expected_zero_one_loss": eval_loss_expected_zero_one,
+                                "n_example": example_total,
+                                "n_prediction": num_predictions,
+                                "train_loss": epoch_loss / epoch_examples,
+                                "train_ent": epoch_e / epoch_examples,
+                                "train_l1": epoch_l1 / epoch_examples,
+                            }), file=f)
                     elif args.task == "language_modeling":
-                        model.eval()
                         if args.vopt:
                             eval_loss_avg_c, eval_loss_avg_t, eval_loss, eval_NC, eval_NT = language_modeling_lattice_loop(args, eval_dataloader, tokenizer,
                                                                                                                        model, device)
                         else:
                             eval_loss_avg_c, eval_loss_avg_t, eval_loss, eval_NC, eval_NT = language_modeling_unigram_loop(args, eval_dataloader,
                                                                                               tokenizer, model, device)
-                        model.train()
                         logger.info(f"Eval loss at step {step}: avgc = {eval_loss_avg_c}, avgt = {eval_loss_avg_t}, loss = {eval_loss}, NC = {eval_NC}, NT = {eval_NT}, "
                                     f"EPC = {model.cls.predictions.expert_coefficient.item() if args.unigram_expert else -42.0}")
                         with open(os.path.join(args.output_dir, "log.json"), "a") as f:
@@ -408,6 +423,7 @@ def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, train_dataloader: D
                             }), file=f)
                     else:
                         raise ValueError
+                    model.train()
                 if (step % args.save_steps) == 0:
                     save_checkpoint(args, epoch, step, model, tokenizer, optimizer)
 
