@@ -8,13 +8,13 @@ from bopt.forward_step import language_modeling_lattice_step, language_modeling_
 
 INF = 1e9
 
-def language_modeling_lattice_loop(args, dataloader, tokenizer, model, device):
+def language_modeling_lattice_loop(args, dataloader, tokenizer, model, device, unigram_expert=None, skip_gram=False):
     loss_total =  0
     ntokens_total =  0
     nchars_total =  0
     with torch.no_grad():
         for batch in tqdm(dataloader):
-            logits, loss, ent, lengths, ntokens, _, _ = language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=True)
+            logits, loss, ent, lengths, ntokens, _, _ = language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=True, unigram_expert=unigram_expert, skip_gram=skip_gram)
             batch_size =  lengths.size(0)
             ntokens_total += ntokens.sum().item() - batch_size
             nchars_total += lengths.sum().item() - batch_size
@@ -22,14 +22,14 @@ def language_modeling_lattice_loop(args, dataloader, tokenizer, model, device):
     return loss_total / nchars_total, loss_total / ntokens_total, loss_total, nchars_total, ntokens_total
 
 
-def language_modeling_unigram_loop(args, dataloader, tokenizer, model, device):
+def language_modeling_unigram_loop(args, dataloader, tokenizer, model, device, skip_gram=False):
     loss_total =  0
     ntokens_total =  0
     nchars_total =  0
     with torch.no_grad():
         for batch in dataloader:
             input_ids, pos_ids, input_mask, labels, lengths, ntokens, text = batch
-            logits, loss, ent, lengths, ntokens, _, _ = language_modeling_unigram_step(args, batch, tokenizer, model, device)
+            logits, loss, ent, lengths, ntokens, _, _ = language_modeling_unigram_step(args, batch, tokenizer, model, device, skip_gram=skip_gram)
             batch_size =  lengths.size(0)
             ntokens_total += ntokens.sum().item() - batch_size
             nchars_total += lengths.sum().item() - batch_size

@@ -48,7 +48,7 @@ def morpheme_prediction_unigram_step(args, batch, tokenizer, model, device):
     return logits, loss, None, None, None, None, None
 
 
-def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=False, decode=False, decode_remove_csp=True, decode_remove_padding=True, unigram_expert=None):
+def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=False, decode=False, decode_remove_csp=True, decode_remove_padding=True, unigram_expert=None, skip_gram=False):
     """
 
     Args:
@@ -77,18 +77,30 @@ def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=F
     #   mmask, emask: [batch_size, 1, L, M, L]
     #   binary_mask: [batch_size, N * (E + L)
     #   ntokens: [batch_size, N]
-    if args.output_viterbi:
+    if skip_gram:
         (input_ids, pos_ids, input_mask,
          fwd_ids, fwd_ms, lengths,
          bwd_ids, bwd_ms_c, bwd_lengths,
-         vfwd_ids, vfwd_ms,
-         vbwd_ids, vbwd_ms_c,
-         mmask, emask, binary_mask, txt, ntokens) = batch
+         txt) = batch
+        _batch_size, _N, _M, _L = fwd_ids.size()
+        mmask, emask = tokenizer.parallel_backward_mask(_L, _M, device)
+        mmask = mmask[None, None, ...].expand(_batch_size, 1, *mmask.size())
+        emask = emask[None, None, ...].expand(_batch_size, 1, *emask.size())
+        binary_mask = input_mask
+        ntokens = torch.ones((_batch_size, 1), device=device, dtype=torch.long)
     else:
-        (input_ids, pos_ids, input_mask,
-         fwd_ids, fwd_ms, lengths,
-         bwd_ids, bwd_ms_c, bwd_lengths,
-         mmask, emask, binary_mask, txt, ntokens) = batch
+        if args.output_viterbi:
+            (input_ids, pos_ids, input_mask,
+             fwd_ids, fwd_ms, lengths,
+             bwd_ids, bwd_ms_c, bwd_lengths,
+             vfwd_ids, vfwd_ms,
+             vbwd_ids, vbwd_ms_c,
+             mmask, emask, binary_mask, txt, ntokens) = batch
+        else:
+            (input_ids, pos_ids, input_mask,
+             fwd_ids, fwd_ms, lengths,
+             bwd_ids, bwd_ms_c, bwd_lengths,
+             mmask, emask, binary_mask, txt, ntokens) = batch
 
     # save some size variables, N is the number of blocks, M is the max edge length, and L is the block size
     batch_size, N, M, L = fwd_ids.size()
@@ -109,6 +121,7 @@ def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=F
     # we use output_xx to denote lattice quantities associated with the fix-pointing
     # and f_output_xx to denote lattice quantities associated with the final output
     if args.output_viterbi:
+        assert args.group_lasso == 0
         output_fwd_ids = fwd_ids
         output_fwd_ms = fwd_ms
         output_bwd_ms_c = bwd_ms_c # this is the un-expanded bwd_ms
@@ -119,11 +132,15 @@ def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=F
         f_output_bwd_ms_c = vbwd_ms_c # this is the un-expanded vbwd_ms
         vbwd_ms = (vbwd_ms_c.unsqueeze(2) * emask + mmask).reshape(batch_size, N * L, M, L)
         f_output_bwd_ms = vbwd_ms
+        f_output_lengths = lengths
     else:
         f_output_fwd_ids = output_fwd_ids = fwd_ids
         f_output_fwd_ms = output_fwd_ms = fwd_ms
+        f_output_bwd_ids = bwd_ids
         f_output_bwd_ms_c = output_bwd_ms_c = bwd_ms_c
         f_output_bwd_ms = output_bwd_ms = bwd_ms
+        f_output_lengths = lengths
+        f_output_bwd_lengths = bwd_lengths
 
     # initialize the lattice using the individually parametrized edge weights and perform fix-pointing
     output_fwd_ts = None
@@ -245,6 +262,12 @@ def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=F
     f_output_fwd_ts = increasing_roll_right(f_output_fwd_ts, 0)
     f_output_fwd_ts = f_output_fwd_ts * f_output_fwd_ms + (1-f_output_fwd_ms) * -INF
 
+    if skip_gram:
+        f_output_fwd_ts = f_output_fwd_ts[:,1:,...]
+        f_output_fwd_ids = f_output_fwd_ids[:, 1:, ...]
+        f_output_fwd_ms = f_output_fwd_ms[:, 1:, ...]
+        f_output_lengths = f_output_lengths[:, 1:]
+        f_output_bwd_lengths = f_output_bwd_lengths[:, 1:, ...]
     # do some logging if requested
     if args.log_lattice and eval:
         with open(os.path.join(args.output_dir, args.log_lattice_file), "at") as f:
@@ -256,17 +279,17 @@ def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=F
             f.write(json.dumps(d) + "\n")
 
     if decode:
-        max_log_alpha, _, backpointers = tokenizer.viterbi_algorithm(f_output_fwd_ts.reshape(-1, *f_output_fwd_ts.size()[2:]), f_output_fwd_ms.reshape(-1, *f_output_fwd_ms.size()[2:]), lengths.reshape(-1, *lengths.size()[2:]))
-        word_ids = tokenizer.decode_backpointers(f_output_fwd_ids.reshape(-1, *f_output_fwd_ids.size()[2:]), lengths.reshape(-1, *lengths.size()[2:]), backpointers)
+        max_log_alpha, _, backpointers = tokenizer.viterbi_algorithm(f_output_fwd_ts.reshape(-1, *f_output_fwd_ts.size()[2:]), f_output_fwd_ms.reshape(-1, *f_output_fwd_ms.size()[2:]), f_output_lengths.reshape(-1, *f_output_lengths.size()[2:]))
+        word_ids = tokenizer.decode_backpointers(f_output_fwd_ids.reshape(-1, *f_output_fwd_ids.size()[2:]), f_output_lengths.reshape(-1, *f_output_lengths.size()[2:]), backpointers)
         word_ids = [sum(word_ids[i*N:(i+1)*N],[]) for i in range(batch_size)]
         return [[tokenizer.id2str(id, remove_csp=decode_remove_csp) for id in word_id if not decode_remove_padding or not tokenizer.is_padding(id)] for word_id in word_ids]
 
     # compute prob
-    log_alphas, _ = tokenizer.forward_algorithm(f_output_fwd_ts.reshape(batch_size * N, M, L),
-                                                f_output_fwd_ms.reshape(batch_size * N, M, L),
-                                                lengths.reshape(batch_size * N))
+    log_alphas, _ = tokenizer.forward_algorithm(f_output_fwd_ts.reshape(-1, M, L), # batch x N, M, L or batch x N - 1 ... for skipgram
+                                                f_output_fwd_ms.reshape(-1, M, L),  # batch x N, M, L or batch x N - 1 ... for skipgram
+                                                f_output_lengths.reshape(-1)) # batch x N
     log_probs = log_alphas.sum()
-    nchars = lengths.sum() - batch_size # adjust for BOS
+    nchars = f_output_lengths.sum() - batch_size # adjust for BOS
 
     if eval:
         loss = -log_probs / nchars  * args.main_loss_multiplier
@@ -274,7 +297,7 @@ def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=F
         loss = -log_probs / (f_output_fwd_ms.sum() - batch_size) * args.main_loss_multiplier
     elif args.normalize_by_expected_length:
         length_transition = (torch.ones(f_output_fwd_ids.size(-2)))[None,None, :, None].expand(*f_output_fwd_ids.size()).to(f_output_fwd_ms.device) * f_output_fwd_ms
-        expected_lengths, _ = tokenizer.expectation(f_output_fwd_ts.reshape(batch_size * N, M, L), length_transition.reshape(batch_size * N, M, L), f_output_fwd_ms.reshape(batch_size * N, M, L), lengths.reshape(batch_size * N))
+        expected_lengths, _ = tokenizer.expectation(f_output_fwd_ts.reshape(-1, M, L), length_transition.reshape(-1, M, L), f_output_fwd_ms.reshape(batch_size * N, M, L), f_output_lengths.reshape(-1)) # lengths is reshaped to batch x N or batch-1 x N for skipgram
         loss = -log_probs / (expected_lengths.sum().item() - batch_size) * args.main_loss_multiplier
     elif args.no_normalization:
         loss = -log_probs * args.main_loss_multiplier / batch_size
@@ -285,10 +308,11 @@ def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=F
 
     # get regularizer necessary book-keeping
     if args.group_lasso > 0:
-        oent, _, om, _ = tokenizer(fwd_ids, fwd_ms, lengths,
-                                 bwd_ids, bwd_ms, bwd_lengths,
-                                 mmask, emask, None, lm=True, lm_mask=global_mask, fwd_ts=output_fwd_ts,
-                                 bwd_ts=output_bwd_ts)
+        assert not args.output_viterbi
+        oent, _, om, _ = tokenizer(f_output_fwd_ids, f_output_fwd_ms, f_output_lengths,
+                                 f_output_bwd_ids, f_output_bwd_ms, f_output_bwd_lengths,
+                                 mmask, emask, None, lm=True, lm_mask=global_mask, fwd_ts=None if args.group_lasso_on_input else f_output_fwd_ts ,
+                                 bwd_ts=None if args.group_lasso_on_input else f_output_bwd_ts)
         om_list = om.reshape(batch_size, -1)[input_mask[:, :om.size(1) * om.size(2)].to(torch.bool)]
         unit_list = input_ids[:, :om.size(1) * om.size(2)][input_mask[:, :om.size(1) * om.size(2)].to(torch.bool)].reshape(-1)
         if om_list.size() != unit_list.size():
@@ -303,9 +327,10 @@ def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=F
 
     if DEBUG:
         code.interact(local=locals())
-    return None, loss, ent, lengths, ntokens, om_list, unit_list
+    return None, loss, ent, f_output_lengths, ntokens, om_list, unit_list
 
-def language_modeling_unigram_step(args, batch, tokenizer, model, device):
+def language_modeling_unigram_step(args, batch, tokenizer, model, device, skip_gram=False):
+    # skip gram is handled in preprocessing so that this function applies exactly the same to skipgram and normal LMing
     batch = [t.to(device) if isinstance(t, torch.Tensor) else t for t in batch]
     input_ids, pos_ids, input_mask, labels, lengths, ntokens, text = batch
 

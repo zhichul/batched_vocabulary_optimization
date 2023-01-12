@@ -7,7 +7,7 @@ def parse_args():
     parser.add_argument('--start_step', type=int, default=None,  help='start checkpoint')
     parser.add_argument('--config', type=str)
     parser.add_argument("--output_dir", default=None, type=str, help="The output directory where the model predictions and checkpoints will be written.", required=True)
-    parser.add_argument('--task', type=str, choices=["morpheme_prediction", "language_modeling"], default="morpheme_prediction", help='name of the task', required=True)
+    parser.add_argument('--task', type=str, choices=["morpheme_prediction", "language_modeling", "skip_gram"], default="morpheme_prediction", help='name of the task', required=True)
     parser.add_argument('--overwrite_output_dir', action='store_true')
     parser.add_argument('--overwrite_cache', action='store_true')
 

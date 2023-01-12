@@ -17,6 +17,8 @@ from bopt.data.language_modeling.unigram import preprocess_language_modeling_wit
     LanguageModelingUnigramDataset, tokenize_language_modeling_with_unigram_dataset, \
     preprocess_language_modeling_with_unigram_node_dataset
 from bopt.data.morpheme_prediction.unigram import preprocess_morpheme_prediction_with_unigram_dataset, MorphemePredictionUnigramDataset
+from bopt.data.skip_gram.lattice import preprocess_skip_gram_with_lattices_dataset, SkipGramLatticeDataset
+from bopt.data.skip_gram.unigram import SkipGramUnigramDataset
 from bopt.forward_step import morpheme_prediction_lattice_step, language_modeling_lattice_step, \
     language_modeling_unigram_step, morpheme_prediction_unigram_step
 from bopt.forward_loop import language_modeling_lattice_loop, language_modeling_unigram_loop, \
@@ -163,6 +165,42 @@ def preprocess_datasets(args, tokenizer, input_vocab, output_vocab):
                 datasets[name] = dataset = MorphemePredictionUnigramDataset(cache_dir)
             sampler = RandomSampler(dataset) if name == "train" else SequentialSampler(dataset)
             dataloaders[name] = dataloader = DataLoader(dataset, sampler=sampler, batch_size=args.gpu_batch_size, num_workers=args.data_num_workers)
+    elif args.task == "skip_gram":
+        datasets = {}
+        dataloaders = {}
+        for name, data in zip(["train", "eval"], [args.train_dataset, args.eval_dataset]):
+            if data is None:
+                logger.info(f"No {name} dataset specified, continuing...")
+                continue
+            cache_dir = os.path.join(args.output_dir, f"cache", os.path.basename(data))
+            flag = create_or_clear_cache(args, cache_dir)
+            if flag:
+                if args.vopt:
+                    preprocess_skip_gram_with_lattices_dataset(data,
+                                                               cache_dir,
+                                                               tokenizer,
+                                                               output_vocab,
+                                                               args.max_blocks if name == "train" or args.eval_max_blocks is None else args.eval_max_blocks,
+                                                               args.max_block_length if name == "train" or args.eval_max_block_length is None else args.eval_max_block_length,
+                                                               args.max_unit_length if name == "train" or args.eval_max_unit_length is None else args.eval_max_unit_length)
+                else:
+                    preprocess_language_modeling_with_unigram_dataset(args,
+                                                                      data,
+                                                                      cache_dir,
+                                                                      tokenizer,
+                                                                      output_vocab,
+                                                                      args.max_blocks if name == "train" or args.eval_max_blocks is None else args.eval_max_blocks,
+                                                                      args.max_block_length if name == "train" or args.eval_max_block_length is None else args.eval_max_block_length,
+                                                                      args.max_unit_length if name == "train" or args.eval_max_unit_length is None else args.eval_max_unit_length,
+                                                                      args.max_length if name == "train" or args.eval_max_length is None else args.eval_max_length)
+            if args.vopt:
+                datasets[name] = dataset = SkipGramLatticeDataset(cache_dir, args.max_block_length if name == "train" or args.eval_max_block_length is None else args.eval_max_block_length)
+            else:
+                datasets[name] = dataset = SkipGramUnigramDataset(cache_dir, args.max_length if name == "train" or args.eval_max_length is None else args.eval_max_length)
+            sampler = RandomSampler(dataset) if name == "train" else SequentialSampler(dataset)
+            dataloaders[name] = dataloader = DataLoader(dataset, sampler=sampler,
+                                                        batch_size=args.gpu_batch_size if name == "train" or args.eval_gpu_batch_size is None else args.eval_gpu_batch_size,
+                                                        num_workers=args.data_num_workers, collate_fn=default_collate)
     elif args.task == "language_modeling":
         datasets = {}
         dataloaders = {}
@@ -343,6 +381,11 @@ def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, train_dataloader: D
                     _, loss, ent, lengths, ntokens, out_marginals, out_units = language_modeling_lattice_step(args, batch, tokenizer, model, device, unigram_expert=unigram_expert)
                 else:
                     _, loss, ent, lengths, ntokens, out_marginals, out_units = language_modeling_unigram_step(args, batch, tokenizer, model, device)
+            elif args.task == "skip_gram":
+                if args.vopt:
+                    _, loss, ent, lengths, ntokens, out_marginals, out_units = language_modeling_lattice_step(args, batch, tokenizer, model, device, unigram_expert=unigram_expert, skip_gram=True)
+                else:
+                    _, loss, ent, lengths, ntokens, out_marginals, out_units = language_modeling_unigram_step(args, batch, tokenizer, model, device)
             else:
                 raise ValueError
 
@@ -417,13 +460,11 @@ def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, train_dataloader: D
                                 "train_ent": epoch_e / epoch_examples,
                                 "train_l1": epoch_l1 / epoch_examples,
                             }), file=f)
-                    elif args.task == "language_modeling":
+                    elif args.task == "language_modeling" or args.task == "skip_gram":
                         if args.vopt:
-                            eval_loss_avg_c, eval_loss_avg_t, eval_loss, eval_NC, eval_NT = language_modeling_lattice_loop(args, eval_dataloader, tokenizer,
-                                                                                                                       model, device)
+                            eval_loss_avg_c, eval_loss_avg_t, eval_loss, eval_NC, eval_NT = language_modeling_lattice_loop(args, eval_dataloader, tokenizer, model, device, unigram_expert=unigram_expert, skip_gram=args.task == "skip_gram")
                         else:
-                            eval_loss_avg_c, eval_loss_avg_t, eval_loss, eval_NC, eval_NT = language_modeling_unigram_loop(args, eval_dataloader,
-                                                                                              tokenizer, model, device)
+                            eval_loss_avg_c, eval_loss_avg_t, eval_loss, eval_NC, eval_NT = language_modeling_unigram_loop(args, eval_dataloader, tokenizer, model, device, skip_gram=args.task == "skip_gram")
                         logger.info(f"Eval loss at step {step}: avgc = {eval_loss_avg_c}, avgt = {eval_loss_avg_t}, loss = {eval_loss}, NC = {eval_NC}, NT = {eval_NT}, "
                                     f"EPC = {model.cls.predictions.expert_coefficient.item() if args.unigram_expert else -42.0}")
                         with open(os.path.join(args.output_dir, "log.json"), "a") as f:
