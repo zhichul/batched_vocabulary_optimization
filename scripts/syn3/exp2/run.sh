@@ -31,7 +31,7 @@ CUDA_VISIBLE_DEVICES=1 python3 -O -um bopt.run \
     --weights_file ${DATA_PREFIX}/spm-unigram-weights-${VSIZE}.txt  \
     --output_vocab ${DATA_PREFIX}/output_vocab.txt \
     --config ${SCRIPT_PREFIX}/config${SIZE}.json \
-    --output_dir ${ARTIFACT_PREFIX}/${SEED}/${L1}/${SIZE}/ \
+    --output_dir ${ARTIFACT_PREFIX}/${SEED}/${SIZE}/${VSIZE}/ \
     --overwrite_output_dir \
     --overwrite_cache \
     --do_train --do_eval \
@@ -47,7 +47,7 @@ CUDA_VISIBLE_DEVICES=1 python3 -O -um bopt.run \
     --max_unit_length 9 \
     --specials "[UNK]" "[CLS]" "[SEP]" "[PAD]" "[MASK]" "[WBD]" "[SP1]" "[SP2]" "[SP3]" "[SP4]" "[SP5]" \
     --max_length 12 \
-
+    --quiet
 
 
 done
