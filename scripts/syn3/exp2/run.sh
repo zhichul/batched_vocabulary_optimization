@@ -35,10 +35,10 @@ CUDA_VISIBLE_DEVICES=1 python3 -O -um bopt.run \
     --overwrite_output_dir \
     --overwrite_cache \
     --do_train --do_eval \
-    --train_epochs 300 \
+    --train_epochs 600 \
     --eval_steps 20 \
     --save_steps 10000000 \
-    --save_epochs 10 \
+    --save_epochs 50 \
     --train_batch_size 1024 \
     --gpu_batch_size 128 \
     --task morpheme_prediction \

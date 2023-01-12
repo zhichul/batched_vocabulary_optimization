@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 DATA_PREFIX=${BLU_CORPORA}/ptb
 
-for SIZE in 192 392 592 792 845
+for SIZE in 42 92 126 142 192 392 592 792 845
 do
 spm_train --input=/export/a01/corpora/vopt/syn/3/full/train.txt --model_prefix=/export/a01/corpora/vopt/syn/3/full/spm-unigram-${SIZE} --vocab_size=${SIZE} --character_coverage=1.0 --model_type=unigram --add_dummy_prefix=false
 REAL_SIZE=$((${SIZE} + 8))

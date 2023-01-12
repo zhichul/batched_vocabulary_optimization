@@ -21,7 +21,7 @@ for SEED in 42
 do
 for SIZE in 768
 do
-for L1 in 0.1
+for L1 in 0.1 0.01 1.0
 do
 CUDA_VISIBLE_DEVICES=0 python3 -O -um bopt.run \
     --seed ${SEED} \
@@ -51,6 +51,7 @@ CUDA_VISIBLE_DEVICES=0 python3 -O -um bopt.run \
     --max_block_length 12 \
     --max_unit_length 9 \
     --specials "[UNK]" "[CLS]" "[SEP]" "[PAD]" "[MASK]" "[WBD]" "[SP1]" "[SP2]" "[SP3]" "[SP4]" "[SP5]" \
+    --quiet
 
 done
 done

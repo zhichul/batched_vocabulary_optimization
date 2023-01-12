@@ -4,7 +4,8 @@ file = sys.argv[1]
 field = sys.argv[2]
 BEST = {
     "avg_token": "min",
-    "train_loss": "min"
+    "train_loss": "min",
+    "zero_one_loss": "max"
 }
 STEP="step"
 

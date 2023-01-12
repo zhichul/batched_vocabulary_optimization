@@ -383,14 +383,16 @@ def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, train_dataloader: D
                 for group in optimizer.param_groups:
                     torch.nn.utils.clip_grad_norm_((param for param in group['params']), args.max_grad_norm)
                 optimizer.step()
+                # sweight = tokenizer.get_singleton_weight()
+                optimizer.zero_grad(set_to_none=False)
+                # tokenizer.set_singleton_weight(sweight)
+                tokenizer.reset_padding_weight()
+                tokenizer.reset_specials_weight()
                 if not tokenizer.lsp:
                     # make sure weights are positive if parametrized as real numbers
                     tokenizer.clamp_weights()
-                sweight = tokenizer.get_singleton_weight()
-                optimizer.zero_grad(set_to_none=False)
-                tokenizer.reset_padding_weight()
-                tokenizer.reset_specials_weight()
-                tokenizer.set_singleton_weight(sweight)
+                if (tokenizer.weights.weight.data <= -1e-6).any():
+                    code.interact(local=locals())
                 step += 1
                 if DEBUG:
                     code.interact(local=locals())
