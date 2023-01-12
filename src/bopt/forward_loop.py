@@ -85,7 +85,7 @@ def morpheme_prediction_lattice_loop(args, dataloader, tokenizer, model, device)
     example_total = 0
     with torch.no_grad():
         for batch in tqdm(dataloader):
-            input_ids, pos_ids, input_mask, label_ids, fwd_ids, fwd_ms, lengths, bwd_ids, bwd_ms, bwd_lengths, mmask, emask, tmask = [t.to(device) for t in batch]
+            input_ids, pos_ids, input_mask, label_ids, fwd_ids, fwd_ms, lengths, bwd_ids, bwd_ms, bwd_lengths, tmask = [t.to(device) for t in batch]
             logits, loss, ent, lengths, _, _, _ = morpheme_prediction_lattice_step(args, batch, tokenizer, model, device)
             correct_count, label_count1 = zero_one_loss(logits, label_ids)
             correct_prob, label_count2 = expected_zero_one_loss(logits, label_ids)

@@ -1,3 +1,4 @@
+import code
 import csv
 import os
 import pickle
@@ -22,6 +23,8 @@ MAX_UNIT_LENGTH = 20 # M: number of characters in a candidate unit
 # max number of edges in a lattice for a block
 MAX_BLOCK_TOKENS = (MAX_BLOCK_LENGTH * (MAX_BLOCK_LENGTH + 1)) // 2 - ((MAX_BLOCK_LENGTH - MAX_UNIT_LENGTH) * (MAX_BLOCK_LENGTH - MAX_UNIT_LENGTH + 1)) // 2
 
+TMASK_CACHE = dict()
+
 def preprocess_morpheme_prediction_with_lattices_dataset(data_file: str,
                    cache_dir: str,
                    input_tokenizer: TokenizationMixin,
@@ -36,10 +39,6 @@ def preprocess_morpheme_prediction_with_lattices_dataset(data_file: str,
     ws = Whitespace()
     with open(data_file, encoding='utf_8') as csvfile:
         reader = csv.DictReader(csvfile,fieldnames=["id", "label", "text", "features", "segmentation"])
-        task_mask = torch.ones((max_blocks * E, max_blocks * E))
-        for k in range(3):
-            task_mask[:, k * max_unit_length] = 0
-            task_mask[k * max_unit_length, k * max_unit_length] = 1
         for i, row in enumerate(tqdm(reader)):
             text_str = row["text"]
             input_tokens = [pair[0] for pair in ws.pre_tokenize_str(text_str)]
@@ -51,7 +50,7 @@ def preprocess_morpheme_prediction_with_lattices_dataset(data_file: str,
                 packed_chunks = packed_chunks[:max_blocks]
             elif len(packed_chunks) < max_blocks:
                 packed_chunks += [[]] * (max_blocks - len(packed_chunks))
-            fwd_ids, fwd_ms, lengths, bwd_ids, bwd_ms, bwd_lengths, mmask, emask = input_tokenizer.encode_packed_batch(packed_chunks, max_unit_length, max_block_length)
+            fwd_ids, fwd_ms, lengths, bwd_ids, bwd_ms, bwd_lengths, mmask, emask = input_tokenizer.encode_packed_batch(packed_chunks, max_unit_length, max_block_length, compact=True)
             ids, mask, pos_ids, _, _, _ = input_tokenizer.integerize_packed_chunks(packed_chunks, max_unit_length, max_block_length)
             label_ids: torch.LongTensor = torch.ones_like(ids, dtype=torch.long) * -100 # default value for ignore label
             for j, out_id in enumerate(output_labels):
@@ -87,15 +86,23 @@ def preprocess_morpheme_prediction_with_lattices_dataset(data_file: str,
                      "bwd_ids": bwd_ids.tolist(),
                      "bwd_ms": bwd_ms.tolist(),
                      "bwd_lengths": bwd_lengths.tolist(),
-                     "mmask": mmask.tolist(),
-                     "emask": emask.tolist(),
-                     "tmask": task_mask.tolist()
-                     }, file=f
+                     "max_blocks": max_blocks,
+                     "max_block_length": max_block_length,
+                     "max_unit_length": max_unit_length,
+                     "E": E
+                }, file=f
                 )
 
-
-
+def tmask(max_blocks, max_unit_length, E):
+    if (max_blocks, max_unit_length, E) not in TMASK_CACHE:
+        task_mask = torch.ones((max_blocks * E, max_blocks * E))
+        for k in range(3):
+            task_mask[:, k * max_unit_length] = 0
+            task_mask[k * max_unit_length, k * max_unit_length] = 1
+        TMASK_CACHE[(max_blocks, max_unit_length, E)] = task_mask
+    return TMASK_CACHE[(max_blocks, max_unit_length, E)]
 class MorphemePredictionLatticeDataset(LazyDataset):
+
 
     def encode(self, ex, index):
         """
@@ -112,9 +119,9 @@ class MorphemePredictionLatticeDataset(LazyDataset):
             "bwd_ids"
             "bwd_ms"
             "bwd_lengths"
-            "mmask"
-            "emask"
-            "tmask"
+            # "mmask" these are dynamically re-computed to save cache size
+            # "emask"
+            # "tmask"
         """
         return (torch.LongTensor(ex["input_ids"]),
                 torch.LongTensor(ex["pos_ids"]),
@@ -126,9 +133,8 @@ class MorphemePredictionLatticeDataset(LazyDataset):
                 torch.LongTensor(ex["bwd_ids"]),
                 torch.FloatTensor(ex["bwd_ms"]),
                 torch.LongTensor(ex["bwd_lengths"]),
-                torch.LongTensor(ex["mmask"]),
-                torch.LongTensor(ex["emask"]),
-                torch.LongTensor(ex["tmask"]))
+                tmask(ex["max_blocks"], ex["max_unit_length"], ex["E"])
+                )
 
 if __name__ == "__main__":
     torch.manual_seed(42)

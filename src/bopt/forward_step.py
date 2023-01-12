@@ -14,7 +14,14 @@ DEBUG = False
 
 def morpheme_prediction_lattice_step(args, batch, tokenizer, model, device):
     batch = [t.to(device) for t in batch]
-    input_ids, pos_ids, input_mask, label_ids, fwd_ids, fwd_ms, lengths, bwd_ids, bwd_ms, bwd_lengths, mmask, emask, tmask = batch
+    input_ids, pos_ids, input_mask, label_ids, fwd_ids, fwd_ms, lengths, bwd_ids, bwd_ms_c, bwd_lengths, tmask = batch
+    batch_size, N, M, L = fwd_ids.size()
+    mmask, emask = tokenizer.parallel_backward_mask(L, M, device)
+
+    # expand bwd_ids and bwd_ms
+    bwd_ids = (bwd_ids.unsqueeze(2) * emask.to(torch.long) + tokenizer.pad_index * (1-emask.to(torch.long))).reshape(batch_size, N * L, M, L)
+    bwd_ms = (bwd_ms_c.unsqueeze(2) * emask + mmask).reshape(batch_size, N * L, M, L)
+
     # dp lattice if necessasry
     ent, a, m, c = None, None, None, None
     if args.vopt:
