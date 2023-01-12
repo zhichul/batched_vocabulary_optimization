@@ -51,7 +51,7 @@ def preprocess_language_modeling_with_unigram_dataset(args,
             # pack input into chunks
             packed_chunks = input_tokenizer.pack_chunks(input_tokens, max_block_length)
             kept_chunks = truncated_and_pad_packed_chunks(input_tokenizer, packed_chunks, max_blocks)
-            ntokens = [len(chunk) for chunk in kept_chunks]
+            ntokens = sum([len(chunk) for chunk in kept_chunks])
 
             # viterbi tokenize
             input_tokenizations = viterbi_tokenize(input_tokenizer, input_tokens)
@@ -130,7 +130,7 @@ def preprocess_language_modeling_with_unigram_node_dataset(data_file: str,
             # pack input into chunks
             packed_chunks = input_tokenizer.pack_chunks(input_tokens, max_block_length)
             kept_chunks = truncated_and_pad_packed_chunks(input_tokenizer, packed_chunks, max_blocks)
-            ntokens = [len(chunk) for chunk in kept_chunks]
+            ntokens = sum([len(chunk) for chunk in kept_chunks])
 
             # viterbi tokenize
             input_tokenizations = viterbi_tokenize(input_tokenizer, input_tokens)
