@@ -4,7 +4,7 @@ import torch
 from tqdm import tqdm
 
 from bopt.forward_step import language_modeling_lattice_step, language_modeling_unigram_step, \
-    morpheme_prediction_lattice_step
+    morpheme_prediction_lattice_step, morpheme_prediction_unigram_step
 
 INF = 1e9
 
@@ -99,10 +99,23 @@ def morpheme_prediction_lattice_loop(args, dataloader, tokenizer, model, device)
     return loss_total / example_total, zero_one_loss_total / num_predictions, expected_zero_one_loss_total / num_predictions, example_total, num_predictions
 
 def morpheme_prediction_unigram_loop(args, dataloader, tokenizer, model, device):
-    loss_total =  0
+    loss_total = 0
+    zero_one_loss_total = 0
+    expected_zero_one_loss_total = 0
+    num_predictions = 0
+    example_total = 0
     with torch.no_grad():
         for batch in tqdm(dataloader):
-            logits, loss, ent, lengths, ntokens, _, _ = language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=True)
-            batch_size =  lengths.size(0)
-            loss_total += loss.item() * (lengths.sum().item() - batch_size)
-    return None
+            input_ids, pos_ids, input_mask, label_ids = [t.to(device) for t in batch]
+            logits, loss, _, _, _, _, _ = morpheme_prediction_unigram_step(args, batch, tokenizer, model, device)
+            correct_count, label_count1 = zero_one_loss(logits, label_ids)
+            correct_prob, label_count2 = expected_zero_one_loss(logits, label_ids)
+            assert label_count1 == label_count2 == 3
+            zero_one_loss_total += correct_count
+            expected_zero_one_loss_total += correct_prob
+            num_predictions += label_count1
+            batch_size = logits.size(0)
+            loss_total += loss.item() * batch_size
+            example_total += batch_size
+    return loss_total / example_total, zero_one_loss_total / num_predictions, expected_zero_one_loss_total / num_predictions, example_total, num_predictions
+

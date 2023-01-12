@@ -15,6 +15,7 @@ from bopt.core.integerize import Integerizer
 from bopt.core.tokenizer import Tokenizer
 from bopt.core.tokenizer.tokenization import TokenizationMixin
 from bopt.data.datasets import LazyDataset
+from bopt.data.language_modeling.utils import clear_cache, truncated_and_pad_packed_chunks
 from bopt.data.utils import load_vocab, load_weights, constant_initializer
 
 MAX_BLOCKS = 10 # N: Number of words roughly in a sentence
@@ -33,25 +34,26 @@ def preprocess_morpheme_prediction_with_lattices_dataset(data_file: str,
                    max_block_length: int = None,
                    max_unit_length: int = None,
                    debug=False):
-    for f in glob.glob(f'{cache_dir}/*'):
-        os.remove(f)
+    clear_cache(cache_dir)
+
     E = (max_block_length * (max_block_length + 1)) // 2 - ((max_block_length - max_unit_length) * (max_block_length - max_unit_length + 1)) // 2
     ws = Whitespace()
     with open(data_file, encoding='utf_8') as csvfile:
         reader = csv.DictReader(csvfile,fieldnames=["id", "label", "text", "features", "segmentation"])
         for i, row in enumerate(tqdm(reader)):
+            # pretokenize
             text_str = row["text"]
             input_tokens = [pair[0] for pair in ws.pre_tokenize_str(text_str)]
             output_labels = [output_vocab.index(tok, unk=True) for tok in row["features"].split("-")]
             input_tokens = ["[SP1]", "[SP2]", "[SP3]"] + input_tokens
+
+            # pack input into chunks
             packed_chunks = input_tokenizer.pack_chunks(input_tokens, max_block_length)
-            if len(packed_chunks) > max_blocks:
-                print(f"[WARNING] Truncating {packed_chunks} to {' '.join(sum(packed_chunks[:max_blocks], []))}")
-                packed_chunks = packed_chunks[:max_blocks]
-            elif len(packed_chunks) < max_blocks:
-                packed_chunks += [[]] * (max_blocks - len(packed_chunks))
-            fwd_ids, fwd_ms, lengths, bwd_ids, bwd_ms, bwd_lengths, mmask, emask = input_tokenizer.encode_packed_batch(packed_chunks, max_unit_length, max_block_length, compact=True)
-            ids, mask, pos_ids, _, _, _ = input_tokenizer.integerize_packed_chunks(packed_chunks, max_unit_length, max_block_length)
+            kept_chunks = truncated_and_pad_packed_chunks(input_tokenizer, packed_chunks, max_blocks)
+
+            # encode the chunks into lattice / serial versions, and build label ids
+            fwd_ids, fwd_ms, lengths, bwd_ids, bwd_ms, bwd_lengths, mmask, emask = input_tokenizer.encode_packed_batch(kept_chunks, max_unit_length, max_block_length, compact=True)
+            ids, mask, pos_ids, _, _, _ = input_tokenizer.integerize_packed_chunks(kept_chunks, max_unit_length, max_block_length)
             label_ids: torch.LongTensor = torch.ones_like(ids, dtype=torch.long) * -100 # default value for ignore label
             for j, out_id in enumerate(output_labels):
                 label_ids[j * max_unit_length] = out_id

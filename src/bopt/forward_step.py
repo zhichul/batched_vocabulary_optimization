@@ -17,6 +17,8 @@ def morpheme_prediction_lattice_step(args, batch, tokenizer, model, device):
     input_ids, pos_ids, input_mask, label_ids, fwd_ids, fwd_ms, lengths, bwd_ids, bwd_ms_c, bwd_lengths, tmask = batch
     batch_size, N, M, L = fwd_ids.size()
     mmask, emask = tokenizer.parallel_backward_mask(L, M, device)
+    mmask = mmask[None, None, ...].expand(batch_size, 1, *mmask.size())
+    emask = emask[None, None, ...].expand(batch_size, 1, *emask.size())
 
     # expand bwd_ids and bwd_ms
     bwd_ids = (bwd_ids.unsqueeze(2) * emask.to(torch.long) + tokenizer.pad_index * (1-emask.to(torch.long))).reshape(batch_size, N * L, M, L)
@@ -36,6 +38,15 @@ def morpheme_prediction_lattice_step(args, batch, tokenizer, model, device):
     loss = losses[0] * args.main_loss_multiplier
     logits = losses[1]
     return logits, loss, ent, lengths, None, None, None
+
+def morpheme_prediction_unigram_step(args, batch, tokenizer, model, device):
+    batch = [t.to(device) if isinstance(t, torch.Tensor) else t for t in batch]
+    input_ids, pos_ids, input_mask, label_ids = batch
+    losses = model(input_ids=input_ids, position_ids=pos_ids, attention_mask=input_mask, labels=label_ids, attn_bias=None, return_dict=True)
+    loss = losses[0] * args.main_loss_multiplier
+    logits = losses[1]
+    return logits, loss, None, None, None, None, None
+
 
 def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=False, decode=False, decode_remove_csp=True, decode_remove_padding=True, unigram_expert=None):
     """
