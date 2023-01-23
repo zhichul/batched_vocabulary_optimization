@@ -13,6 +13,7 @@ def parse_args():
 
     parser.add_argument('--input_vocab', type=str, default=None, required=True)
     parser.add_argument('--continuing_subword_prefix', type=str)
+    parser.add_argument('--dummy_prefix', type=str)
     parser.add_argument('--output_vocab', type=str, default=None, help="If not the same as input vocab.")
     parser.add_argument('--weights_file', type=str, default=None, help="If not using default initialization.")
     parser.add_argument('--segmentation_dictionary', type=str, default=None, nargs="+", help="only used with viterbi mode, forces tokenization to match dict if in dict")
@@ -30,6 +31,7 @@ def parse_args():
     parser.add_argument('--save_steps', type=int, default=1000)
     parser.add_argument('--train_dataset', type=str, default=None, required=False)
     parser.add_argument('--eval_dataset', type=str, default=None, required=False)
+    parser.add_argument('--test_dataset', type=str, default=None, required=False)
     parser.add_argument('--seed', type=int, default=42)
 
 
@@ -47,6 +49,7 @@ def parse_args():
     parser.add_argument('--main_loss_multiplier', type=float, default=1.0)
     parser.add_argument('--l2', type=float, default=0.0)
     parser.add_argument('--l1', type=float, default=0.0)
+    parser.add_argument('--length_penalty', type=float, default=0.0)
     parser.add_argument('--group_lasso', type=float, default=0.0)
     parser.add_argument('--entropic', type=float, default=0.0)
     parser.add_argument('--entropy_start', type=int, default=-1)
@@ -54,7 +57,7 @@ def parse_args():
     parser.add_argument('--entropy_start_dec', type=int, default=1e9)
     parser.add_argument('--entropy_end_dec', type=int, default=1e9)
 
-    parser.add_argument('--bias_mode', type=str, choices=["albo"], default="albo")
+    parser.add_argument('--bias_mode', type=str, choices=["albo", "mult_then_renorm"], default="albo")
     parser.add_argument('--vopt', action='store_true')
     parser.add_argument('--debug_viterbi_lattice', action='store_true')
     parser.add_argument('--debug_node_unigram', action='store_true')
@@ -77,11 +80,13 @@ def parse_args():
     parser.add_argument('--no_pos', action='store_true')
     parser.add_argument('--unigram_expert', action='store_true')
     parser.add_argument('--fixed_unigram_expert', action='store_true')
+    parser.add_argument('--eval_viterbi_mode', action='store_true')
 
     parser.add_argument('--max_blocks', type=int)
     parser.add_argument('--max_block_length', type=int)
     parser.add_argument('--max_unit_length', type=int, default=1e10)
     parser.add_argument('--max_length', type=int, help="used for non-lattice")
+    parser.add_argument('--skip_gram_distances', type=int, nargs="+", help="skip-gram distances to include")
 
     parser.add_argument('--eval_max_blocks', type=int, default=None)
     parser.add_argument('--eval_max_block_length', type=int, default=None)

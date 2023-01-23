@@ -18,7 +18,7 @@ from bopt.data.language_modeling.unigram import preprocess_language_modeling_wit
     preprocess_language_modeling_with_unigram_node_dataset
 from bopt.data.morpheme_prediction.unigram import preprocess_morpheme_prediction_with_unigram_dataset, MorphemePredictionUnigramDataset
 from bopt.data.skip_gram.lattice import preprocess_skip_gram_with_lattices_dataset, SkipGramLatticeDataset
-from bopt.data.skip_gram.unigram import SkipGramUnigramDataset
+from bopt.data.skip_gram.unigram import SkipGramUnigramDataset, preprocess_skip_gram_with_unigram_dataset
 from bopt.forward_step import morpheme_prediction_lattice_step, language_modeling_lattice_step, \
     language_modeling_unigram_step, morpheme_prediction_unigram_step
 from bopt.forward_loop import language_modeling_lattice_loop, language_modeling_unigram_loop, \
@@ -105,7 +105,7 @@ def load_tokenizer(args, input_vocab, weights, device):
     logger.info("Building tokenizer...")
     tokenizer = Tokenizer(vocab=input_vocab,
                           weights=weights,
-                          log_space_parametrization=False,
+                          log_space_parametrization=args.log_space,
                           continuing_subword_prefix=args.continuing_subword_prefix,
                           pad_token="[PAD]",
                           max_unit_length=args.max_unit_length,
@@ -133,7 +133,7 @@ def preprocess_datasets(args, tokenizer, input_vocab, output_vocab):
     if args.task == "morpheme_prediction":
         datasets = {}
         dataloaders = {}
-        for name, data in zip(["train", "eval"], [args.train_dataset, args.eval_dataset]):
+        for name, data in zip(["train", "eval", "test"], [args.train_dataset, args.eval_dataset,  args.test_dataset if args.test_dataset else args.eval_dataset]):
             if data is None:
                 logger.info(f"No {name} dataset specified, continuing...")
                 continue
@@ -168,7 +168,7 @@ def preprocess_datasets(args, tokenizer, input_vocab, output_vocab):
     elif args.task == "skip_gram":
         datasets = {}
         dataloaders = {}
-        for name, data in zip(["train", "eval"], [args.train_dataset, args.eval_dataset]):
+        for name, data in zip(["train", "eval", "test"], [args.train_dataset, args.eval_dataset,  args.test_dataset if args.test_dataset else args.eval_dataset]):
             if data is None:
                 logger.info(f"No {name} dataset specified, continuing...")
                 continue
@@ -176,7 +176,8 @@ def preprocess_datasets(args, tokenizer, input_vocab, output_vocab):
             flag = create_or_clear_cache(args, cache_dir)
             if flag:
                 if args.vopt:
-                    preprocess_skip_gram_with_lattices_dataset(data,
+                    preprocess_skip_gram_with_lattices_dataset(args,
+                                                               data,
                                                                cache_dir,
                                                                tokenizer,
                                                                output_vocab,
@@ -184,7 +185,7 @@ def preprocess_datasets(args, tokenizer, input_vocab, output_vocab):
                                                                args.max_block_length if name == "train" or args.eval_max_block_length is None else args.eval_max_block_length,
                                                                args.max_unit_length if name == "train" or args.eval_max_unit_length is None else args.eval_max_unit_length)
                 else:
-                    preprocess_language_modeling_with_unigram_dataset(args,
+                    preprocess_skip_gram_with_unigram_dataset(args,
                                                                       data,
                                                                       cache_dir,
                                                                       tokenizer,
@@ -204,7 +205,7 @@ def preprocess_datasets(args, tokenizer, input_vocab, output_vocab):
     elif args.task == "language_modeling":
         datasets = {}
         dataloaders = {}
-        for name, data in zip(["train", "eval"], [args.train_dataset, args.eval_dataset]):
+        for name, data in zip(["train", "eval", "test"], [args.train_dataset, args.eval_dataset,  args.test_dataset if args.test_dataset else args.eval_dataset]):
             if data is None:
                 logger.info(f"No {name} dataset specified, continuing...")
                 continue
@@ -289,10 +290,11 @@ def build_optimizers(args, tokenizer, model):
 class Regularizers:
 
     @classmethod
-    def regulairzation(cls, args, tokenizer, model, lengths, entropic_weight, ent, out_marginals, out_units, log_marginal_counts, counts, prev_lmc, prev_c, lmc, device="cpu"):
+    def regulairzation(cls, args, tokenizer, model, lengths, entropic_weight, ent, out_marginals, out_units, log_marginal_counts, counts, prev_lmc, prev_c, lmc, expected_ntokens, device="cpu"):
         l1 = torch.zeros((1,), device=device)
         e = torch.zeros((1,), device=device)
         gl = torch.zeros((1,), device=device)
+        lp = torch.zeros((1,), device=device)
         if args.l1 > 0:
             if not tokenizer.lsp:
                 l1 = args.l1 * tokenizer.weights.weight.mean()
@@ -302,6 +304,10 @@ class Regularizers:
             nchars = lengths.sum(-1)
             avg_ent = ent / nchars
             e = entropic_weight * avg_ent.mean()
+        elif args.vopt:
+            nchars = lengths.sum(-1)
+            avg_ent = ent / nchars
+            e = avg_ent.mean().detach()
         if args.group_lasso > 0:
             # if cls.log_marginal_counts is None:
             #     cls.log_marginal_counts = torch.ones((len(tokenizer.vocab),), dtype=torch.float)
@@ -317,7 +323,9 @@ class Regularizers:
                     gl = args.group_lasso * (log_individual_multiplier.exp().to(device) * out_marginals).sum()
                 except Exception as ex:
                     code.interact(local=locals())
-        return l1, e, gl
+        if args.length_penalty > 0:
+            lp =  args.length_penalty * expected_ntokens / lengths.size(0) # normalize by batchsize
+        return l1, e, gl, lp
 
 def save_checkpoint(args, epoch, step, model, tokenizer, optimizer):
     checkpointdir = os.path.join(args.output_dir, f"checkpoint-{step}")
@@ -339,7 +347,7 @@ def save_checkpoint(args, epoch, step, model, tokenizer, optimizer):
     output_optim_file = os.path.join(checkpointdir, "optim.bin")
     torch.save({"optimizer_state_dict": optimizer.state_dict()}, output_optim_file)
 
-def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, train_dataloader: DataLoader,eval_dataloader: DataLoader, optimizer, lr_scheduler, device="cpu"):
+def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, train_dataloader: DataLoader,eval_dataloader: DataLoader, test_dataloader: DataLoader, optimizer, lr_scheduler, device="cpu"):
     logger.info("Training...")
     model.train()
     bn = 0
@@ -358,7 +366,7 @@ def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, train_dataloader: D
             else:
                 entropic_weight = args.entropic * min(1, max(0,  1 - (epoch - args.entropy_start_dec) / (args.entropy_end_dec - args.entropy_start_dec)))
         weight = args.gpu_batch_size / args.train_batch_size # TODO: if gpu_batch_size approaches the size of the dataset, make sure to drop_last
-        epoch_loss = epoch_l1 = epoch_e =  epoch_examples = epoch_gl = 0
+        epoch_loss = epoch_l1 = epoch_e =  epoch_examples = epoch_gl = epoch_lp = 0
         tqdm_bar = tqdm(train_dataloader, total=len(train_dataloader) * args.train_epochs, initial=epoch * len(train_dataloader))
         log_marginal_counts = torch.ones((len(tokenizer.vocab),), dtype=torch.float) * -INF
         lmc = torch.ones((len(tokenizer.vocab),), dtype=torch.float) * -INF
@@ -373,27 +381,27 @@ def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, train_dataloader: D
 
             if args.task == "morpheme_prediction":
                 if args.vopt:
-                    _, loss, ent, lengths, ntokens, out_marginals, out_units = morpheme_prediction_lattice_step(args, batch, tokenizer, model, device)
+                    _, loss, ent, lengths, ntokens, out_marginals, out_units, expected_ntokens = morpheme_prediction_lattice_step(args, batch, tokenizer, model, device)
                 else:
-                    _, loss, ent, lengths, ntokens, out_marginals, out_units = morpheme_prediction_unigram_step(args, batch, tokenizer, model, device)
+                    _, loss, ent, lengths, ntokens, out_marginals, out_units, expected_ntokens = morpheme_prediction_unigram_step(args, batch, tokenizer, model, device)
             elif args.task == "language_modeling":
                 if args.vopt:
-                    _, loss, ent, lengths, ntokens, out_marginals, out_units = language_modeling_lattice_step(args, batch, tokenizer, model, device, unigram_expert=unigram_expert)
+                    _, loss, ent, lengths, ntokens, out_marginals, out_units, expected_ntokens = language_modeling_lattice_step(args, batch, tokenizer, model, device, unigram_expert=unigram_expert)
                 else:
-                    _, loss, ent, lengths, ntokens, out_marginals, out_units = language_modeling_unigram_step(args, batch, tokenizer, model, device)
+                    _, loss, ent, lengths, ntokens, out_marginals, out_units, expected_ntokens = language_modeling_unigram_step(args, batch, tokenizer, model, device)
             elif args.task == "skip_gram":
                 if args.vopt:
-                    _, loss, ent, lengths, ntokens, out_marginals, out_units = language_modeling_lattice_step(args, batch, tokenizer, model, device, unigram_expert=unigram_expert, skip_gram=True)
+                    _, loss, ent, lengths, ntokens, out_marginals, out_units, expected_ntokens = language_modeling_lattice_step(args, batch, tokenizer, model, device, unigram_expert=unigram_expert, skip_gram=True)
                 else:
-                    _, loss, ent, lengths, ntokens, out_marginals, out_units = language_modeling_unigram_step(args, batch, tokenizer, model, device)
+                    _, loss, ent, lengths, ntokens, out_marginals, out_units, expected_ntokens = language_modeling_unigram_step(args, batch, tokenizer, model, device)
             else:
                 raise ValueError
 
             # get regularizations
-            l1, e, gl = Regularizers.regulairzation(args, tokenizer, model, lengths, entropic_weight, ent, out_marginals, out_units, log_marginal_counts, counts, prev_log_marginal_counts, prev_counts, lmc, device=device)
+            l1, e, gl, lp = Regularizers.regulairzation(args, tokenizer, model, lengths, entropic_weight, ent, out_marginals, out_units, log_marginal_counts, counts, prev_log_marginal_counts, prev_counts, lmc, expected_ntokens, device=device)
 
             # weight the loss and backpropograte
-            Li = weight * (loss + l1 + e + gl)
+            Li = weight * (loss + l1 + e + gl + lp)
             Li.backward()
             # code.interact(local=locals())
             # for group in optimizer.param_groups:
@@ -409,6 +417,7 @@ def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, train_dataloader: D
             epoch_l1 += l1.item() * batch_size
             epoch_gl += gl.item() * batch_size
             epoch_e += e.item() * batch_size
+            epoch_lp += lp.item() * batch_size
             tqdm_bar.desc = f"Epoch {epoch:<4} " \
                             f"Step {step:<4} " \
                             f"Task {epoch_loss / epoch_examples:<4.2f} " \
@@ -417,9 +426,10 @@ def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, train_dataloader: D
                             f"Ent {epoch_e / epoch_examples:<6.4f} " \
                             f"TEnt {-42.0 if prev_type_ent is None else prev_type_ent.item():<6.4f} " \
                             f"GnormM {(sum([(param.grad ** 2).sum() for param in list(model.parameters()) if param.grad is not None], torch.tensor(0, device=device))**0.5).item():<6.4f} " \
-                            f"GnormV {(sum([(param.grad ** 2).sum() for param in list(tokenizer.parameters()) if param.grad is not None], torch.tensor(0, device=device)) ** 0.5).item():<6.4f} " \
+                            f"GnormV {(sum([(param.grad ** 2).sum() for param in list(tokenizer.parameters()) if param.grad is not None], torch.tensor(0, device=device)) ** 0.5).item():<10.8f} " \
                             f"LR " + " ".join([f"{param_group['lr']:<6.4f}" for param_group in optimizer.param_groups]) + " " \
-                            f"EPC = {model.cls.predictions.expert_coefficient.item() if args.unigram_expert else -42.0}"
+                            f"EPC = {model.cls.predictions.expert_coefficient.item() if args.unigram_expert else -42.0}" \
+                            f"LP = {epoch_lp / epoch_examples:<6.4f}"
             # step
             if (bn + 1) % ( args.train_batch_size // args.gpu_batch_size) == 0:
                 # clip grad
@@ -434,7 +444,7 @@ def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, train_dataloader: D
                 if not tokenizer.lsp:
                     # make sure weights are positive if parametrized as real numbers
                     tokenizer.clamp_weights()
-                if (tokenizer.weights.weight.data <= -1e-6).any():
+                if not args.log_space and (tokenizer.weights.weight.data <= -1e-6).any() or args.log_space and (tokenizer.weights.weight.data <= -14).any():
                     code.interact(local=locals())
                 step += 1
                 if DEBUG:
@@ -444,21 +454,34 @@ def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, train_dataloader: D
                     model.eval()
                     if args.task == "morpheme_prediction":
                         if args.vopt:
-                            eval_loss_log, eval_loss_zero_one, eval_loss_expected_zero_one, example_total, num_predictions = morpheme_prediction_lattice_loop(args, eval_dataloader, tokenizer, model, device)
+                            eval_loss_log, eval_loss_zero_one, eval_loss_expected_zero_one, eval_example_total, eval_num_predictions = morpheme_prediction_lattice_loop(args, eval_dataloader, tokenizer, model, device)
                         else:
-                            eval_loss_log, eval_loss_zero_one, eval_loss_expected_zero_one, example_total, num_predictions = morpheme_prediction_unigram_loop(args, eval_dataloader, tokenizer, model, device)
-                        logger.info(f"Eval loss at step {step}: loss = {eval_loss_log}, 0/1: {eval_loss_zero_one}, E[0/1]: {eval_loss_expected_zero_one}, ex = {example_total}, pred = {num_predictions}")
+                            eval_loss_log, eval_loss_zero_one, eval_loss_expected_zero_one, eval_example_total, eval_num_predictions = morpheme_prediction_unigram_loop(args, eval_dataloader, tokenizer, model, device)
+                        logger.info(f"Eval loss at step {step}: loss = {eval_loss_log}, 0/1: {eval_loss_zero_one}, E[0/1]: {eval_loss_expected_zero_one}, ex = {eval_example_total}, pred = {eval_num_predictions}")
+                        if args.vopt:
+                            test_loss_log, test_loss_zero_one, test_loss_expected_zero_one, test_example_total, test_num_predictions = morpheme_prediction_lattice_loop(args, test_dataloader, tokenizer, model, device)
+                        else:
+                            test_loss_log, test_loss_zero_one, test_loss_expected_zero_one, test_example_total, test_num_predictions = morpheme_prediction_unigram_loop(args, test_dataloader, tokenizer, model, device)
+                        logger.info(
+                            f"Test loss at step {step}: loss = {test_loss_log}, 0/1: {test_loss_zero_one}, E[0/1]: {test_loss_expected_zero_one}, ex = {test_example_total}, pred = {test_num_predictions}")
+
                         with open(os.path.join(args.output_dir, "log.json"), "a") as f:
                             print(json.dumps({
                                 "step": step,
-                                "log_loss": eval_loss_log,
-                                "zero_one_loss": eval_loss_zero_one,
-                                "expected_zero_one_loss": eval_loss_expected_zero_one,
-                                "n_example": example_total,
-                                "n_prediction": num_predictions,
+                                "eval_log_loss": eval_loss_log,
+                                "eval_zero_one_loss": eval_loss_zero_one,
+                                "eval_expected_zero_one_loss": eval_loss_expected_zero_one,
+                                "eval_n_example": eval_example_total,
+                                "eval_n_prediction": eval_num_predictions,
+                                "test_log_loss": test_loss_log,
+                                "test_zero_one_loss": test_loss_zero_one,
+                                "test_expected_zero_one_loss": test_loss_expected_zero_one,
+                                "test_n_example": test_example_total,
+                                "test_n_prediction": test_num_predictions,
                                 "train_loss": epoch_loss / epoch_examples,
                                 "train_ent": epoch_e / epoch_examples,
                                 "train_l1": epoch_l1 / epoch_examples,
+                                "train_lp": epoch_lp / epoch_examples,
                             }), file=f)
                     elif args.task == "language_modeling" or args.task == "skip_gram":
                         if args.vopt:
@@ -467,17 +490,30 @@ def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, train_dataloader: D
                             eval_loss_avg_c, eval_loss_avg_t, eval_loss, eval_NC, eval_NT = language_modeling_unigram_loop(args, eval_dataloader, tokenizer, model, device, skip_gram=args.task == "skip_gram")
                         logger.info(f"Eval loss at step {step}: avgc = {eval_loss_avg_c}, avgt = {eval_loss_avg_t}, loss = {eval_loss}, NC = {eval_NC}, NT = {eval_NT}, "
                                     f"EPC = {model.cls.predictions.expert_coefficient.item() if args.unigram_expert else -42.0}")
+                        if args.vopt:
+                            test_loss_avg_c, test_loss_avg_t, test_loss, test_NC, test_NT = language_modeling_lattice_loop(args, test_dataloader, tokenizer, model, device, unigram_expert=unigram_expert, skip_gram=args.task == "skip_gram")
+                        else:
+                            test_loss_avg_c, test_loss_avg_t, test_loss, test_NC, test_NT = language_modeling_unigram_loop(args, test_dataloader, tokenizer, model, device, skip_gram=args.task == "skip_gram")
+                        logger.info(f"Test loss at step {step}: avgc = {test_loss_avg_c}, avgt = {test_loss_avg_t}, loss = {test_loss}, NC = {test_NC}, NT = {test_NT}, "
+                                    f"EPC = {model.cls.predictions.expert_coefficient.item() if args.unigram_expert else -42.0}")
+
                         with open(os.path.join(args.output_dir, "log.json"), "a") as f:
                             print(json.dumps({
                                 "step": step,
-                                "avg_char": eval_loss_avg_c,
-                                "avg_token": eval_loss_avg_t,
+                                "eval_avg_char": eval_loss_avg_c,
+                                "eval_avg_token": eval_loss_avg_t,
                                 "eval_loss": eval_loss,
-                                "n_char": eval_NC,
-                                "n_token": eval_NT,
+                                "eval_n_char": eval_NC,
+                                "eval_n_token": eval_NT,
+                                "test_avg_char": test_loss_avg_c,
+                                "test_avg_token": test_loss_avg_t,
+                                "test_loss": test_loss,
+                                "test_n_char": test_NC,
+                                "test_n_token": test_NT,
                                 "train_loss": epoch_loss / epoch_examples,
                                 "train_ent": epoch_e / epoch_examples,
                                 "train_l1": epoch_l1 / epoch_examples,
+                                "train_lp": epoch_lp / epoch_examples,
                                 "group_lasso": epoch_gl / epoch_examples,
                                 "type_entropy": -42.0 if prev_type_ent is None else prev_type_ent.item(),
                                 "expert_coefficient": model.cls.predictions.expert_coefficient.item() if args.unigram_expert else -42.0
@@ -574,7 +610,7 @@ def main():
     # train!
     if args.do_train:
         logger.info("Training...")
-        train(args, model, tokenizer, dataloaders["train"], dataloaders["eval"], optimizer, lr_scheduler, device=device)
+        train(args, model, tokenizer, dataloaders["train"], dataloaders["eval"], dataloaders["test"], optimizer, lr_scheduler, device=device)
     #    code.interact(local=locals())
     if args.do_eval:
         logger.info("Evaluating...")

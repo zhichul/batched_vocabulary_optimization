@@ -1,28 +1,11 @@
 import sys
-import json
-file = sys.argv[1]
-field = sys.argv[2]
-BEST = {
-    "avg_token": "min",
-    "train_loss": "min",
-    "zero_one_loss": "max",
-    "expected_zero_one_loss": "max",
-    "log_loss": "min",
-}
-STEP="step"
 
-best_metric = None
-best_step = None
-with open(file, "rt") as f:
-    for line in f:
-        logline = json.loads(line)
-        if best_metric is None:
-            best_metric = logline[field]
-            best_step = logline[STEP]
-        else:
-            if (BEST[field] == "min" and logline[field] < best_metric) or (BEST[field] == "max" and logline[field] > best_metric):
-                best_metric = logline[field]
-                best_step = logline[STEP]
+from bopt.analysis.best_dev import best_dev
 
-print(f"{file}: {best_step}, {field}={best_metric}")
+if __name__ == "__main__":
+    file = sys.argv[1]
+    field = sys.argv[2]
+    others = sys.argv[3:]
+    best_metric, best_step, best_others = best_dev(file, field, *others)
+    print(f"{file}: {best_step}, {field}={best_metric}, ohters: {' '.join([f'{other}={best:.2f}' for (other, best) in zip(others, best_others)])}")
 

@@ -59,7 +59,7 @@ def preprocess_skip_gram_with_unigram_dataset(args,
                         skip_gram_counts[j][input_tokens[i]][input_tokens[i + j]] += 1
                 words.add(input_tokens[i])
         words = sorted(list(words))
-        for i, word in enumerate(words):
+        for i, word in enumerate(tqdm(words)):
             # pack input into chunks
             packed_chunks = input_tokenizer.pack_chunks([word], max_block_length)
 
@@ -90,7 +90,7 @@ def preprocess_skip_gram_with_unigram_dataset(args,
 
             # pos ids, labels, and mask
             pos_ids = list(range(max_length))
-            labels = [id if id != input_tokenizer.pad_index else -100 for id in input_ids[1:]] + [-100]
+            labels = [id if id != input_tokenizer.pad_index else -100 for id in input_ids]
             mask = [int(id != input_tokenizer.pad_index) for id in input_ids]
 
             # log to file
@@ -102,14 +102,14 @@ def preprocess_skip_gram_with_unigram_dataset(args,
                      "pos_ids": pos_ids,
                      "input_mask": mask,
                      "labels": labels,
-                     "text": text_str,
+                     "word": word,
                      "length": [length],  # in terms of characters
+                     "n_subwords": len(viterbi_chunks[0]),
                      }, file=f)
         with open(f"{cache_dir}.index.json", "wt") as index_file:
             json.dump({"counts": skip_gram_counts,
                        "words": words,
-                       "total": sum(count for dist in skip_gram_counts for w in skip_gram_counts[dist] for count in
-                                    skip_gram_counts[dist][w])},
+                       "total": sum(count for dist in skip_gram_counts for src in skip_gram_counts[dist] for tgt, count in skip_gram_counts[dist][src].items())},
                       index_file)
     msg = (f"Segmentation dictionary is {args.segmentation_dictionary}, {total_tokens} tokens, "
           f"{replaced_tokens} ({replaced_tokens / total_tokens}) replaced, "
@@ -142,12 +142,13 @@ class SkipGramUnigramDataset(LazySkipGramDataset):
             "ntokens"
         """
         dist, src, tgt, i, max_block_length = index
-        code.interact(local=locals())
+        labels = [-100 for _ in ex["src"]["labels"]] + ex["tgt"]["labels"][1:] + [-100]
+        labels[ex["src"]["n_subwords"]-1] = ex["tgt"]["labels"][0]
         ret =  (torch.LongTensor(ex["src"]["input_ids"] + ex["tgt"]["input_ids"]),
                 torch.LongTensor(ex["src"]["pos_ids"] + sft(ex["tgt"]["pos_ids"], max_block_length)),
                 torch.LongTensor(ex["src"]["input_mask"] + ex["tgt"]["input_mask"]),
-                torch.LongTensor([-100 for _ in ex["src"]["labels"]] + [ex["tgt"]["labels"]]),
-                torch.LongTensor(ex["tgt"]["length"]),
+                torch.LongTensor(labels),
+                torch.LongTensor([ex["tgt"]["length"][0]]),
                 torch.LongTensor([1]),
-                ex["text"])
+                f'{ex["src"]["word"]} {ex["tgt"]["word"]}')
         return ret

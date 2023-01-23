@@ -27,6 +27,25 @@ MAX_BLOCK_TOKENS = (MAX_BLOCK_LENGTH * (MAX_BLOCK_LENGTH + 1)) // 2 - ((MAX_BLOC
 
 TMASK_CACHE = dict()
 
+def load_gold_segmentations(*files):
+    d = dict()
+    tmp = dict()
+    special = {"[SP1]", "[SP2]", "[SP3]"}
+    for file in files:
+        with open(file, encoding='utf_8') as csvfile:
+            reader = csv.DictReader(csvfile,fieldnames=["id", "label", "text", "features", "segmentation"])
+            for i, row in enumerate(tqdm(reader)):
+                word =  row["text"]
+                seg = [tok for tok in row["segmentation"].split("-") if tok not in special]
+                if word in d:
+                    # print(word, seg, d[word], row, tmp[word])
+                    if d[word] != seg:
+                        code.interact(local=locals())
+                        raise AssertionError
+                tmp[word] = row
+                d[word] = seg
+    return d
+
 def preprocess_morpheme_prediction_with_unigram_dataset(args, data_file: str,
                    cache_dir: str,
                    input_tokenizer: TokenizationMixin,
@@ -43,17 +62,18 @@ def preprocess_morpheme_prediction_with_unigram_dataset(args, data_file: str,
     is_ambiguous_tokens = 0
     is_matching_tokens = 0
     if args.segmentation_dictionary is not None:
-        segmentation_dictionary = load_segmentation_dictionary(*args.segmentation_dictionary)
+        segmentation_dictionary = {k: [v] for k,v in load_gold_segmentations(*args.segmentation_dictionary).items()}
     else:
         segmentation_dictionary = None
 
     ws = Whitespace()
+    dummy_prefix = args.dummy_prefix if args.dummy_prefix is not None else ""
     with open(data_file, encoding='utf_8') as csvfile:
         reader = csv.DictReader(csvfile,fieldnames=["id", "label", "text", "features", "segmentation"])
         for i, row in enumerate(tqdm(reader)):
             # pretokenize
             text_str = row["text"]
-            input_tokens = [pair[0] for pair in ws.pre_tokenize_str(text_str)]
+            input_tokens = [dummy_prefix + pair[0] for pair in ws.pre_tokenize_str(text_str)]
             output_labels = [output_vocab.index(tok, unk=True) for tok in row["features"].split("-")]
             input_tokens = ["[SP1]", "[SP2]", "[SP3]"] + input_tokens
 
@@ -101,7 +121,12 @@ def preprocess_morpheme_prediction_with_unigram_dataset(args, data_file: str,
                      "text":text_str,
                 }, file=f
                 )
-
+    msg = (f"Segmentation dictionary is {args.segmentation_dictionary}, {total_tokens} tokens, "
+           f"{replaced_tokens} ({replaced_tokens / total_tokens}) replaced, "
+           f"{is_gold_tokens} ({is_gold_tokens / total_tokens}) gold, "
+           f"{is_ambiguous_tokens} ({is_ambiguous_tokens / total_tokens}) ambiguous."
+           f"{is_matching_tokens} ({(is_matching_tokens / replaced_tokens) if replaced_tokens > 0 else 0.0}) matching out of replaced.")
+    print(msg)
 def tmask(max_blocks, max_unit_length, E):
     if (max_blocks, max_unit_length, E) not in TMASK_CACHE:
         task_mask = torch.ones((max_blocks * E, max_blocks * E))

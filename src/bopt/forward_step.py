@@ -37,7 +37,7 @@ def morpheme_prediction_lattice_step(args, batch, tokenizer, model, device):
     # get loss
     loss = losses[0] * args.main_loss_multiplier
     logits = losses[1]
-    return logits, loss, ent, lengths, None, None, None
+    return logits, loss, ent, lengths, None, None, None, None
 
 def morpheme_prediction_unigram_step(args, batch, tokenizer, model, device):
     batch = [t.to(device) if isinstance(t, torch.Tensor) else t for t in batch]
@@ -45,7 +45,7 @@ def morpheme_prediction_unigram_step(args, batch, tokenizer, model, device):
     losses = model(input_ids=input_ids, position_ids=pos_ids, attention_mask=input_mask, labels=label_ids, attn_bias=None, return_dict=True)
     loss = losses[0] * args.main_loss_multiplier
     logits = losses[1]
-    return logits, loss, None, None, None, None, None
+    return logits, loss, None, None, None, None, None, None
 
 
 def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=False, decode=False, decode_remove_csp=True, decode_remove_padding=True, unigram_expert=None, skip_gram=False):
@@ -267,6 +267,9 @@ def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=F
         f_output_fwd_ids = f_output_fwd_ids[:, 1:, ...]
         f_output_fwd_ms = f_output_fwd_ms[:, 1:, ...]
         f_output_lengths = f_output_lengths[:, 1:]
+        f_output_bwd_ts = f_output_bwd_ts[:,1:,...]
+        f_output_bwd_ids = f_output_bwd_ids[:, 1:, ...]
+        f_output_bwd_ms = f_output_bwd_ms[:, 1:, ...]
         f_output_bwd_lengths = f_output_bwd_lengths[:, 1:, ...]
     # do some logging if requested
     if args.log_lattice and eval:
@@ -285,9 +288,16 @@ def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=F
         return [[tokenizer.id2str(id, remove_csp=decode_remove_csp) for id in word_id if not decode_remove_padding or not tokenizer.is_padding(id)] for word_id in word_ids]
 
     # compute prob
-    log_alphas, _ = tokenizer.forward_algorithm(f_output_fwd_ts.reshape(-1, M, L), # batch x N, M, L or batch x N - 1 ... for skipgram
-                                                f_output_fwd_ms.reshape(-1, M, L),  # batch x N, M, L or batch x N - 1 ... for skipgram
-                                                f_output_lengths.reshape(-1)) # batch x N
+    if not eval or not args.eval_viterbi_mode:
+        log_alphas, _ = tokenizer.forward_algorithm(f_output_fwd_ts.reshape(-1, M, L), # batch x N, M, L or batch x N - 1 ... for skipgram
+                                                    f_output_fwd_ms.reshape(-1, M, L),  # batch x N, M, L or batch x N - 1 ... for skipgram
+                                                    f_output_lengths.reshape(-1)) # batch x N
+    else:
+        log_alphas, _, _ = tokenizer.viterbi_algorithm(f_output_fwd_ts.reshape(-1, M, L),
+                                                    # batch x N, M, L or batch x N - 1 ... for skipgram
+                                                    f_output_fwd_ms.reshape(-1, M, L),
+                                                    # batch x N, M, L or batch x N - 1 ... for skipgram
+                                                    f_output_lengths.reshape(-1))  # batch x N
     log_probs = log_alphas.sum()
     nchars = f_output_lengths.sum() - batch_size # adjust for BOS
 
@@ -306,6 +316,16 @@ def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=F
     else:
         loss = -log_probs / nchars  * args.main_loss_multiplier
 
+    expected_ntokens = None
+    if args.length_penalty > 0.0:
+        length_transition = (torch.ones(f_output_fwd_ids.size(-2)))[None, None, :, None].expand(
+            *f_output_fwd_ids.size()).to(f_output_fwd_ms.device) * f_output_fwd_ms
+        expected_lengths, _ = tokenizer.expectation(f_output_fwd_ts.reshape(-1, M, L),
+                                                    length_transition.reshape(-1, M, L),
+                                                    f_output_fwd_ms.reshape(batch_size * N, M, L),
+                                                    f_output_lengths.reshape(
+                                                        -1))  # lengths is reshaped to batch x N or batch-1 x N for skipgram
+        expected_ntokens = expected_lengths.sum()
     # get regularizer necessary book-keeping
     if args.group_lasso > 0:
         assert not args.output_viterbi
@@ -327,7 +347,7 @@ def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=F
 
     if DEBUG:
         code.interact(local=locals())
-    return None, loss, ent, f_output_lengths, ntokens, om_list, unit_list
+    return None, loss, ent, f_output_lengths, ntokens, om_list, unit_list, expected_ntokens
 
 def language_modeling_unigram_step(args, batch, tokenizer, model, device, skip_gram=False):
     # skip gram is handled in preprocessing so that this function applies exactly the same to skipgram and normal LMing
@@ -349,4 +369,4 @@ def language_modeling_unigram_step(args, batch, tokenizer, model, device, skip_g
 
     # get loss
     loss = losses[0] * args.main_loss_multiplier
-    return None, loss, None, lengths, ntokens, None, None # sum of mask is the number of tokens
+    return None, loss, None, lengths, ntokens, None, None, None # sum of mask is the number of tokens

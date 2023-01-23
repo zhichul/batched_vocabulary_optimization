@@ -38,7 +38,7 @@ class LazySkipGramDataset(Dataset):
         _index = [((dist, self.w2i[src], self.w2i[tgt]), count)
                        for dist, dist_count in self.counts.items()
                        for src, tgt_count in dist_count.items()
-                       for tgt, count in tgt_count]
+                       for tgt, count in tgt_count.items()]
         self._index = [content for (content, count) in _index for _ in range(count)]
         self.max_block_length = max_block_length
 

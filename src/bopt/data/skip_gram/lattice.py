@@ -61,13 +61,12 @@ def preprocess_skip_gram_with_lattices_dataset(args,
                         skip_gram_counts[j][input_tokens[i]][input_tokens[i + j]] += 1
                 words.add(input_tokens[i])
         words = sorted(list(words))
-        for i, word in enumerate(words):
+        for i, word in enumerate(tqdm(words)):
             # encode the words into lattice / serial versions
             packed_chunks = input_tokenizer.pack_chunks([word], max_block_length)
             fwd_ids, fwd_ms, lengths, bwd_ids, bwd_ms, bwd_lengths, mmask, emask = input_tokenizer.encode_packed_batch(packed_chunks, max_unit_length, max_block_length, compact=True)
             ids, mask, pos_ids, lm_ids, lm_mask, lm_pos_ids = input_tokenizer.integerize_packed_chunks(packed_chunks, max_unit_length, max_block_length)
             # binary_mask = torch.cat([mask, lm_mask], 0)
-            code.interact(local=locals())
 
             # save to cache dir
             item_name = os.path.join(cache_dir, f"{i}.pkl")
@@ -91,7 +90,7 @@ def preprocess_skip_gram_with_lattices_dataset(args,
         with open(f"{cache_dir}.index.json", "wt") as index_file:
             json.dump({"counts": skip_gram_counts,
                        "words": words,
-                       "total": sum(count for dist in skip_gram_counts for w in skip_gram_counts[dist] for count in skip_gram_counts[dist][w])},
+                       "total": sum(count for dist in skip_gram_counts for src in skip_gram_counts[dist] for tgt, count in skip_gram_counts[dist][src].items())},
                       index_file)
 
 
@@ -99,14 +98,13 @@ class SkipGramLatticeDataset(LazySkipGramDataset):
 
     def encode(self, ex, index):
         dist, src, tgt, i, max_block_length = index
-        code.interact(local=locals())
         return (torch.LongTensor(ex["src"]["word_ids"] + ex["tgt"]["word_ids"] + ex["src"]["lm_ids"] + ex["tgt"]["lm_ids"]),
-                torch.LongTensor(ex["src"]["word_pos_ids"] + sft(ex["tgt"]["word_pos_ids"], max_block_length) + ex["src"]["lm_pos_ids"] + sft(ex["tgt"]["lm_pos_ids"])),
+                torch.LongTensor(ex["src"]["word_pos_ids"] + sft(ex["tgt"]["word_pos_ids"], max_block_length) + ex["src"]["lm_pos_ids"] + sft(ex["tgt"]["lm_pos_ids"], max_block_length)),
                 torch.LongTensor(ex["src"]["word_mask"] + ex["tgt"]["word_mask"] + ex["src"]["lm_mask"] + ex["tgt"]["lm_mask"]),
                 torch.LongTensor(ex["src"]["fwd_ids"] + ex["tgt"]["fwd_ids"]),
                 torch.LongTensor(ex["src"]["fwd_ms"] + ex["tgt"]["fwd_ms"]),
-                torch.LongTensor(ex["src"]["lengths"] + ex["tgt"]["lengths"]),
+                torch.LongTensor(ex["src"]["lengths"] + [ex["tgt"]["lengths"][0]]),
                 torch.LongTensor(ex["src"]["bwd_ids"] + ex["tgt"]["bwd_ids"]),
                 torch.LongTensor(ex["src"]["bwd_ms"] + ex["tgt"]["bwd_ms"]),
                 torch.LongTensor(ex["src"]["bwd_lengths"] + ex["tgt"]["bwd_lengths"]),
-                ex["text_str"])
+                f'{ex["src"]["word"]} {ex["tgt"]["word"]}')

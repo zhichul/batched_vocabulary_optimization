@@ -14,10 +14,10 @@ def language_modeling_lattice_loop(args, dataloader, tokenizer, model, device, u
     nchars_total =  0
     with torch.no_grad():
         for batch in tqdm(dataloader):
-            logits, loss, ent, lengths, ntokens, _, _ = language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=True, unigram_expert=unigram_expert, skip_gram=skip_gram)
+            logits, loss, ent, lengths, ntokens, _, _, _ = language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=True, unigram_expert=unigram_expert, skip_gram=skip_gram)
             batch_size =  lengths.size(0)
-            ntokens_total += ntokens.sum().item() - batch_size
-            nchars_total += lengths.sum().item() - batch_size
+            ntokens_total += ntokens.sum().item() - (batch_size if not skip_gram else 0)
+            nchars_total += lengths.sum().item() - (batch_size if not skip_gram else 0)
             loss_total += loss.item() * (lengths.sum().item() - batch_size)
     return loss_total / nchars_total, loss_total / ntokens_total, loss_total, nchars_total, ntokens_total
 
@@ -29,10 +29,10 @@ def language_modeling_unigram_loop(args, dataloader, tokenizer, model, device, s
     with torch.no_grad():
         for batch in dataloader:
             input_ids, pos_ids, input_mask, labels, lengths, ntokens, text = batch
-            logits, loss, ent, lengths, ntokens, _, _ = language_modeling_unigram_step(args, batch, tokenizer, model, device, skip_gram=skip_gram)
+            logits, loss, ent, lengths, ntokens, _, _, _ = language_modeling_unigram_step(args, batch, tokenizer, model, device, skip_gram=skip_gram)
             batch_size =  lengths.size(0)
-            ntokens_total += ntokens.sum().item() - batch_size
-            nchars_total += lengths.sum().item() - batch_size
+            ntokens_total += ntokens.sum().item() - (batch_size if not skip_gram else 0)
+            nchars_total += lengths.sum().item() - (batch_size if not skip_gram else 0)
             loss_total += loss.item() * (labels!=-100).sum().item()
     return loss_total / nchars_total, loss_total / ntokens_total, loss_total, nchars_total, ntokens_total
 
@@ -86,7 +86,7 @@ def morpheme_prediction_lattice_loop(args, dataloader, tokenizer, model, device)
     with torch.no_grad():
         for batch in tqdm(dataloader):
             input_ids, pos_ids, input_mask, label_ids, fwd_ids, fwd_ms, lengths, bwd_ids, bwd_ms, bwd_lengths, tmask = [t.to(device) for t in batch]
-            logits, loss, ent, lengths, _, _, _ = morpheme_prediction_lattice_step(args, batch, tokenizer, model, device)
+            logits, loss, ent, lengths, _, _, _, _ = morpheme_prediction_lattice_step(args, batch, tokenizer, model, device)
             correct_count, label_count1 = zero_one_loss(logits, label_ids)
             correct_prob, label_count2 = expected_zero_one_loss(logits, label_ids)
             assert label_count1 == label_count2 == 3
@@ -107,7 +107,7 @@ def morpheme_prediction_unigram_loop(args, dataloader, tokenizer, model, device)
     with torch.no_grad():
         for batch in tqdm(dataloader):
             input_ids, pos_ids, input_mask, label_ids = [t.to(device) for t in batch]
-            logits, loss, _, _, _, _, _ = morpheme_prediction_unigram_step(args, batch, tokenizer, model, device)
+            logits, loss, _, _, _, _, _, _ = morpheme_prediction_unigram_step(args, batch, tokenizer, model, device)
             correct_count, label_count1 = zero_one_loss(logits, label_ids)
             correct_prob, label_count2 = expected_zero_one_loss(logits, label_ids)
             assert label_count1 == label_count2 == 3
