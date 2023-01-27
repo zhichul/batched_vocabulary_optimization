@@ -35,15 +35,18 @@ def truncated_and_pad_packed_chunks(tokenizer: Tokenizer, packed_chunks: List[Pa
         kept_chunks += [[]] * (max_blocks - len(kept_chunks)) # add padding if needed
     return kept_chunks
 
-def viterbi_tokenize(tokenizer: Tokenizer, tokens: List[str], remove_csp=False) -> List[List[str]]:
+def viterbi_tokenize(tokenizer: Tokenizer, tokens: List[str], remove_csp=False, device="cpu", return_prob=False) -> List[List[str]]:
     """
     Returns a list of lists, one for each token, containing its viterbi segmentation, with continuing subword prefix added
     """
-    fwd_ids, fwd_ms, lengths, bwd_ids, bwd_ms, bwd_lengths, mmask, emask = tokenizer.encode_batch(tokens, tokenizer.max_unit_length)
+    fwd_ids, fwd_ms, lengths, bwd_ids, bwd_ms, bwd_lengths, mmask, emask = tokenizer.encode_batch(tokens, tokenizer.max_unit_length, device=device)
     fwd_ts = tokenizer.get_weights(fwd_ids)
     max_log_alpha, _, backpointers = tokenizer.viterbi_algorithm(fwd_ts, fwd_ms, lengths)
     log_alpha, _ = tokenizer.forward_algorithm(fwd_ts, fwd_ms, lengths)
     word_ids = tokenizer.decode_backpointers(fwd_ids, lengths, backpointers)
+    if return_prob:
+        code.interact(local=locals())
+        return [[tokenizer.id2str(id, remove_csp=remove_csp) for id in word_id] for word_id in word_ids], (max_log_alpha - log_alpha).exp().reshape(-1).tolist()
     return [[tokenizer.id2str(id, remove_csp=remove_csp) for id in word_id] for word_id in word_ids]
 
 def pack_viterbi_chunks(kept_chunks, input_tokenizations) -> List[PackedChunk]:

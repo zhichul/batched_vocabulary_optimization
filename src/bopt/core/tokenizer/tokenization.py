@@ -46,7 +46,8 @@ class TokenizationMixin:
         return 1 if specials_set and chunk in specials_set else len(chunk)
 
     def len_c(self, chunk: str):
-        return self.len_chunk(chunk, self.specials_set)
+        # len_type also handles vocab items correctly (esp. when they have csp the original len_c will be incorrect)
+        return self.len_type(chunk) # original: return self.len_chunk(chunk, self.specials_set)
 
     def len_type(self, type: str):
         if self.specials_set and type in self.specials_set:
@@ -262,7 +263,7 @@ class TokenizationMixin:
         [ hate        ]
         then flip ^ left to right
         """
-        if chunk not in self.specials_set and len(chunk) > L:
+        if chunk not in self.specials_set and self.len_c(chunk) > L:
             raise ValueError(f"chunk length of {chunk} is greater than allowed max chunk length {L}")
         fwd_ids, fwd_mask, bwd_ids, bwd_mask = self.init_transitions_and_masks(M, L, device=device, verbatim=verbatim)
 

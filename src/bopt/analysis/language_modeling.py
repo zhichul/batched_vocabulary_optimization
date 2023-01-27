@@ -115,21 +115,21 @@ if __name__ == "__main__":
     #
     # for size in [50, 100, 134]:
     #     tokenizations = load_tokenizations(f"/export/a01/artifacts/bopt/syn3/exp7/42/1/1/24/{size}/cache/train.csv", f"/export/a01/corpora/vopt/syn/3/full/spmd-unigram-weights-{size}.txt", csp=None, dummy_prefix="▁")
-    #     tp, pred, true = stats(tokenizations, gseg)
+    #     tp, pred, true = morpheme_prediction_segmentation_stats(tokenizations, gseg)
     #     print(size, tp, pred, true, tp / pred, tp / true, 2 * (tp / pred * tp / true) / (tp / pred + tp / true))
     #
     # for size in [0.01, 0.1, 1.0]:
     #     tokenizations = load_tokenizations(f"/export/a01/artifacts/bopt/syn3/exp6/42/1/1/24/{size}/cache/train.csv", f"/export/a01/artifacts/bopt/syn3/exp4-11/42/{size}/768/checkpoint-600/learned_vocab.txt", csp="@@", dummy_prefix=None)
-    #     tp, pred, true = stats(tokenizations, gseg)
+    #     tp, pred, true = morpheme_prediction_segmentation_stats(tokenizations, gseg)
     #     print(size, tp, pred, true, tp / pred, tp / true, 2 * (tp / pred * tp / true) / (tp / pred + tp / true))
     #
-    # gseg = load_gold_segmentations("/export/a01/corpora/vopt/syn/4/full/all.csv")
+    # gseg = load_gold_segmentations_morpheme_prediction("/export/a01/corpora/vopt/syn/4/full/all.csv")
     # print(len(gseg))
     # for size in [50, 100, 200, 400]:
     #     tokenizations = load_tokenizations(f"/export/a01/artifacts/bopt/syn4/exp2/42/768/{size}/cache/train.csv", f"/export/a01/corpora/vopt/syn/4/full/spm-unigram-weights-{size}.txt", csp=None, dummy_prefix=None)
-    #     tp, pred, true = stats(tokenizations, gseg)
+    #     tp, pred, true = morpheme_prediction_segmentation_stats(tokenizations, gseg)
     #     print(size, tp, pred, true, tp / pred, tp / true, 2 * (tp / pred * tp / true) / (tp / pred + tp / true))
     # for size in [0.01, 0.1, 1.0]:
     #     tokenizations = load_tokenizations(f"/export/a01/artifacts/bopt/syn4/exp6/42/1/1/24/{size}/cache/train.csv", f"/export/a01/artifacts/bopt/syn4/exp4-11/42/{size}/768/checkpoint-3262/learned_vocab.txt", csp="@@", dummy_prefix=None)
-    #     tp, pred, true = stats(tokenizations, gseg)
+    #     tp, pred, true = morpheme_prediction_segmentation_stats(tokenizations, gseg)
     #     print(size, tp, pred, true, tp / pred, tp / true, 2 * (tp / pred * tp / true) / (tp / pred + tp / true))

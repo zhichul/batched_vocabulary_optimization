@@ -135,7 +135,8 @@ class MorphemePredictionLatticeDataset(LazyDataset):
                 torch.LongTensor(ex["bwd_ids"]),
                 torch.FloatTensor(ex["bwd_ms"]),
                 torch.LongTensor(ex["bwd_lengths"]),
-                tmask(ex["max_blocks"], ex["max_unit_length"], ex["E"])
+                tmask(ex["max_blocks"], ex["max_unit_length"], ex["E"]),
+                ex["text"]
                 )
 
 if __name__ == "__main__":

@@ -12,9 +12,9 @@ from bopt.data.logging.lattice_loggers import LOGGERS
 INF = 1e9
 DEBUG = False
 
-def morpheme_prediction_lattice_step(args, batch, tokenizer, model, device):
-    batch = [t.to(device) for t in batch]
-    input_ids, pos_ids, input_mask, label_ids, fwd_ids, fwd_ms, lengths, bwd_ids, bwd_ms_c, bwd_lengths, tmask = batch
+def morpheme_prediction_lattice_step(args, batch, tokenizer, model, device, eval=False):
+    batch = [t.to(device) if isinstance(t, torch.Tensor) else t for t in batch]
+    input_ids, pos_ids, input_mask, label_ids, fwd_ids, fwd_ms, lengths, bwd_ids, bwd_ms_c, bwd_lengths, tmask, text = batch
     batch_size, N, M, L = fwd_ids.size()
     mmask, emask = tokenizer.parallel_backward_mask(L, M, device)
     mmask = mmask[None, None, ...].expand(batch_size, 1, *mmask.size())
@@ -32,12 +32,38 @@ def morpheme_prediction_lattice_step(args, batch, tokenizer, model, device):
                                  mmask, emask, tmask, marginal_temperature=args.marginal_temperature)
 
     # run model
-    losses = model(input_ids=input_ids, position_ids=pos_ids, labels=label_ids, attn_bias=a if args.vopt else None)
-
+    losses = model(input_ids=input_ids, position_ids=pos_ids, labels=label_ids, attn_bias=a if args.vopt else None, output_attentions=args.log_attention_statistics and eval)
     # get loss
     loss = losses[0] * args.main_loss_multiplier
     logits = losses[1]
-    return logits, loss, ent, lengths, None, None, None, None
+    if args.log_attention_statistics and eval:
+        attentions = losses["attentions"]
+        attentions = torch.stack(attentions, dim=0)
+        attentions_protected = torch.clamp(attentions, min=1e-6)
+        mask = input_mask[None,:,None,:,None].to(torch.float).expand_as(attentions)
+        lattice = a.exp()[None,:,None,:,:]
+
+        over_attention = (torch.clamp(attentions - lattice, min=0) * mask).sum().item()
+        over_attention_count = ((attentions > lattice) * mask).sum().item()
+        over_attention_mass = (attentions[((attentions > lattice) * mask).to(torch.bool)]).sum().item()
+        leakage = ((1- attentions.sum(-1)) * mask[:,:,:,:,0]).sum().item()
+        attention_entropy = (- attentions_protected * torch.log(attentions_protected) * mask).sum(-1)
+        attention_entropy_count = (mask[:,:,:,:,0]).sum().item()
+        attention_entropy_mean = attention_entropy.sum().item() / attention_entropy_count
+        attention_entropy_std = ((((attention_entropy - attention_entropy_mean) * mask[:,:,:,:,0]) ** 2).sum() / attention_entropy_count).sqrt().item()
+        astat = {"leakage":leakage,
+                 "over_attention_mean": over_attention / over_attention_count if over_attention_count > 0 else 0.0,
+                 "over_attention_count": over_attention_count,
+                 "over_attention_mass": over_attention_mass,
+                 "total_attention_count": mask.sum().item(),
+                 "entropy_mean":attention_entropy_mean,
+                 "entropy_count": attention_entropy_count,
+                 "entropy_std": attention_entropy_std,
+                 "entropy": attention_entropy,
+                 "mask": mask}
+    else:
+        astat = {}
+    return logits, loss, ent, lengths, None, None, None, None, astat
 
 def morpheme_prediction_unigram_step(args, batch, tokenizer, model, device):
     batch = [t.to(device) if isinstance(t, torch.Tensor) else t for t in batch]
@@ -45,7 +71,7 @@ def morpheme_prediction_unigram_step(args, batch, tokenizer, model, device):
     losses = model(input_ids=input_ids, position_ids=pos_ids, attention_mask=input_mask, labels=label_ids, attn_bias=None, return_dict=True)
     loss = losses[0] * args.main_loss_multiplier
     logits = losses[1]
-    return logits, loss, None, None, None, None, None, None
+    return logits, loss, None, None, None, None, None, None, None
 
 
 def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=False, decode=False, decode_remove_csp=True, decode_remove_padding=True, unigram_expert=None, skip_gram=False):
@@ -347,7 +373,7 @@ def language_modeling_lattice_step(args, batch, tokenizer, model, device, eval=F
 
     if DEBUG:
         code.interact(local=locals())
-    return None, loss, ent, f_output_lengths, ntokens, om_list, unit_list, expected_ntokens
+    return None, loss, ent, f_output_lengths, ntokens, om_list, unit_list, expected_ntokens, None
 
 def language_modeling_unigram_step(args, batch, tokenizer, model, device, skip_gram=False):
     # skip gram is handled in preprocessing so that this function applies exactly the same to skipgram and normal LMing
@@ -369,4 +395,4 @@ def language_modeling_unigram_step(args, batch, tokenizer, model, device, skip_g
 
     # get loss
     loss = losses[0] * args.main_loss_multiplier
-    return None, loss, None, lengths, ntokens, None, None, None # sum of mask is the number of tokens
+    return None, loss, None, lengths, ntokens, None, None, None, None # sum of mask is the number of tokens

@@ -330,6 +330,14 @@ class Regularizers:
 def save_checkpoint(args, epoch, step, model, tokenizer, optimizer):
     checkpointdir = os.path.join(args.output_dir, f"checkpoint-{step}")
     os.makedirs(checkpointdir, exist_ok=True)
+
+    # save_vocab
+    output_vocab_file = os.path.join(checkpointdir, "learned_vocab.txt")
+    weights = tokenizer.weights.weight.detach().tolist() if tokenizer.lsp else tokenizer.weights.weight.log().detach().tolist()
+    save_weights(OrderedDict(zip(tokenizer.vocab, weights)), output_vocab_file)
+
+    if args.only_save_vocab:
+        return
     # Save a trained model
     # Save a trained model, configuration and tokenizer
     model_to_save = model.module if hasattr(model, 'module') else model  # Only save the model it-self
@@ -338,12 +346,11 @@ def save_checkpoint(args, epoch, step, model, tokenizer, optimizer):
     output_model_file = os.path.join(checkpointdir, "pytorch_model.bin")
     output_config_file = os.path.join(checkpointdir, "config.json")
 
+    # save model and config
     torch.save(model_to_save.state_dict(), output_model_file)
     model_to_save.config.to_json_file(output_config_file)
 
-    output_vocab_file = os.path.join(checkpointdir, "learned_vocab.txt")
-    weights = tokenizer.weights.weight.detach().tolist() if tokenizer.lsp else tokenizer.weights.weight.log().detach().tolist()
-    save_weights(OrderedDict(zip(tokenizer.vocab, weights)), output_vocab_file)
+    # save_optimizer
     output_optim_file = os.path.join(checkpointdir, "optim.bin")
     torch.save({"optimizer_state_dict": optimizer.state_dict()}, output_optim_file)
 
@@ -381,19 +388,19 @@ def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, train_dataloader: D
 
             if args.task == "morpheme_prediction":
                 if args.vopt:
-                    _, loss, ent, lengths, ntokens, out_marginals, out_units, expected_ntokens = morpheme_prediction_lattice_step(args, batch, tokenizer, model, device)
+                    _, loss, ent, lengths, ntokens, out_marginals, out_units, expected_ntokens, _ = morpheme_prediction_lattice_step(args, batch, tokenizer, model, device)
                 else:
-                    _, loss, ent, lengths, ntokens, out_marginals, out_units, expected_ntokens = morpheme_prediction_unigram_step(args, batch, tokenizer, model, device)
+                    _, loss, ent, lengths, ntokens, out_marginals, out_units, expected_ntokens, _ = morpheme_prediction_unigram_step(args, batch, tokenizer, model, device)
             elif args.task == "language_modeling":
                 if args.vopt:
-                    _, loss, ent, lengths, ntokens, out_marginals, out_units, expected_ntokens = language_modeling_lattice_step(args, batch, tokenizer, model, device, unigram_expert=unigram_expert)
+                    _, loss, ent, lengths, ntokens, out_marginals, out_units, expected_ntokens, _ = language_modeling_lattice_step(args, batch, tokenizer, model, device, unigram_expert=unigram_expert)
                 else:
-                    _, loss, ent, lengths, ntokens, out_marginals, out_units, expected_ntokens = language_modeling_unigram_step(args, batch, tokenizer, model, device)
+                    _, loss, ent, lengths, ntokens, out_marginals, out_units, expected_ntokens, _ = language_modeling_unigram_step(args, batch, tokenizer, model, device)
             elif args.task == "skip_gram":
                 if args.vopt:
-                    _, loss, ent, lengths, ntokens, out_marginals, out_units, expected_ntokens = language_modeling_lattice_step(args, batch, tokenizer, model, device, unigram_expert=unigram_expert, skip_gram=True)
+                    _, loss, ent, lengths, ntokens, out_marginals, out_units, expected_ntokens, _ = language_modeling_lattice_step(args, batch, tokenizer, model, device, unigram_expert=unigram_expert, skip_gram=True)
                 else:
-                    _, loss, ent, lengths, ntokens, out_marginals, out_units, expected_ntokens = language_modeling_unigram_step(args, batch, tokenizer, model, device)
+                    _, loss, ent, lengths, ntokens, out_marginals, out_units, expected_ntokens, _ = language_modeling_unigram_step(args, batch, tokenizer, model, device)
             else:
                 raise ValueError
 
@@ -454,16 +461,19 @@ def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, train_dataloader: D
                     model.eval()
                     if args.task == "morpheme_prediction":
                         if args.vopt:
-                            eval_loss_log, eval_loss_zero_one, eval_loss_expected_zero_one, eval_example_total, eval_num_predictions = morpheme_prediction_lattice_loop(args, eval_dataloader, tokenizer, model, device)
+                            eval_loss_log, eval_loss_zero_one, eval_loss_expected_zero_one, eval_example_total, eval_num_predictions, eval_tok_precision, eval_tok_recall, eval_tok_f1, eval_path_marginal, eval_tok_marginal, eval_astat = morpheme_prediction_lattice_loop(args, eval_dataloader, tokenizer, model, device)
                         else:
-                            eval_loss_log, eval_loss_zero_one, eval_loss_expected_zero_one, eval_example_total, eval_num_predictions = morpheme_prediction_unigram_loop(args, eval_dataloader, tokenizer, model, device)
-                        logger.info(f"Eval loss at step {step}: loss = {eval_loss_log}, 0/1: {eval_loss_zero_one}, E[0/1]: {eval_loss_expected_zero_one}, ex = {eval_example_total}, pred = {eval_num_predictions}")
+                            eval_loss_log, eval_loss_zero_one, eval_loss_expected_zero_one, eval_example_total, eval_num_predictions, eval_tok_precision, eval_tok_recall, eval_tok_f1, eval_path_marginal, eval_tok_marginal, eval_astat   = morpheme_prediction_unigram_loop(args, eval_dataloader, tokenizer, model, device)
+                        logger.info(f"Eval loss at step {step}: loss = {eval_loss_log}, 0/1: {eval_loss_zero_one:.2f}, E[0/1]: {eval_loss_expected_zero_one:.2f}, ex = {eval_example_total}, pred = {eval_num_predictions}, "
+                                    f"tprec={eval_tok_precision:.2f}, trec={eval_tok_recall:.2f}, tf1={eval_tok_f1:.2f}, pm={eval_path_marginal:.2f}, tm={eval_tok_marginal:.2f}, leakage={eval_astat['leakage']} / {eval_astat['total_attention_dist_count']}={eval_astat['leakage'] / eval_astat['total_attention_dist_count']:.2f}, over={eval_astat['over_attention_mean']} * {eval_astat['over_attention_count']} "
+                                    f"({eval_astat['over_attention_mass']:.2f} / {eval_astat['total_attention_dist_count']} = {eval_astat['over_attention_mass'] / eval_astat['total_attention_dist_count']:.2f} mass), a-ent={eval_astat['entropy_mean']:.2f}, ({eval_astat['entropy_std']:.2f})")
                         if args.vopt:
-                            test_loss_log, test_loss_zero_one, test_loss_expected_zero_one, test_example_total, test_num_predictions = morpheme_prediction_lattice_loop(args, test_dataloader, tokenizer, model, device)
+                            test_loss_log, test_loss_zero_one, test_loss_expected_zero_one, test_example_total, test_num_predictions, test_tok_precision, test_tok_recall, test_tok_f1, test_path_marginal, test_tok_marginal, test_astat = morpheme_prediction_lattice_loop(args, test_dataloader, tokenizer, model, device)
                         else:
-                            test_loss_log, test_loss_zero_one, test_loss_expected_zero_one, test_example_total, test_num_predictions = morpheme_prediction_unigram_loop(args, test_dataloader, tokenizer, model, device)
-                        logger.info(
-                            f"Test loss at step {step}: loss = {test_loss_log}, 0/1: {test_loss_zero_one}, E[0/1]: {test_loss_expected_zero_one}, ex = {test_example_total}, pred = {test_num_predictions}")
+                            test_loss_log, test_loss_zero_one, test_loss_expected_zero_one, test_example_total, test_num_predictions, test_tok_precision, test_tok_recall, test_tok_f1, test_path_marginal, test_tok_marginal, test_astat  = morpheme_prediction_unigram_loop(args, test_dataloader, tokenizer, model, device)
+                        logger.info(f"Test loss at step {step}: loss = {test_loss_log}, 0/1: {test_loss_zero_one:.2f}, E[0/1]: {test_loss_expected_zero_one:.2f}, ex = {test_example_total}, pred = {test_num_predictions}, "
+                                    f"tprec={test_tok_precision:.2f}, trec={test_tok_recall:.2f}, tf1={test_tok_f1:.2f}, pm={test_path_marginal:.2f}, tm={test_tok_marginal:.2f}, leakage={test_astat['leakage']} / {test_astat['total_attention_dist_count']}={test_astat['leakage'] / test_astat['total_attention_dist_count']:.2f}, over={test_astat['over_attention_mean']} * {test_astat['over_attention_count']}"
+                                    f"({test_astat['over_attention_mass']:.2f} / {test_astat['total_attention_dist_count']} = {test_astat['over_attention_mass'] / test_astat['total_attention_dist_count']:.2f} mass), a-ent={test_astat['entropy_mean']:.2f}, ({test_astat['entropy_std']:.2f})")
 
                         with open(os.path.join(args.output_dir, "log.json"), "a") as f:
                             print(json.dumps({
@@ -482,6 +492,32 @@ def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, train_dataloader: D
                                 "train_ent": epoch_e / epoch_examples,
                                 "train_l1": epoch_l1 / epoch_examples,
                                 "train_lp": epoch_lp / epoch_examples,
+                                "eval_tok_prec": eval_tok_precision,
+                                "eval_tok_recall": eval_tok_recall,
+                                "eval_tok_f1": eval_tok_f1,
+                                "eval_tok_marginal": eval_tok_marginal,
+                                "eval_path_marginal": eval_path_marginal,
+                                "test_tok_prec": test_tok_precision,
+                                "test_tok_recall": test_tok_recall,
+                                "test_tok_f1": test_tok_f1,
+                                "test_tok_marginal": test_tok_marginal,
+                                "test_path_marginal": test_path_marginal,
+                                "eval_leakage": eval_astat["leakage"],
+                                "eval_over_attention_mean": eval_astat["over_attention_mean"],
+                                "eval_over_attention_count": eval_astat["over_attention_count"],
+                                "eval_over_attention_mass": eval_astat["over_attention_mass"],
+                                "eval_total_attention_count": eval_astat["total_attention_count"],
+                                "eval_total_attention_dist_count": eval_astat["total_attention_dist_count"],
+                                "eval_entropy_mean": eval_astat["entropy_mean"],
+                                "eval_entropy_std": eval_astat["entropy_std"],
+                                "test_leakage": test_astat["leakage"],
+                                "test_over_attention_mean": test_astat["over_attention_mean"],
+                                "test_over_attention_count": test_astat["over_attention_count"],
+                                "test_over_attention_mass": test_astat["over_attention_mass"],
+                                "test_total_attention_count": test_astat["total_attention_count"],
+                                "test_total_attention_dist_count": test_astat["total_attention_dist_count"],
+                                "test_entropy_mean": test_astat["entropy_mean"],
+                                "test_entropy_std": test_astat["entropy_std"],
                             }), file=f)
                     elif args.task == "language_modeling" or args.task == "skip_gram":
                         if args.vopt:

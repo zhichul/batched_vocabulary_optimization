@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+EXPID="110"
+mkdir -p ${BLU_ARTIFACTS}/bopt/ptb/exp${EXPID}
+DATA_PREFIX=${BLU_CORPORA}/ptb
+ARTIFACT_PREFIX=${BLU_ARTIFACTS}/bopt/ptb/exp${EXPID}
+SCRIPT_PREFIX=${HOME}/jhu/bopt/scripts/ptb/exp${EXPID}
+for SEED in 44 # 42 46
+do
+for SIZE in 768
+do
+for VSIZE in 10000 8000 6000
+do
+python3 -O -u /home/blu/jhu/bopt/scripts/simple/analysis/best_dev.py ${ARTIFACT_PREFIX}/${SEED}/${SIZE}/${VSIZE}/log.json eval_avg_token test_avg_token
+python3 -O -u /home/blu/jhu/bopt/scripts/simple/analysis/best_dev.py ${ARTIFACT_PREFIX}/${SEED}/${SIZE}/${VSIZE}/log.json train_loss eval_avg_token test_avg_token
+python3 ../../simple/analysis/effectiv_vocab_size.py language_modeling ${ARTIFACT_PREFIX}/${SEED}/${SIZE}/${VSIZE}/cache/ptb.train.txt
+
+done
+done
+done
+
+
+
+#/export/a01/artifacts/bopt/ptb/exp10/44/768/10000/log.json: 3920, avg_token=4.966020234440926
+#/export/a01/artifacts/bopt/ptb/exp10/44/768/10000/log.json: 9550, train_loss=1.7776905157986809
+#/export/a01/artifacts/bopt/ptb/exp10/44/768/8000/log.json: 3920, avg_token=5.013947724962005
+#/export/a01/artifacts/bopt/ptb/exp10/44/768/8000/log.json: 9570, train_loss=1.8004593096281354
+#/export/a01/artifacts/bopt/ptb/exp10/44/768/6000/log.json: 3920, avg_token=5.0438119135538635
+#/export/a01/artifacts/bopt/ptb/exp10/44/768/6000/log.json: 9570, train_loss=1.8657432104411877
+#/export/a01/artifacts/bopt/ptb/exp10/44/768/4000/log.json: 3950, avg_token=5.1177216957262095
+#/export/a01/artifacts/bopt/ptb/exp10/44/768/4000/log.json: 9550, train_loss=1.9466594457626343
+#/export/a01/artifacts/bopt/ptb/exp10/44/768/2000/log.json: 4610, avg_token=5.227876196394601
+#/export/a01/artifacts/bopt/ptb/exp10/44/768/2000/log.json: 9570, train_loss=2.0059987264767027

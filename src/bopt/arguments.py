@@ -81,6 +81,8 @@ def parse_args():
     parser.add_argument('--unigram_expert', action='store_true')
     parser.add_argument('--fixed_unigram_expert', action='store_true')
     parser.add_argument('--eval_viterbi_mode', action='store_true')
+    parser.add_argument('--eval_segmentation', action='store_true')
+    parser.add_argument('--only_save_vocab', action='store_true')
 
     parser.add_argument('--max_blocks', type=int)
     parser.add_argument('--max_block_length', type=int)
@@ -99,6 +101,8 @@ def parse_args():
     parser.add_argument('--log_lattice', type=str, nargs="+")
     parser.add_argument('--log_lattice_key', type=str)
     parser.add_argument('--log_lattice_file', type=str)
+
+    parser.add_argument('--log_attention_statistics', action="store_true")
     return check_args(parser.parse_args())
 
 def check_args(args):
@@ -112,4 +116,6 @@ def check_args(args):
     else:
         if len(os.listdir(args.output_dir)) != 0 and not args.overwrite_output_dir:
             raise ValueError("Output dir exists and is non-empty, please set overwrite_output_dir to True")
+    if args.task not in ["morpheme_prediction"] and args.eval_segmentation:
+        raise NotImplementedError(f"eval_segmentation is not implemented with {args.task}")
     return args

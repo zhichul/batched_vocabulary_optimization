@@ -10,6 +10,16 @@ BEST = {
     "expected_zero_one_loss": "max",
     "eval_log_loss": "min",
     "log_loss": "min",
+    "eval_tok_f1": "max",
+    "eval_tok_precision": "max",
+    "eval_tok_recall": "max",
+    "eval_tok_marginal": "max",
+    "eval_path_marginal": "max",
+    "test_tok_f1": "max",
+    "test_tok_precision": "max",
+    "test_tok_recall": "max",
+    "test_tok_marginal": "max",
+    "test_path_marginal": "max",
 }
 STEP="step"
 
