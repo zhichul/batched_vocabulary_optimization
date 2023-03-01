@@ -27,15 +27,15 @@ CUDA_VISIBLE_DEVICES=0 python3 -O -um bopt.run \
     --train_epochs 300 \
     --eval_steps 1 \
     --save_steps 10000000 \
-    --save_epochs 10 \
+    --save_epochs 1 \
     --train_batch_size 1024 \
     --gpu_batch_size 512 \
     --l1 ${L1} \
     --continuing_subword_prefix @@ \
     --task morpheme_prediction \
     --entropic 10.0 \
-    --entropy_start 150 \
-    --entropy_end 225 \
+    --entropy_start 1 \
+    --entropy_end 2 \
     --max_blocks 1 \
     --max_block_length 12 \
     --max_unit_length 9 \
@@ -45,6 +45,7 @@ CUDA_VISIBLE_DEVICES=0 python3 -O -um bopt.run \
     --only_save_vocab \
     --segmentation_dictionary ${DATA_PREFIX}/train.500.csv ${DATA_PREFIX}/dev.csv \
     --log_attention_statistics \
+    --mixture_count 12 \
     --quiet \
 
     exit

@@ -27,12 +27,15 @@ def load_vocab(file: Path):
     return Integerizer(units)
 
 def load_weights(file: Path, tensor=False):
+    # returns Dict[str, float(tensor)] if single weight, Dict[str, list[float](tensor)]
     weights = OrderedDict()
     with open(file, "rt") as f:
         for line in f:
             line = line.rstrip()
-            unit, weight = line.split("\t")
-            weights[unit] = float(weight)
+            items = line.split("\t")
+            unit = items[0]
+            ws = items[1:]
+            weights[unit] = [float(w) for w in ws] if len(ws) > 1 else float(ws[0])
             if tensor:
                 weights[unit] = torch.tensor(weights[unit])
     return weights
@@ -44,11 +47,16 @@ def save_weights(weights, file: Path, unit_only=False):
                 print(v, file=f)
             else:
                 if isinstance(w, torch.Tensor):
-                    print(f"{v}\t{w.item()}", file=f)
+                    if w.reshape(-1).size()[-1] == 1:
+                        print(f"{v}\t{w.item()}", file=f)
+                    else:
+                        weght_str = '\t'.join([f'{i}' for i in w.reshape(-1).tolist()])
+                        print(f"{v}\t{weght_str}", file=f)
                 elif isinstance(w, float):
                     print(f"{v}\t{w}", file=f)
                 elif isinstance(w, list) and isinstance(w[0], float):
-                    print(f"{v}\t{w[0]}", file=f)
+                    weght_str = '\t'.join([f'{i}' for i in w])
+                    print(f"{v}\t{weght_str}", file=f)
                 else:
                     print(type(w))
                     raise ValueError(w)
@@ -60,10 +68,13 @@ def load_labels(file: Path):
             label_list.append(line.strip())
     return label_list
 
-def constant_initializer(vocab: Integerizer, constant=0.0):
+def constant_initializer(vocab: Integerizer, constant=0.0, mixture_count=1):
     # remember this is in log space, so it corresponds to 1.0 in real space
     # this initialization gives weight 1 to all trees, thus having highest entropy
-    return {k: constant for k in vocab}
+    if mixture_count == 1:
+        return {k: constant for k in vocab}
+    else:
+        return {k: [constant] * mixture_count for k in vocab}
 
 def gaussian_initializer(vocab: Integerizer, mean=0.0, sigma=1.0):
     # remember this is in log space, so it corresponds to 1.0 in real space

@@ -89,6 +89,7 @@ def parse_args():
     parser.add_argument('--max_unit_length', type=int, default=1e10)
     parser.add_argument('--max_length', type=int, help="used for non-lattice")
     parser.add_argument('--skip_gram_distances', type=int, nargs="+", help="skip-gram distances to include")
+    parser.add_argument('--mixture_count', type=int, default=1)
 
     parser.add_argument('--eval_max_blocks', type=int, default=None)
     parser.add_argument('--eval_max_block_length', type=int, default=None)

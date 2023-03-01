@@ -27,12 +27,17 @@ def morpheme_prediction_lattice_step(args, batch, tokenizer, model, device, eval
     # dp lattice if necessasry
     ent, a, m, c = None, None, None, None
     if args.vopt:
-        ent, a, m, c = tokenizer(fwd_ids, fwd_ms, lengths,
-                                 bwd_ids, bwd_ms, bwd_lengths,
-                                 mmask, emask, tmask, marginal_temperature=args.marginal_temperature)
+        if args.mixture_count > 1:
+            ent, a, m, c, ment, _ = tokenizer(fwd_ids, fwd_ms, lengths,
+                                     bwd_ids, bwd_ms, bwd_lengths,
+                                     mmask, emask, tmask, marginal_temperature=args.marginal_temperature)
+        else:
+            ent, a, m, c = tokenizer(fwd_ids, fwd_ms, lengths,
+                                     bwd_ids, bwd_ms, bwd_lengths,
+                                     mmask, emask, tmask, marginal_temperature=args.marginal_temperature)
 
     # run model
-    losses = model(input_ids=input_ids, position_ids=pos_ids, labels=label_ids, attn_bias=a if args.vopt else None, output_attentions=args.log_attention_statistics and eval)
+    losses = model(input_ids=input_ids, position_ids=pos_ids, labels=label_ids, attn_bias=a if args.vopt else None, output_attentions=args.log_attention_statistics and eval, mixture_bias=args.mixture_count > 1)
     # get loss
     loss = losses[0] * args.main_loss_multiplier
     logits = losses[1]
@@ -41,7 +46,7 @@ def morpheme_prediction_lattice_step(args, batch, tokenizer, model, device, eval
         attentions = torch.stack(attentions, dim=0)
         attentions_protected = torch.clamp(attentions, min=1e-6)
         mask = input_mask[None,:,None,:,None].to(torch.float).expand_as(attentions)
-        lattice = a.exp()[None,:,None,:,:]
+        lattice = a.exp()[None,:,None,:,:] if args.mixture_count == 1 else a.exp().transpose(0,1)[None,...]
 
         over_attention = (torch.clamp(attentions - lattice, min=0) * mask).sum().item()
         over_attention_count = ((attentions > lattice) * mask).sum().item()
@@ -63,7 +68,7 @@ def morpheme_prediction_lattice_step(args, batch, tokenizer, model, device, eval
                  "mask": mask}
     else:
         astat = {}
-    return logits, loss, ent, lengths, None, None, None, None, astat
+    return logits, loss, ent if args.mixture_count == 1 else ment, lengths, None, None, None, None, astat
 
 def morpheme_prediction_unigram_step(args, batch, tokenizer, model, device):
     batch = [t.to(device) if isinstance(t, torch.Tensor) else t for t in batch]

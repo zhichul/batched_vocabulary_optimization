@@ -6,6 +6,5 @@ do
 python3 ../../simple/analysis/best_dev.py ${BLU_ARTIFACTS}/bopt/syn3/exp74-11/42/768/${L1}/${LR}/log.json test_tok_f1 test_zero_one_loss test_leakage test_over_attention_mean test_over_attention_count test_over_attention_mass test_total_attention_dist_count
 python3 ../../simple/analysis/best_dev.py ${BLU_ARTIFACTS}/bopt/syn3/exp74-11/42/768/${L1}/${LR}/log.json test_tok_marginal
 python3 ../../simple/analysis/best_dev.py ${BLU_ARTIFACTS}/bopt/syn3/exp74-11/42/768/${L1}/${LR}/log.json test_path_marginal
-python3 ../../simple/analysis/best_dev.py ${BLU_ARTIFACTS}/bopt/syn3/exp74-11/42/768/${L1}/${LR}/log.json test_path_marginal
 done
 done

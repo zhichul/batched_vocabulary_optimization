@@ -5,6 +5,7 @@ import torch
 from tqdm import tqdm
 
 from bopt.analysis.morpheme_prediction import spans, load_gold_segmentations_morpheme_prediction, morpheme_prediction_segmentation_stats
+from bopt.core.utils import increasing_roll_left
 from bopt.data.language_modeling.utils import viterbi_tokenize, pack_viterbi_chunks
 from bopt.forward_step import language_modeling_lattice_step, language_modeling_unigram_step, \
     morpheme_prediction_lattice_step, morpheme_prediction_unigram_step
@@ -132,20 +133,30 @@ def morpheme_prediction_lattice_loop(args, dataloader, tokenizer, model, device)
                 all_fwd_ids, all_fwd_ms, all_lengths, all_bwd_ids, all_bwd_ms, all_bwd_lengths, all_mmask, all_emask = tokenizer.encode_packed_batch(packed_chunks, args.max_unit_length, args.max_block_length, compact=False, verbatim=False, device=input_ids.device)
 
                 # path marginal
-                gold_log_alphas, _,_ = tokenizer.viterbi_algorithm(tokenizer.get_weights(gold_fwd_ids), gold_fwd_ms, gold_lengths)
-                all_log_alphas, all_edge_alphas = tokenizer.forward_algorithm(tokenizer.get_weights(all_fwd_ids), all_fwd_ms, all_lengths)
+                if args.mixture_count == 1:
+                    all_fwd_ts = tokenizer.get_weights(all_fwd_ids)
+                    all_bwd_ts = tokenizer.get_weights(all_bwd_ids)
+                else:
+                    all_ent, all_a, all_m, all_c, all_ment, all_fwd_ts = tokenizer(all_fwd_ids.unsqueeze(1), all_fwd_ms.unsqueeze(1), all_lengths.unsqueeze(1), all_bwd_ids.unsqueeze(1), all_bwd_ms.unsqueeze(1), all_bwd_lengths.unsqueeze(1), all_mmask, all_emask)
+
+                gold_log_alphas, _,_ = tokenizer.viterbi_algorithm(all_fwd_ts, gold_fwd_ms, gold_lengths)
+                all_log_alphas, all_edge_alphas = tokenizer.forward_algorithm(all_fwd_ts, all_fwd_ms, all_lengths)
                 path_marginal += (gold_log_alphas - all_log_alphas).exp().sum().item()
 
                 # tok marginal
-                B = len(gold_tokens_in_vocab)
-                all_log_betas, all_edge_log_betas = tokenizer.forward_algorithm(tokenizer.get_weights(all_bwd_ids), all_bwd_ms, all_bwd_lengths)
-                all_edge_log_betas = all_edge_log_betas.reshape(B, -1, *all_edge_log_betas.size()[1:])[:,-1,...].flip(-1)
-                triu_ones = torch.triu(torch.ones(args.max_unit_length, args.max_block_length, dtype=torch.bool).to(device), diagonal=0)
-                ea = all_edge_alphas[triu_ones[None, ...].expand(B, -1, -1)].reshape(B, -1)  # [B, E] where E  = L (L+1) / 2
-                eb = all_edge_log_betas[triu_ones.flip(-1)[None, ...].expand(B, -1, -1)].reshape(B, -1)  # [B, L, E]
-                td = tokenizer.get_weights(all_fwd_ids)[triu_ones[None, ...].expand(B, -1, -1)].reshape(B, -1)  # [B, E]
-                ms = gold_fwd_ms[triu_ones[None, ...].expand(B, -1, -1)].reshape(B, -1)  # [B, E]
-                tok_marginal += (ea + eb - td - all_log_alphas[:,None]).exp()[ms.to(torch.bool)].sum().item()
+                if args.mixture_count == 1:
+                    B = len(gold_tokens_in_vocab)
+                    all_log_betas, all_edge_log_betas = tokenizer.forward_algorithm(all_bwd_ts, all_bwd_ms, all_bwd_lengths)
+                    all_edge_log_betas = all_edge_log_betas.reshape(B, -1, *all_edge_log_betas.size()[1:])[:,-1,...].flip(-1)
+
+                    triu_ones = torch.triu(torch.ones(args.max_unit_length, args.max_block_length, dtype=torch.bool).to(device), diagonal=0)
+                    ea = all_edge_alphas[triu_ones[None, ...].expand(B, -1, -1)].reshape(B, -1)  # [B, E] where E  = L (L+1) / 2
+                    eb = all_edge_log_betas[triu_ones.flip(-1)[None, ...].expand(B, -1, -1)].reshape(B, -1)  # [B, L, E]
+                    td = tokenizer.get_weights(all_fwd_ids)[triu_ones[None, ...].expand(B, -1, -1)].reshape(B, -1)  # [B, E]
+                    ms = gold_fwd_ms[triu_ones[None, ...].expand(B, -1, -1)].reshape(B, -1)  # [B, E]
+                    tok_marginal += (ea + eb - td - all_log_alphas[:,None]).exp()[ms.to(torch.bool)].sum().item()
+                else:
+                    tok_marginal += all_edge_alphas[gold_fwd_ms.to(bool)].exp().sum().item()
                 if DEBUG1:
                     code.interact(local={k:v for k,v in list(locals().items()) + list(globals().items())})
             if args.log_attention_statistics:

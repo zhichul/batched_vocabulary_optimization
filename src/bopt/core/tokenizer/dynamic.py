@@ -11,7 +11,7 @@ class LatticeDPMixin:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def forward_algorithm(self, transition_matrix: torch.FloatTensor, mask: torch.FloatTensor, lengths: torch.LongTensor) -> Tuple[torch.FloatTensor, torch.FloatTensor]:
+    def forward_algorithm(self, transition_matrix: torch.FloatTensor, mask: torch.FloatTensor, lengths: torch.LongTensor, return_nodes=False) -> Tuple[torch.FloatTensor, torch.FloatTensor]:
         """
         transition_matrix: [B, M, L]
         mask: [B, M, L]
@@ -55,8 +55,12 @@ class LatticeDPMixin:
             # to have all incoming edges with edge-alphas already computed
             log_alphas.append(torch.logsumexp(edge_log_alphas[:, :, i], -1))
 
-        log_alphas = torch.gather(torch.stack(log_alphas), 0, lengths.unsqueeze(0))
-        return log_alphas.squeeze(0), edge_log_alphas
+        all_log_alphas = torch.stack(log_alphas)
+        last_log_alphas = torch.gather(all_log_alphas, 0, lengths.unsqueeze(0))
+        if not return_nodes:
+            return last_log_alphas.squeeze(0), edge_log_alphas
+        else:
+            return last_log_alphas.squeeze(0), edge_log_alphas, all_log_alphas.T # return alpha for nodes |x|, ..., and 0 to |x|,
 
     def viterbi_algorithm(self, transition_matrix: torch.FloatTensor, mask: torch.FloatTensor, lengths: torch.LongTensor) -> Tuple[torch.FloatTensor, torch.FloatTensor, List[torch.LongTensor]]:
         """

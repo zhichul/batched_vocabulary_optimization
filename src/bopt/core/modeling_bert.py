@@ -364,6 +364,7 @@ class BertSelfAttention(nn.Module):
         output_attentions=False,
         attn_bias=None,
         bias_mode=None,
+        mixture_bias=False,
     ):
         mixed_query_layer = self.query(hidden_states)
 
@@ -430,6 +431,8 @@ class BertSelfAttention(nn.Module):
         if attn_bias is not None:
             if attn_bias.dim() == 3:
                 attn_bias = attn_bias.unsqueeze(1)
+            if attn_bias.dim() == 4 and mixture_bias:
+                attn_bias = attn_bias.transpose(0,1)
             if bias_mode == "mult_then_renorm":
                 attention_scores += attn_bias
                 attention_probs = nn.Softmax(dim=-1)(attention_scores)
@@ -538,6 +541,7 @@ class BertAttention(nn.Module):
         output_attentions=False,
         attn_bias=None,
         bias_mode=None,
+        mixture_bias=False,
     ):
         self_outputs = self.self(
             hidden_states,
@@ -548,7 +552,8 @@ class BertAttention(nn.Module):
             past_key_value,
             output_attentions,
             attn_bias,
-            bias_mode
+            bias_mode,
+            mixture_bias,
         )
         attention_output = self.output(self_outputs[0], hidden_states)
         outputs = (attention_output,) + self_outputs[1:]  # add attentions if we output them
@@ -609,6 +614,7 @@ class BertLayer(nn.Module):
         output_attentions=False,
         attn_bias=None,
         bias_mode=None,
+        mixture_bias=False,
     ):
         # decoder uni-directional self-attention cached key/values tuple is at positions 1,2
         self_attn_past_key_value = past_key_value[:2] if past_key_value is not None else None
@@ -620,6 +626,7 @@ class BertLayer(nn.Module):
             past_key_value=self_attn_past_key_value,
             attn_bias=attn_bias,
             bias_mode=bias_mode,
+            mixture_bias=mixture_bias,
         )
         attention_output = self_attention_outputs[0]
 
@@ -691,6 +698,7 @@ class BertEncoder(nn.Module):
         return_dict=True,
         attn_bias=None,
         bias_mode=None,
+        mixture_bias=False,
     ):
         all_hidden_states = () if output_hidden_states else None
         all_self_attentions = () if output_attentions else None
@@ -719,7 +727,8 @@ class BertEncoder(nn.Module):
                     encoder_hidden_states,
                     encoder_attention_mask,
                     attn_bias,
-                    bias_mode
+                    bias_mode,
+                    mixture_bias,
                 )
             else:
                 layer_outputs = layer_module(
@@ -731,7 +740,8 @@ class BertEncoder(nn.Module):
                     past_key_value,
                     output_attentions,
                     attn_bias,
-                    bias_mode
+                    bias_mode,
+                    mixture_bias,
                 )
 
             hidden_states = layer_outputs[0]
@@ -1051,6 +1061,7 @@ class BertModel(BertPreTrainedModel):
         return_dict=None,
         attn_bias=None,
         bias_mode=None,
+        mixture_bias=False,
     ):
         r"""
         encoder_hidden_states  (:obj:`torch.FloatTensor` of shape :obj:`(batch_size, sequence_length, hidden_size)`, `optional`):
@@ -1146,6 +1157,7 @@ class BertModel(BertPreTrainedModel):
             return_dict=return_dict,
             attn_bias=attn_bias,
             bias_mode=bias_mode,
+            mixture_bias=mixture_bias,
         )
         sequence_output = encoder_outputs[0]
         pooled_output = self.pooler(sequence_output) if self.pooler is not None else None
@@ -1464,6 +1476,7 @@ class BertForMaskedLM(BertPreTrainedModel):
         output_hidden_states=None,
         return_dict=None,
         attn_bias=None,
+        mixture_bias=False,
         unigram_expert=None,
     ):
         r"""
@@ -1489,6 +1502,7 @@ class BertForMaskedLM(BertPreTrainedModel):
             return_dict=return_dict,
             attn_bias=attn_bias,
             bias_mode=self.bias_mode,
+            mixture_bias=mixture_bias,
         )
 
         sequence_output = outputs[0]

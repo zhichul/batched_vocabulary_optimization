@@ -47,6 +47,13 @@ class LatticeAttentionMixin:
         return l
 
     @classmethod
+    def inverse_permutation(self, L, M):
+        permutation = self.permutation(L, M)
+        inverse_permutation = [None] * len(permutation)
+        for i, push_index in enumerate(permutation):
+            inverse_permutation[push_index] = i
+        return inverse_permutation
+    @classmethod
     def edge_initial_position(self, L: int, M: int) -> List[int]:
         if (L, M) in self.edge_initial_position_cache:
             return self.edge_initial_position_cache[(L, M)]
