@@ -485,7 +485,7 @@ def train(args, model: BertForMaskedLM, tokenizer:Tokenizer, train_dataloader: D
                                 "test_n_char": test_NC,
                                 "test_n_token": test_NT,
                                 "train_loss": epoch_loss / epoch_examples if epoch_examples > 0 else 0,
-                                "train_ent": epoch_e / epoch_examplesif epoch_examples > 0 else 0,
+                                "train_ent": epoch_e / epoch_examples if epoch_examples > 0 else 0,
                                 "train_l1": epoch_l1 / epoch_examples if epoch_examples > 0 else 0,
                                 "train_lp": epoch_lp / epoch_examples if epoch_examples > 0 else 0,
                                 "group_lasso": epoch_gl / epoch_examples if epoch_examples > 0 else 0,
