@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+EXPID="r1-3"
+mkdir -p ${BLU_ARTIFACTS}/bopt/sentiment140/exp${EXPID}
+DATA_PREFIX=${BLU_CORPORA}/sentiment140
+ARTIFACT_PREFIX=${BLU_ARTIFACTS}/bopt/sentiment140/exp${EXPID}
+SCRIPT_PREFIX=${HOME}/jhu/bopt/scripts/sentiment140/exp${EXPID}
+for SEED in 42
+do
+for SIZE in "2-4-192" 768
+do
+for L1 in 0.1 # 0.01 1.0
+do
+for VSIZE in  16000 # 32000
+do
+CUDA_VISIBLE_DEVICES=1 python3 -O -um bopt.run \
+    --seed ${SEED} \
+    --train_dataset "${DATA_PREFIX}/training.1600000.processed.noemoticon.utf8.length<150.relabel.random_others.first100k.csv" \
+    --eval_dataset "${DATA_PREFIX}/training.1600000.processed.noemoticon.utf8.length<150.relabel.random_500.csv" \
+    --test_dataset "${DATA_PREFIX}/testdata.manual.2009.06.14.utf8.length<150.no_neutral.relabel.csv" \
+    --input_vocab /export/a01/artifacts/bopt/sentiment140/expr1-1/42/0.1/768/16000/checkpoint-976/learned_vocab.txt \
+    --weights_file /export/a01/artifacts/bopt/sentiment140/expr1-1/42/0.1/768/16000/checkpoint-976/learned_vocab.txt  \
+    --output_vocab ${DATA_PREFIX}/output_vocab.txt \
+    --config ${SCRIPT_PREFIX}/config${SIZE}-${VSIZE}.json \
+    --output_dir ${ARTIFACT_PREFIX}/${SEED}/${L1}/${SIZE}/${VSIZE} \
+    --overwrite_output_dir \
+    --do_train --do_eval \
+    --train_epochs 10 \
+    --eval_steps 20 \
+    --save_steps 10000000 \
+    --save_epochs 1 \
+    --train_batch_size 1024 \
+    --gpu_batch_size 64 \
+    --task sentiment_analysis \
+    --max_blocks 1 \
+    --max_block_length 160 \
+    --max_length 160 \
+    --max_unit_length 8 \
+    --specials "[UNK]" "[CLS]" "[SEP]" "[PAD]" "[MASK]" "[WBD]" "[SP1]" "[SP2]" "[SP3]" "[SP4]" "[SP5]" \
+    --quiet \
+#    --overwrite_cache \
+
+done
+done
+done
+done

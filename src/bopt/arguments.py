@@ -7,7 +7,7 @@ def parse_args():
     parser.add_argument('--start_step', type=int, default=None,  help='start checkpoint')
     parser.add_argument('--config', type=str)
     parser.add_argument("--output_dir", default=None, type=str, help="The output directory where the model predictions and checkpoints will be written.", required=True)
-    parser.add_argument('--task', type=str, choices=["morpheme_prediction", "language_modeling", "skip_gram"], default="morpheme_prediction", help='name of the task', required=True)
+    parser.add_argument('--task', type=str, choices=["morpheme_prediction", "language_modeling", "skip_gram", "sentiment_analysis"], default="morpheme_prediction", help='name of the task', required=True)
     parser.add_argument('--overwrite_output_dir', action='store_true')
     parser.add_argument('--overwrite_cache', action='store_true')
 
@@ -30,6 +30,7 @@ def parse_args():
     parser.add_argument('--save_epochs', type=int)
     parser.add_argument('--save_steps', type=int, default=1000)
     parser.add_argument('--train_dataset', type=str, default=None, required=False)
+    parser.add_argument('--encoding', type=str, default=None, required=False)
     parser.add_argument('--eval_dataset', type=str, default=None, required=False)
     parser.add_argument('--test_dataset', type=str, default=None, required=False)
     parser.add_argument('--seed', type=int, default=42)
@@ -117,6 +118,6 @@ def check_args(args):
     else:
         if len(os.listdir(args.output_dir)) != 0 and not args.overwrite_output_dir:
             raise ValueError("Output dir exists and is non-empty, please set overwrite_output_dir to True")
-    if args.task not in ["morpheme_prediction"] and args.eval_segmentation:
+    if args.task not in ["morpheme_prediction", "sentiment_analysis"] and args.eval_segmentation:
         raise NotImplementedError(f"eval_segmentation is not implemented with {args.task}")
     return args

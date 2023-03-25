@@ -4,6 +4,7 @@ import math
 import torch
 from tqdm import tqdm
 
+from bopt.analysis.language_modeling import load_gold_segmentations
 from bopt.analysis.morpheme_prediction import spans, load_gold_segmentations_morpheme_prediction, morpheme_prediction_segmentation_stats
 from bopt.core.utils import increasing_roll_left
 from bopt.data.language_modeling.utils import viterbi_tokenize, pack_viterbi_chunks
@@ -62,7 +63,7 @@ def language_modeling_unigram_decode_loop(args, dataloader, tokenizer, model, de
             decodings.extend([ [tokenizer.id2str(id, remove_csp=remove_csp) for id in input_id.tolist() if not remove_padding or not tokenizer.is_padding(id)] for input_id in input_ids])
     return decodings
 
-def zero_one_loss(logits, labels):
+def zero_one_loss(logits, labels, return_prediction=False):
     # they are batch x seq_len x out_vocab_size
     predictions = logits.topk(1, dim=-1)[1].squeeze(-1)
     label_mask = labels != -100
@@ -70,6 +71,8 @@ def zero_one_loss(logits, labels):
     label_linear = labels[label_mask]
     prediction_linear = predictions[label_mask]
     correct_count = (label_linear == prediction_linear).sum()
+    if return_prediction:
+        return correct_count.item(), label_count, prediction_linear
     return correct_count.item(), label_count
 
 def expected_zero_one_loss(logits, labels):
@@ -83,7 +86,7 @@ def expected_zero_one_loss(logits, labels):
     correct_prob = (prediction_linear).sum()
     return correct_prob.item(), label_count
 
-def morpheme_prediction_lattice_loop(args, dataloader, tokenizer, model, device):
+def morpheme_prediction_lattice_loop(args, dataloader, tokenizer, model, device, not_morpheme=False):
     loss_total = 0
     zero_one_loss_total = 0
     expected_zero_one_loss_total = 0
@@ -98,14 +101,16 @@ def morpheme_prediction_lattice_loop(args, dataloader, tokenizer, model, device)
     entropies = []
     masks = []
     leakage = over_attention_total = over_attention_count = entropy_count = over_attention_mass = total_attention_count = 0
-    if args.eval_segmentation:
+    if args.eval_segmentation and not not_morpheme:
         gseg = load_gold_segmentations_morpheme_prediction(*args.segmentation_dictionary)
         gseg_tokens = load_gold_segmentations_morpheme_prediction(*args.segmentation_dictionary, use_set=False, use_span=False)
     with torch.no_grad():
+        predictions = []
         for batch in tqdm(dataloader):
             input_ids, pos_ids, input_mask, label_ids, fwd_ids, fwd_ms, lengths, bwd_ids, bwd_ms, bwd_lengths, tmask, text = [t.to(device) if isinstance(t, torch.Tensor) else t for t in batch]
             logits, loss, ent, lengths, _, _, _, _, astat = morpheme_prediction_lattice_step(args, batch, tokenizer, model, device, eval=True)
-            correct_count, label_count1 = zero_one_loss(logits, label_ids)
+            correct_count, label_count1, prediction = zero_one_loss(logits, label_ids, return_prediction=True)
+            predictions.append(prediction)
             correct_prob, label_count2 = expected_zero_one_loss(logits, label_ids)
             assert label_count1 == label_count2 == 3
             zero_one_loss_total += correct_count
@@ -114,7 +119,7 @@ def morpheme_prediction_lattice_loop(args, dataloader, tokenizer, model, device)
             batch_size =  lengths.size(0)
             loss_total += loss.item() * batch_size
             example_total += batch_size
-            if args.eval_segmentation:
+            if args.eval_segmentation and not not_morpheme:
                 viterbi_segs = viterbi_tokenize(tokenizer, text, device=input_ids.device, remove_csp=True)
                 tokenizations.extend([(t, spans(seg)) for t, seg in zip(text, viterbi_segs)])
 
@@ -168,9 +173,9 @@ def morpheme_prediction_lattice_loop(args, dataloader, tokenizer, model, device)
                 entropy_count += astat["entropy_count"]
                 entropies.append(astat["entropy"])
                 masks.append(astat["mask"])
-    if args.eval_segmentation and len(tokenizations) != example_total:
+    if args.eval_segmentation and not not_morpheme and len(tokenizations) != example_total:
         raise AssertionError
-    if args.eval_segmentation:
+    if args.eval_segmentation and not not_morpheme:
         tp, pred, true = morpheme_prediction_segmentation_stats(tokenizations, gseg)
         tok_precision = tp / pred
         tok_recall = tp / true
@@ -187,7 +192,8 @@ def morpheme_prediction_lattice_loop(args, dataloader, tokenizer, model, device)
         astats["entropy_std"] = math.sqrt(sum((((entropy - astats["entropy_mean"]) * mask[...,0]) ** 2).sum().item() for mask, entropy in zip(masks, entropies)) / entropy_count)
     if DEBUG2:
         code.interact(local={k: v for k, v in list(locals().items()) + list(globals().items())})
-    return loss_total / example_total, zero_one_loss_total / num_predictions, expected_zero_one_loss_total / num_predictions, example_total, num_predictions, tok_precision, tok_recall, tok_f1, path_marginal/example_total, tok_marginal/gold_tok_total, astats
+    predictions = sum((prediction.reshape(-1).tolist() for prediction in predictions), [])
+    return loss_total / example_total, zero_one_loss_total / num_predictions, expected_zero_one_loss_total / num_predictions, example_total, num_predictions, tok_precision, tok_recall, tok_f1, path_marginal/example_total, tok_marginal/gold_tok_total if gold_tok_total else 0, astats, predictions
 
 def morpheme_prediction_unigram_loop(args, dataloader, tokenizer, model, device):
     loss_total = 0
@@ -195,11 +201,13 @@ def morpheme_prediction_unigram_loop(args, dataloader, tokenizer, model, device)
     expected_zero_one_loss_total = 0
     num_predictions = 0
     example_total = 0
+    predictions = []
     with torch.no_grad():
         for batch in tqdm(dataloader):
             input_ids, pos_ids, input_mask, label_ids = [t.to(device) if isinstance(t, torch.Tensor) else t for t in batch]
             logits, loss, _, _, _, _, _, _, _ = morpheme_prediction_unigram_step(args, batch, tokenizer, model, device)
-            correct_count, label_count1 = zero_one_loss(logits, label_ids)
+            correct_count, label_count1, prediction = zero_one_loss(logits, label_ids, return_prediction=True)
+            predictions.append(prediction)
             correct_prob, label_count2 = expected_zero_one_loss(logits, label_ids)
             assert label_count1 == label_count2 == 3
             zero_one_loss_total += correct_count
@@ -208,5 +216,7 @@ def morpheme_prediction_unigram_loop(args, dataloader, tokenizer, model, device)
             batch_size = logits.size(0)
             loss_total += loss.item() * batch_size
             example_total += batch_size
-    return loss_total / example_total, zero_one_loss_total / num_predictions, expected_zero_one_loss_total / num_predictions, example_total, num_predictions, None, None, None,None, None, None
+    predictions = sum((prediction.reshape(-1).tolist() for prediction in predictions), [])
+    return loss_total / example_total, zero_one_loss_total / num_predictions, expected_zero_one_loss_total / num_predictions, example_total, num_predictions, None, None, None,None, None, None, predictions
+
 

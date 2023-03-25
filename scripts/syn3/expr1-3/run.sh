@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+EXPID="r1-3"
+mkdir -p ${BLU_ARTIFACTS}/bopt/syn3/exp${EXPID}
+DATA_PREFIX=${BLU_CORPORA}/vopt/syn/3/full
+ARTIFACT_PREFIX=${BLU_ARTIFACTS}/bopt/syn3/exp${EXPID}
+SCRIPT_PREFIX=${HOME}/jhu/bopt/scripts/syn3/exp${EXPID}
+for SEED in 42
+do
+for SIZE in 768
+do
+for VSIZE in 19
+do
+CUDA_VISIBLE_DEVICES=0 python3 -O -um bopt.run \
+    --seed ${SEED} \
+    --train_dataset ${DATA_PREFIX}/train.csv \
+    --eval_dataset ${DATA_PREFIX}/dev.csv \
+    --test_dataset ${DATA_PREFIX}/test.csv \
+    --input_vocab ${DATA_PREFIX}/spm-unigram-vocab-${VSIZE}.txt \
+    --weights_file ${DATA_PREFIX}/spm-unigram-weights-${VSIZE}.txt  \
+    --output_vocab ${DATA_PREFIX}/output_vocab.txt \
+    --config ${SCRIPT_PREFIX}/config${SIZE}.json \
+    --output_dir ${ARTIFACT_PREFIX}/${SEED}/${SIZE}/${VSIZE}/ \
+    --overwrite_output_dir \
+    --overwrite_cache \
+    --do_train --do_eval \
+    --train_epochs 600 \
+    --eval_steps 20 \
+    --save_steps 10000000 \
+    --save_epochs 50 \
+    --train_batch_size 1024 \
+    --gpu_batch_size 1024 \
+    --task morpheme_prediction \
+    --max_blocks 1 \
+    --max_block_length 12 \
+    --max_unit_length 9 \
+    --specials "[UNK]" "[CLS]" "[SEP]" "[PAD]" "[MASK]" "[WBD]" "[SP1]" "[SP2]" "[SP3]" "[SP4]" "[SP5]" \
+    --max_length 12 \
+    --quiet
+
+
+done
+done
+done

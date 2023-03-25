@@ -26,7 +26,6 @@ class TokenizationMixin:
         self.bos_token = "[BOS]"
         self.eos_token = "[EOS]"
         self.node_token = node_token
-        self.max_unit_length = min(max_unit_length, max(len(u) for u in vocab))
 
         # represent vocabulary
         self.vocab = vocab
@@ -40,6 +39,7 @@ class TokenizationMixin:
         self.specials_indices = [vocab.index(special) for special in specials]
         self.singleton_indices = [vocab.index(u) for u in vocab if self.len_c(u) == 1]
         self.constant_indices = sorted(list(set([self.pad_index] + self.specials_indices + self.singleton_indices)))
+        self.max_unit_length = min(max_unit_length, max(self.len_c(u) for u in vocab)) #removed so that everything is consistently set by the commandline argument max_unit_length and there's no overrides
 
     @classmethod
     def len_chunk(cls, chunk: str, specials_set: Set[str]):
@@ -205,6 +205,9 @@ class TokenizationMixin:
                                                     torch.FloatTensor,]:
         B = len(chunks)
         M = min(self.max_unit_length, L, M)
+        # commented out because this optimization to save memory is only done in
+        # this function which leads to size mismatches with the outputs of other
+        # functions that just take M and do not have access to self.max_unit_length
 
         # encode lattice as special transition matrices
         fwd_ids = []
@@ -296,6 +299,8 @@ class TokenizationMixin:
             for l in range(min(len(chunk) - s, M) + 1):
                 unit = chunk[s:s + l]
                 unit = unit if self.csp is None or s == 0 else self.csp + unit
+                if l == 1 and unit not in self.vocab:
+                    unit = "[UNK]" #unknown character
                 if unit in self.vocab:
                     # fwd
                     fwd_mask[l - 1, s + l - 1] = 1
@@ -303,6 +308,7 @@ class TokenizationMixin:
                     # bwd
                     bwd_mask[l - 1, L - s - 1] = 1
                     bwd_ids[l - 1, L - s - 1] = self.vocab.index(unit)
+
         return fwd_ids, fwd_mask, bwd_ids, bwd_mask
 
     def encode_packed_transitions(self, packed_chunk: List[str], L: int, M: int, device="cpu", verbatim=False) -> Tuple[torch.LongTensor, torch.FloatTensor, torch.LongTensor, torch.FloatTensor]:

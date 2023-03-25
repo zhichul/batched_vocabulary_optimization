@@ -40,6 +40,12 @@ def load_weights(file: Path, tensor=False):
                 weights[unit] = torch.tensor(weights[unit])
     return weights
 
+def normalized_weights(weights):
+    Z = torch.logsumexp(torch.stack([torch.tensor(w) for w in weights.values()]).squeeze(), dim=-1)
+    weights_new = dict()
+    for key in weights:
+        weights_new[key] = weights[key] - Z.item()
+    return weights_new
 def save_weights(weights, file: Path, unit_only=False):
     with open(file, "wt") as f:
         for v,w in weights.items():
