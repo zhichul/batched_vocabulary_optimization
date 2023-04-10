@@ -92,6 +92,8 @@ def integerize_for_forward(sentences: List[str],
 
     Input sentences are assumed to contain no whitespace chars on either end,
     but we will make sure to strip it again. Space is treated as a regular char.
+
+    remove_space will remove instead of keep space as prefix.
     """
     # first check arguments
     if len(sentences) == 0: raise ValueError("empty list of sentences received")
