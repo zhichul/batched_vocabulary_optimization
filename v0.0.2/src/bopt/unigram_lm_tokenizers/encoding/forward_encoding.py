@@ -1,11 +1,13 @@
 from typing import List, Dict
 from bopt.integerize import Integerizer
 import torch
+import math
 
 # all special edges have id < 0 such that we can easily filter out the true edges
 NONEDGE_ID = -1
 PADEDGE_ID = -2
-
+NONEDGE_LOGPOT = -math.inf
+PADEDGE_LOGPOT = 0.0
 
 def blockify(chunks: List[str], max_blocks: int, max_block_length: int) -> List[str]:
     """

@@ -30,3 +30,6 @@ def forward_algorithm(edge_log_potentials: torch.FloatTensor):
     edge_log_alphas = edge_log_alphas.reshape(*(size_prefix + (M, L)))
     last_node_log_alphas = node_log_alphas[-1].reshape(*size_prefix)
     return ForwardAlgorithmOutput(last_node_log_alphas, edge_log_alphas)
+
+def conditional_marginals(edge_log_potentials: torch.FloatTensor):
+    pass

@@ -3,7 +3,7 @@ import math
 import torch
 import torch.nn as nn
 
-from bopt.unigram_lm_tokenizers.encoding.forward_encoding import NONEDGE_ID, PADEDGE_ID
+from bopt.unigram_lm_tokenizers.encoding.forward_encoding import NONEDGE_ID, PADEDGE_ID, NONEDGE_LOGPOT, PADEDGE_LOGPOT
 
 
 class UnigramLM(nn.Module):
@@ -21,16 +21,12 @@ class UnigramLM(nn.Module):
         weight -inf, PADEDGE_IDs have weight 0, and the rest have weight based
         on self.edge_log_potentials
         """
-        nonedge_mask = (lattice_encoding == NONEDGE_ID).to(torch.long)
-        nonedge_mask_b = nonedge_mask.to(torch.bool)
-        padedge_mask = (lattice_encoding == PADEDGE_ID).to(torch.long)
-        padedge_mask_b = padedge_mask.to(torch.bool)
-        edge_mask = (1 - (nonedge_mask + padedge_mask))
-        edge_mask_f = edge_mask.to(torch.float)
+        nonedge_mask = lattice_encoding == NONEDGE_ID
+        padedge_mask = lattice_encoding == PADEDGE_ID
+        edge_mask = (~(nonedge_mask | padedge_mask)).to(torch.long)
+        edge_log_potentials = self.edge_log_potentials(edge_mask * lattice_encoding).squeeze(-1)
 
-        base_weight = torch.zeros_like(lattice_encoding, dtype=torch.float)
-        base_weight[nonedge_mask_b] = -math.inf
-        base_weight[padedge_mask_b] = 0.0
-        edge_weight = edge_mask_f * self.edge_log_potentials(edge_mask * lattice_encoding).squeeze(-1)
+        edge_log_potentials[nonedge_mask] = NONEDGE_LOGPOT
+        edge_log_potentials[padedge_mask] = PADEDGE_LOGPOT
 
-        return base_weight + edge_weight
+        return edge_log_potentials
