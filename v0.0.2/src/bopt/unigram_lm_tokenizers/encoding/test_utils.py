@@ -22,10 +22,12 @@ def test():
         ]
     )
     log_potentials = torch.tensor([0.0] * len(vocabulary)).unsqueeze(-1)
+    unigramlm = UnigramLM(len(vocabulary), log_potentials)
     encoding1 = integerize_for_forward(["hate"], 1, 5, 4, vocabulary, space_character=" ", split_on_space=False, add_dummy_space_start=False)
     encoding2 = integerize_for_backward(["hate"], 1, 5, 4, vocabulary, space_character=" ", split_on_space=False, add_dummy_space_start=False)
     for encoding in [expand_encodings(encoding1), expand_encodings(encoding2)]:
-        print_lattice(encoding.reshape(-1, 1, 4, 5), vocabulary)
+        expanded_encoding = encoding.reshape(-1, 1, 4, 5)
+        print_lattice(encoding.reshape(-1, 1, 4, 5), vocabulary, log_potentials=unigramlm(expanded_encoding))
 
 if __name__ == "__main__":
     test()
