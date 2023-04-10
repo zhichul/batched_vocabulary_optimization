@@ -55,7 +55,8 @@ def integerize_for_forward(sentences: List[str],
                            vocabulary: Integerizer,
                            space_character : str = "▁",
                            split_on_space : bool = True,
-                           add_dummy_space_start : bool = True) -> torch.Tensor:
+                           add_dummy_space_start : bool = True,
+                           remove_space: bool = False) -> torch.Tensor:
     """
     Given a list of sentences, this method extracts substrings from each,
     represented as a 2d matrix of vocabulary ids whose corresponding substrings
@@ -100,6 +101,8 @@ def integerize_for_forward(sentences: List[str],
     if not split_on_space:
         if max_blocks != 1: raise ValueError("when split_on_space is False, "
          "we only generate single lattices without subdivision")
+    if remove_space and (add_dummy_space_start or not split_on_space):
+        raise ValueError("When remove_space is set to True, add_dummy_space_start must be False, and split_on_space must be true")
 
     B, N, M, L = len(sentences), max_blocks, max_unit_length, max_block_length
     # this is one of the two places where modification to the input strings is done
@@ -110,7 +113,7 @@ def integerize_for_forward(sentences: List[str],
         for sentence in sentences:
             chunks = sentence.split(space_character)
             # this is one of the two places where modification to the input strings is done (adding dummy space)
-            chunks = [(space_character if add_dummy_space_start else "") + chunks[0]] + [space_character + chunk for chunk in chunks[1:]]
+            chunks = [(space_character if not remove_space and add_dummy_space_start else "") + chunks[0]] + [(space_character if not remove_space else "") + chunk for chunk in chunks[1:]]
             blocks = blockify(chunks, N, L)
             block_encoding = integerize_blocks(blocks, vocabulary, max_unit_length, max_block_length)
             outputs.append(block_encoding)
