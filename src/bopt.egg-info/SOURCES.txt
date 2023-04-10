@@ -1,9 +1,0 @@
-setup.py
-src/bopt/__init__.py
-src/bopt/arguments.py
-src/bopt/forward_step.py
-src/bopt/run.py
-src/bopt.egg-info/PKG-INFO
-src/bopt.egg-info/SOURCES.txt
-src/bopt.egg-info/dependency_links.txt
-src/bopt.egg-info/top_level.txt
