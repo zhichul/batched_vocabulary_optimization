@@ -19,7 +19,7 @@ def increasing_roll_left(mat: torch.Tensor, padding_value):
     would be rolled back into
 
         [[1,2,3,4],
-        [5,6,7,-1],
+        [5,6,7,0],
         [9,10,0,0]]
 
     where 0 is the padding value.
@@ -28,15 +28,17 @@ def increasing_roll_left(mat: torch.Tensor, padding_value):
     padding value.
     """
     size = mat.size()
-    if not len(size) > 2:
+    if not len(size) >= 2:
         raise ValueError(mat.size())
     rows, cols = size[-2:]
     size_prefix = size[:-2]
-    padding = torch.zeros(size_prefix + (rows,), dtype=mat.dtype, device=mat.device)
-    padding.fill_(padding_value)
-    rolled = torch.cat([mat.reshape(*(size_prefix + (-1,))), padding], dim=-1).reshape(*(size_prefix + (rows, cols + 1)))
-    out = rolled[..., :cols]
-    return out
+    padding1 = torch.zeros(size[:-2] + (rows,rows-1), dtype=mat.dtype, device=mat.device)
+    padding1.fill_(padding_value)
+    padding2 = torch.zeros(size[:-2] + (rows,), dtype=mat.dtype, device=mat.device)
+    padding2.fill_(padding_value)
+    block = torch.cat([mat, padding1], dim=-1).reshape(*(size_prefix + (rows * (cols + rows-1),))).reshape(*(size_prefix + (-1,)))
+    rolled = torch.cat([block, padding2], dim=-1).reshape(*(size_prefix+ (rows,cols+rows)))[...,:cols]
+    return rolled
 
 def increasing_roll_right(mat: torch.Tensor, padding_value):
     """
@@ -63,8 +65,8 @@ def increasing_roll_right(mat: torch.Tensor, padding_value):
         raise ValueError(mat.size())
     rows, cols = size[-2:]
     size_prefix = size[:-2]
-    padding = torch.zeros(size[:-2] + (rows,1), dtype=mat.dtype, device=mat.device)
+    padding = torch.zeros(size[:-2] + (rows,rows-1), dtype=mat.dtype, device=mat.device)
     padding.fill_(padding_value)
-    rolled = torch.cat([mat, padding], dim=-1).reshape(*(size_prefix + (rows * (cols + 1),)))[...,:-rows].reshape(*(size_prefix+ (rows,cols)))
+    rolled = torch.cat([mat, padding], dim=-1).reshape(*(size_prefix + (rows * (cols + rows-1),)))[...,:-(rows)].reshape(*(size_prefix+ (rows,cols+rows-2)))[...,:cols]
     return rolled
 
