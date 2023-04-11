@@ -24,7 +24,7 @@ def test():
                                        add_dummy_space_start=False, remove_space=True)  # 1x1x4x5
     position_ids = extract_position_ids(encoding1)
     print(position_ids)
-    input_ids = extract_input_ids(encoding1)
+    input_ids = extract_input_ids(encoding1, padding_id=-1)
     print(input_ids)
     attention_mask = extract_attention_mask(encoding1)
     print(attention_mask)

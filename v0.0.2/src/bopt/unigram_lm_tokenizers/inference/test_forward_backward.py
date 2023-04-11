@@ -6,6 +6,7 @@ from bopt.unigram_lm_tokenizers.inference.forward_backward import forward_algori
 from bopt.unigram_lm_tokenizers.modeling.unigramlm import UnigramLM
 from bopt.unigram_lm_tokenizers.utils.encoding import convert_to_backward_encoding, convert_to_forward_encoding, \
     expand_encodings
+from bopt.unigram_lm_tokenizers.utils.indexing import serialize_by_start_position, edge_to_prev_node, edge_to_next_node
 from bopt.unigram_lm_tokenizers.utils.printing import print_lattice
 
 import torch
@@ -76,6 +77,15 @@ def test_forward_backward():
     lattice = expand_encodings(encoding, longest_first=True)
     lattice = torch.cat([encoding[...,None,:,:], lattice], dim=-3)
     print_lattice(lattice.reshape(-1,1,4,5), vocabulary, log_potentials=fcm.reshape(-1, 1, 4, 5), exponentiate=True)
+
+    bcms = serialize_by_start_position(bcm)
+    fcms = serialize_by_start_position(fcm)
+    e2prev = edge_to_prev_node(4, 5)
+    e2next = edge_to_next_node(4, 5)
+    backward_attention = bcms[..., e2prev, :]
+    forward_attention = fcms[..., e2next, :]
+    assert (torch.tril(forward_attention.exp()) == 0).all()
+    assert (torch.triu(backward_attention.exp()) == 0).all()
 
 if __name__ == "__main__":
     test_forward()

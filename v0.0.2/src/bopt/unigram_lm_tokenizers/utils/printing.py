@@ -33,3 +33,18 @@ def print_lattice(encoding, vocabulary, log_potentials=None, sentences=None, exp
                 print()
             print()
     print("==== ==== ==== ====")
+
+def print_attention(input_ids, vocabulary, attention, exponentiate=True):
+    if exponentiate:
+        attention = attention.exp()
+    if isinstance(input_ids, torch.Tensor):
+        input_ids = input_ids.tolist()
+    if isinstance(attention, torch.Tensor):
+        attention = attention.tolist()
+    for b, ids in enumerate(input_ids):
+        print("==== ==== ==== ====")
+        for i in range(len(ids)):
+            for j in range(len(ids)):
+                print(f"{get_token(ids[i], vocabulary):>8s}{'->' if i <j else '<-'}{get_token(ids[j], vocabulary):<8s} {attention[b][i][j]:.2f}", end=" ")
+            print()
+    print("=== === === ===")

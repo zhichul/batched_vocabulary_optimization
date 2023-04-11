@@ -1,7 +1,6 @@
-import torch
-
 from bopt.unigram_lm_tokenizers.encoding.forward_encoding import NONEDGE_ID, PADEDGE_ID, NONEDGE_LOGPOT, PADEDGE_LOGPOT
 from bopt.utils import increasing_roll_right
+import torch
 
 def lattice_mask(*sizes):
     """
@@ -12,13 +11,6 @@ def lattice_mask(*sizes):
     """
     return increasing_roll_right(torch.ones(sizes, dtype=torch.bool), 0)
 
-def serialize(encodings):
-    """
-    Return a flattened version of a lattice encoding.
-    """
-    print(lattice_mask(*encodings.size()))
-    return encodings[lattice_mask(*encodings.size())].reshape(*(encodings.size()[:-2]+(-1,)))
-    
 def convert_to_backward_encoding(forward_encoding):
     return increasing_roll_right(forward_encoding.flip(-1), NONEDGE_ID)
 def convert_to_forward_encoding(backward_encoding):
