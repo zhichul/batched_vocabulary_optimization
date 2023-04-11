@@ -36,7 +36,6 @@ def test():
     print(output.attention_mask)
     print(output.position_ids)
     print(output.type_ids)
-    print(output.type_ids)
     marked_input_ids = output.input_ids.clone()
     marked_input_ids[marked_input_ids == 0] = -1
     print_attention(marked_input_ids, vocabulary, output.attention_bias)
