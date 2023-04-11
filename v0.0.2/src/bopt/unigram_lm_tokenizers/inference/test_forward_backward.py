@@ -68,10 +68,14 @@ def test_forward_backward():
     fcm = cmo.forward_conditional_marginals
     print("Edge backward (log) conditional marginals")
     print(bcm.size())
-    print_lattice(convert_to_forward_encoding(expand_encodings(convert_to_backward_encoding(encoding)).reshape(-1, 1,4,5)), vocabulary, log_potentials=bcm.reshape(-1, 1, 4, 5), exponentiate=True)
+    lattice = convert_to_forward_encoding(expand_encodings(convert_to_backward_encoding(encoding)))
+    lattice = torch.cat([encoding.new_zeros(encoding.size()).fill_(NONEDGE_ID)[...,None,:,:], lattice], dim=-3)
+    print_lattice(lattice.reshape(-1 ,1,4,5), vocabulary, log_potentials=bcm.reshape(-1, 1, 4, 5), exponentiate=True)
     print("Edge forward (log) conditional marginals")
     print(fcm.size())
-    print_lattice(expand_encodings(encoding, longest_first=True).reshape(-1, 1,4,5), vocabulary, log_potentials=fcm.reshape(-1, 1, 4, 5), exponentiate=True)
+    lattice = expand_encodings(encoding, longest_first=True)
+    lattice = torch.cat([encoding[...,None,:,:], lattice], dim=-3)
+    print_lattice(lattice.reshape(-1,1,4,5), vocabulary, log_potentials=fcm.reshape(-1, 1, 4, 5), exponentiate=True)
 
 if __name__ == "__main__":
     test_forward()

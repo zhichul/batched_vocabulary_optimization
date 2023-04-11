@@ -57,7 +57,7 @@ def conditional_marginals(edge_log_potentials: torch.FloatTensor, return_forward
     Given a lattice encoded as an M by L edge matrix, compute backward
     conditional marginals of edges BEFORE and AFTER {the node after the ith character},
     conditioning on that the path goes through {the node after the ith character}.
-    i goes from 1 to L.
+    i goes from 0 to L.
     """
     M, L = edge_log_potentials.size()[-2:]
     size_prefix = edge_log_potentials.size()[:-2]
@@ -101,4 +101,10 @@ def conditional_marginals(edge_log_potentials: torch.FloatTensor, return_forward
         forward_conditional_marginals[nonedge_mask.expand(*forward_conditional_marginals.size())] = NONEDGE_LOGPOT # force both padding and nonedge to be -inf
         forward_conditional_marginals = forward_conditional_marginals.clone()
         forward_conditional_marginals[padedge_mask.expand(*forward_conditional_marginals.size())] = NONEDGE_LOGPOT # force both padding and nonedge to be -inf
+
+    backward_padding = backward_conditional_marginals.new_zeros((size_prefix + (1, M, L))).fill_(NONEDGE_LOGPOT)
+    backward_conditional_marginals = torch.cat([backward_padding, backward_conditional_marginals], dim=-3)
+
+    forward_padding = backward_conditional_marginals[...,-1:,:,:] # just the unconditional marginals
+    forward_conditional_marginals = torch.cat([forward_padding, forward_conditional_marginals], dim=-3)
     return ConditionalMarginalsOutput(backward_conditional_marginals, forward_conditional_marginals=forward_conditional_marginals if return_forward else None)
