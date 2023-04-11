@@ -35,5 +35,5 @@ def entropy(edge_log_potentials):
     last_node_log_alphas = node_log_alphas[-1].reshape(*size_prefix)
     last_node_entropy_aggregate = node_entropies[-1].reshape(*size_prefix)
 
-    return (last_node_entropy_aggregate / last_node_log_alphas.exp() + last_node_log_alphas)
+    return (last_node_entropy_aggregate / last_node_log_alphas.exp() + last_node_log_alphas) # entropy = internal energy + free energy
 
