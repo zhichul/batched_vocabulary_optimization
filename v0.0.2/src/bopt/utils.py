@@ -70,3 +70,16 @@ def increasing_roll_right(mat: torch.Tensor, padding_value):
     rolled = torch.cat([mat, padding], dim=-1).reshape(*(size_prefix + (rows * (cols + rows-1),)))[...,:-(rows)].reshape(*(size_prefix+ (rows,cols+rows-2)))[...,:cols]
     return rolled
 
+def col_shift(mat, amount:int, padding_value):
+    size = mat.size()
+    if not len(size) >= 2:
+        raise ValueError(mat.size())
+    if not amount != 0:
+        raise ValueError(amount)
+    rows, cols = size[-2:]
+    padding = torch.zeros(size[:-2] + (rows, abs(amount)), dtype=mat.dtype, device=mat.device)
+    padding.fill_(padding_value)
+    if amount > 0:
+        return torch.cat([padding, mat], dim=-1)[...,:cols]
+    if amount < 0:
+        return torch.cat([mat, padding], dim=-1)[...,-cols:]

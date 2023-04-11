@@ -50,8 +50,8 @@ def blockify(chunks: List[str], max_blocks: int, max_block_length: int) -> List[
 
 def integerize_for_forward(sentences: List[str],
                            max_blocks: int,
-                           max_block_length: int,
                            max_unit_length: int,
+                           max_block_length: int,
                            vocabulary: Integerizer,
                            space_character : str = "▁",
                            split_on_space : bool = True,

@@ -1,9 +1,9 @@
 from bopt.integerize import Integerizer
 from bopt.unigram_lm_tokenizers.encoding.forward_encoding import integerize_for_forward
+from bopt.unigram_lm_tokenizers.utils.printing import print_lattice
+
 import traceback
 import torch
-
-from bopt.unigram_lm_tokenizers.encoding.utils import print_lattice
 
 
 def test1():
@@ -29,7 +29,7 @@ def test1():
     max_block_length = 4
     max_blocks = 3
     try:
-        integerize_for_forward(sentences, max_blocks, max_block_length, max_unit_length, vocabulary)
+        integerize_for_forward(sentences, max_blocks, max_unit_length, max_block_length, vocabulary)
     except ValueError as e:
         traceback.print_exc()
 
@@ -60,7 +60,7 @@ def test2():
     max_unit_length = 3
     max_block_length = 5
     max_blocks = 3
-    output = integerize_for_forward(sentences, max_blocks, max_block_length, max_unit_length, vocabulary)
+    output = integerize_for_forward(sentences, max_blocks, max_unit_length, max_block_length, vocabulary)
     assert (output == torch.tensor([[[[ 1, 11,  9,  8, 10],
       [-1,  2, -1, 12, -1],
       [-1, -1, -1, 14, 13]],
