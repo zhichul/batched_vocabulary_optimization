@@ -30,3 +30,7 @@ class UnigramLM(nn.Module):
         edge_log_potentials[padedge_mask] = PADEDGE_LOGPOT
 
         return edge_log_potentials
+
+    @property
+    def device(self):
+        return self.edge_log_potentials.weight.data.device

@@ -143,3 +143,7 @@ def integerize_blocks(blocks: List[str], vocabulary: Integerizer, max_unit_lengt
                     forward_ids[length - 1, start + length - 1] = vocabulary.index(unit, unk=length == 1)
         outputs.append(forward_ids)
     return torch.stack(outputs, dim=0)
+
+def length(forward_encodings):
+    L = forward_encodings.size(-1)
+    return L - (forward_encodings == PADEDGE_ID).sum(-1).sum(-1)
