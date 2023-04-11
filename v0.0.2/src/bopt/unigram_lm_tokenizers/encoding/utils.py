@@ -17,9 +17,12 @@ def lattice_mask(*sizes):
 
 def convert_to_backward_encoding(forward_encoding):
     return increasing_roll_right(forward_encoding.flip(-1), NONEDGE_ID)
-
+def convert_to_forward_encoding(backward_encoding):
+    return increasing_roll_right(backward_encoding.flip(-1), NONEDGE_ID)
 def convert_to_backward_log_potentials(forward_log_potentials):
     return increasing_roll_right(forward_log_potentials.flip(-1), NONEDGE_LOGPOT)
+def convert_to_forward_log_potentials(backward_log_potentials):
+    return increasing_roll_right(backward_log_potentials.flip(-1), NONEDGE_LOGPOT)
 
 def expansion_mask(M, L, dtype=None, device=None):
     triu_ones = torch.triu(torch.ones((M, L), dtype=dtype, device=device), diagonal=0)
@@ -63,10 +66,12 @@ def expand_log_potentials(log_potentials):
     log_potentials[padedge_mask.expand(*output_size)] = PADEDGE_LOGPOT
     return log_potentials
 
-def print_lattice(encoding, vocabulary, log_potentials=None, sentences=None):
+def print_lattice(encoding, vocabulary, log_potentials=None, sentences=None, exponentiate=False):
     """
     Encoding should be a BxNxMxL tensor
     """
+    if exponentiate:
+        log_potentials = log_potentials.exp()
     if isinstance(encoding, torch.Tensor):
         encoding = encoding.tolist()
     if isinstance(log_potentials, torch.Tensor):
