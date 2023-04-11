@@ -56,7 +56,9 @@ def integerize_for_forward(sentences: List[str],
                            space_character : str = "▁",
                            split_on_space : bool = True,
                            add_dummy_space_start : bool = True,
-                           remove_space: bool = False) -> torch.Tensor:
+                           remove_space: bool = False,
+                           memoizer = None,
+                           sentence_ids = None) -> torch.Tensor:
     """
     Given a list of sentences, this method extracts substrings from each,
     represented as a 2d matrix of vocabulary ids whose corresponding substrings
@@ -105,25 +107,30 @@ def integerize_for_forward(sentences: List[str],
          "we only generate single lattices without subdivision")
     if remove_space and (add_dummy_space_start or not split_on_space):
         raise ValueError("When remove_space is set to True, add_dummy_space_start must be False, and split_on_space must be true")
+    if memoizer is None != sentence_ids is None: raise ValueError("memoizer and sentence_ids have to be set at the same time")
 
     B, N, M, L = len(sentences), max_blocks, max_unit_length, max_block_length
     # this is one of the two places where modification to the input strings is done
     sentences = [sentence.strip().replace(" ", space_character) for sentence in sentences]
-    # if split_on_white_space is true, split the sentence, chunk it, and recurse
-    if split_on_space:
-        outputs = []
-        for sentence in sentences:
-            chunks = sentence.split(space_character)
-            # this is one of the two places where modification to the input strings is done (adding dummy space)
-            chunks = [(space_character if not remove_space and add_dummy_space_start else "") + chunks[0]] + [(space_character if not remove_space else "") + chunk for chunk in chunks[1:]]
-            blocks = blockify(chunks, N, L)
-            block_encoding = integerize_blocks(blocks, vocabulary, max_unit_length, max_block_length)
-            outputs.append(block_encoding)
-        return torch.stack(outputs, dim=0)
-    # base case if split_on_white_space is false
-    else:
-        encoding = integerize_blocks(sentences, vocabulary, M, L)
-        return encoding.unsqueeze(1) # the unsqueeze is to match BxNxMxL shape with B=len(sentences) and N=1
+    outputs = []
+    for i, sentence in enumerate(sentences):
+        if not memoizer or (sentence_ids[i] not in memoizer): # if not caching or caching but sentence is new
+            if split_on_space:
+                # if split_on_white_space is true, split the sentence, chunk it, and recurse
+                chunks = sentence.split(space_character)
+                # this is one of the two places where modification to the input strings is done (adding dummy space)
+                chunks = [(space_character if not remove_space and add_dummy_space_start else "") + chunks[0]] + [(space_character if not remove_space else "") + chunk for chunk in chunks[1:]]
+                blocks = blockify(chunks, N, L)
+                block_encoding = integerize_blocks(blocks, vocabulary, max_unit_length, max_block_length)
+            else:
+                # otherwise integerize the sentence as a single block
+                block_encoding = integerize_blocks([sentence], vocabulary, M, L)
+            if memoizer:
+                memoizer[sentence_ids[i]] = block_encoding
+        else: # load from cache
+            block_encoding = memoizer[sentence_ids[i]]
+        outputs.append(block_encoding)
+    return torch.stack(outputs, dim=0)
 
 def integerize_blocks(blocks: List[str], vocabulary: Integerizer, max_unit_length: int, max_block_length: int):
     """

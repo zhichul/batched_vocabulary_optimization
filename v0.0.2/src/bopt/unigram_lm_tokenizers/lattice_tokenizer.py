@@ -31,16 +31,24 @@ class LatticeTokenizer(nn.Module):
                 space_character: str = "▁",
                 split_on_space: bool = True,
                 add_dummy_space_start: bool = True,
-                remove_space: bool = False):
+                remove_space: bool = False,
+                memoizer = None,
+                sentence_ids = None):
+        if memoizer is None != sentence_ids is None: raise ValueError(
+            "memoizer and sentence_ids have to be set at the same time")
         B, N, M, L, K = len(sentences), max_blocks, max_unit_length, max_block_length, 1
         if isinstance(sentences[0], list):
             K = len(sentences[0])
             sentences = sum(sentences, [])
+            if sentence_ids:
+                sentence_ids = sum(sentence_ids, [])
         forward_encodings = integerize_for_forward(sentences, N, M, L, self.vocabulary,
                                                    space_character=space_character,
                                                    split_on_space=split_on_space,
                                                    add_dummy_space_start=add_dummy_space_start,
-                                                   remove_space=remove_space).to(self.device).reshape(B, K*N, M, L) # B x KN x M x L
+                                                   remove_space=remove_space,
+                                                   memoizer=memoizer,
+                                                   sentence_ids=sentence_ids).to(self.device).reshape(B, K*N, M, L) # B x KN x M x L
 
         # extract linearized ids
         input_ids = extract_input_ids(forward_encodings, padding_id=0) #TODO: make depend on vocab B x KNE
