@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Set
 from bopt.integerize import Integerizer
 import torch
 import math
@@ -9,13 +9,19 @@ PADEDGE_ID = -2
 NONEDGE_LOGPOT = -math.inf
 PADEDGE_LOGPOT = 0.0
 
-def len_c(chunk, specials):
+def len_c(chunk:str, specials: Set[str]):
+    """
+    Length of a token in characters, if it's special then it has length one.
+    """
     if chunk in specials:
         return 1
     else:
         return len(chunk)
 
-def len_block(block, specials):
+def len_block(block: List[str], specials: Set[str]):
+    """
+    Length of a list of tokens in total in characters.
+    """
     return sum(len_c(chunk, specials) for chunk in block)
 def blockify(chunks: List[str], max_blocks: int, max_block_length: int, specials=set()) -> List[List[str]]:
     """
