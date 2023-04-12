@@ -33,7 +33,8 @@ class LatticeTokenizer(nn.Module):
                 add_dummy_space_start: bool = True,
                 remove_space: bool = False,
                 memoizer = None,
-                sentence_ids = None):
+                sentence_ids = None,
+                specials=set()):
         if memoizer is None != sentence_ids is None: raise ValueError(
             "memoizer and sentence_ids have to be set at the same time")
         B, N, M, L, K = len(sentences), max_blocks, max_unit_length, max_block_length, 1
@@ -48,7 +49,8 @@ class LatticeTokenizer(nn.Module):
                                                    add_dummy_space_start=add_dummy_space_start,
                                                    remove_space=remove_space,
                                                    memoizer=memoizer,
-                                                   sentence_ids=sentence_ids).to(self.device).reshape(B, K*N, M, L) # B x KN x M x L
+                                                   sentence_ids=sentence_ids,
+                                                   specials=specials).to(self.device).reshape(B, K*N, M, L) # B x KN x M x L
 
         # extract linearized ids
         input_ids = extract_input_ids(forward_encodings, padding_id=0) #TODO: make depend on vocab B x KNE

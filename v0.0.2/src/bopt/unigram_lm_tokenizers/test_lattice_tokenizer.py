@@ -36,7 +36,8 @@ def test():
                 add_dummy_space_start = False,
                 remove_space=True,
                 memoizer=memoizer,
-                sentence_ids=sentence_ids)
+                sentence_ids=sentence_ids,
+                specials={"hat"})
     print(output.input_ids)
     print(output.attention_mask)
     print(output.position_ids)

@@ -9,43 +9,51 @@ PADEDGE_ID = -2
 NONEDGE_LOGPOT = -math.inf
 PADEDGE_LOGPOT = 0.0
 
-def blockify(chunks: List[str], max_blocks: int, max_block_length: int) -> List[str]:
+def len_c(chunk, specials):
+    if chunk in specials:
+        return 1
+    else:
+        return len(chunk)
+
+def len_block(block, specials):
+    return sum(len_c(chunk, specials) for chunk in block)
+def blockify(chunks: List[str], max_blocks: int, max_block_length: int, specials=set()) -> List[List[str]]:
     """
     Given list of strings, groups them into blocks such that the total length
     of a block is at most max_block_length, and the number of blocks is padded
     to max_blocks with empty string blocks.
 
-    Returns a list of blocks, where each block is a string.
+    Returns a list of blocks, where each block is a list of strings.
 
     Here's an example:
     chunks = [_hello, _I, _am, _some, _code]
     max_block_length = 6
     max_blocks = 5
-    blocks =  [[_hello], [_I_am], [_some], [_code], ['']]
+    blocks =  [[_hello], [_I, _am], [_some], [_code], ['']]
     where the last block is padding with empty string.
     """
     blocks = list()
-    block = ""
+    block = []
     quota = max_block_length
     for chunk in chunks:
-        length = len(chunk)
+        length = len_c(chunk, specials)
         if length > max_block_length:
             raise ValueError(f"{max_block_length} is not enough to pack {chunk} of length {length}")
         if quota >= length:
             # keep packing in current block
-            block += chunk
+            block.append(chunk)
             quota -= length
         else:
             # make a new block and pack it into
             blocks.append(block)
-            block = chunk
+            block = [chunk]
             quota = max_block_length - length
     if len(block) > 0:
         # add the last one if non-empty
         blocks.append(block)
     if len(blocks) > max_blocks:
         raise ValueError(f"{max_blocks} is not enough blocks for {blocks} of count {len(blocks)}")
-    return blocks + [""] * (max_blocks - len(blocks))
+    return blocks + [[]] * (max_blocks - len(blocks))
 
 
 def integerize_for_forward(sentences: List[str],
@@ -58,7 +66,8 @@ def integerize_for_forward(sentences: List[str],
                            add_dummy_space_start : bool = True,
                            remove_space: bool = False,
                            memoizer = None,
-                           sentence_ids = None) -> torch.Tensor:
+                           sentence_ids = None,
+                           specials=set()) -> torch.Tensor:
     """
     Given a list of sentences, this method extracts substrings from each,
     represented as a 2d matrix of vocabulary ids whose corresponding substrings
@@ -120,19 +129,20 @@ def integerize_for_forward(sentences: List[str],
                 chunks = sentence.split(space_character)
                 # this is one of the two places where modification to the input strings is done (adding dummy space)
                 chunks = [(space_character if not remove_space and add_dummy_space_start else "") + chunks[0]] + [(space_character if not remove_space else "") + chunk for chunk in chunks[1:]]
-                blocks = blockify(chunks, N, L)
-                block_encoding = integerize_blocks(blocks, vocabulary, max_unit_length, max_block_length)
+                blocks = blockify(chunks, N, L, specials=specials)
+                block_encoding = integerize_blocks(blocks, vocabulary, max_unit_length, max_block_length, specials=specials)
             else:
                 # otherwise integerize the sentence as a single block
-                block_encoding = integerize_blocks([sentence], vocabulary, M, L)
+                block_encoding = integerize_blocks([[sentence]], vocabulary, M, L, specials=specials)
             if memoizer:
                 memoizer[sentence_ids[i]] = block_encoding
         else: # load from cache
             block_encoding = memoizer[sentence_ids[i]]
         outputs.append(block_encoding)
+    print(torch.stack(outputs, dim=0))
     return torch.stack(outputs, dim=0)
 
-def integerize_blocks(blocks: List[str], vocabulary: Integerizer, max_unit_length: int, max_block_length: int):
+def integerize_blocks(blocks: List[List[str]], vocabulary: Integerizer, max_unit_length: int, max_block_length: int, specials=set()):
     """
     Returns NxMxL where N is len(blocks), and M is max unit size, and L is max unit length
 
@@ -140,14 +150,22 @@ def integerize_blocks(blocks: List[str], vocabulary: Integerizer, max_unit_lengt
     M,L = max_unit_length, max_block_length
     outputs = []
     for block in blocks:
+        block_length = len_block(block, specials)
+        chunk_start = 0
         forward_ids = torch.ones((M, L), dtype=torch.long).fill_(NONEDGE_ID)
-        forward_ids[0,len(block):] = PADEDGE_ID
-        for start in range(len(block)):  # this loop is skipped for emtpy sentences
-            for length in range(min(len(block) - start, M) + 1):
-                unit = block[start:start + length]
-                if length == 1 or unit in vocabulary:
-                    # do indexing of all chars and all in-vocab substrings, and only characters can be unknown
-                    forward_ids[length - 1, start + length - 1] = vocabulary.index(unit, unk=length == 1)
+        forward_ids[0,block_length:] = PADEDGE_ID
+        for chunk in block:
+            if chunk in specials:
+                start = chunk_start
+                length = 1
+                forward_ids[length - 1, start + length - 1] = vocabulary.index(chunk)
+            for start in range(chunk_start, chunk_start + len(chunk)):  # this loop is skipped for emtpy sentences
+                for length in range(min(block_length - start, M) + 1):
+                    unit = chunk[start - chunk_start:start - chunk_start + length]
+                    if length == 1 or unit in vocabulary:
+                        # do indexing of all chars and all in-vocab substrings, and only characters can be unknown
+                        forward_ids[length - 1, start + length - 1] = vocabulary.index(unit, unk=length == 1)
+            chunk_start += len_c(chunk, specials)
         outputs.append(forward_ids)
     return torch.stack(outputs, dim=0)
 
