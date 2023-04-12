@@ -159,12 +159,13 @@ def integerize_blocks(blocks: List[List[str]], vocabulary: Integerizer, max_unit
                 start = chunk_start
                 length = 1
                 forward_ids[length - 1, start + length - 1] = vocabulary.index(chunk)
-            for start in range(chunk_start, chunk_start + len(chunk)):  # this loop is skipped for emtpy sentences
-                for length in range(min(block_length - start, M) + 1):
-                    unit = chunk[start - chunk_start:start - chunk_start + length]
-                    if length == 1 or unit in vocabulary:
-                        # do indexing of all chars and all in-vocab substrings, and only characters can be unknown
-                        forward_ids[length - 1, start + length - 1] = vocabulary.index(unit, unk=length == 1)
+            else:
+                for start in range(chunk_start, chunk_start + len(chunk)):  # this loop is skipped for emtpy sentences
+                    for length in range(min(block_length - start, M) + 1):
+                        unit = chunk[start - chunk_start:start - chunk_start + length]
+                        if length == 1 or unit in vocabulary:
+                            # do indexing of all chars and all in-vocab substrings, and only characters can be unknown
+                            forward_ids[length - 1, start + length - 1] = vocabulary.index(unit, unk=length == 1)
             chunk_start += len_c(chunk, specials)
         outputs.append(forward_ids)
     return torch.stack(outputs, dim=0)
