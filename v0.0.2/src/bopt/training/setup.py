@@ -26,13 +26,6 @@ def setup_classification(args):
 
     if os.path.exists(args.output_directory) and not args.overwrite_output_directory:
         raise ValueError("Please set overwrite_output_directory to true when using existing directories.")
-    if args.overwrite_cache:
-        for f in glob.glob(f'{args.train_tokenization_cache}/*'):
-            os.remove(f)
-        for f in glob.glob(f'{args.dev_tokenization_cache}/*'):
-            os.remove(f)
-        for f in glob.glob(f'{args.test_tokenization_cache}/*'):
-            os.remove(f)
 
     # load vocabularies
     input_vocab = load_vocab(args.input_vocab)
@@ -60,9 +53,9 @@ def setup_classification(args):
                                   collate_fn=list_collate)
 
     # memoizers / cache
-    train_tokenization_memoizer = OnDiskTensorMemoizer(args.train_tokenization_cache)
-    dev_tokenization_memoizer = OnDiskTensorMemoizer(args.dev_tokenization_cache)
-    test_tokenization_memoizer = OnDiskTensorMemoizer(args.test_tokenization_cache)
+    train_tokenization_memoizer = OnDiskTensorMemoizer(args.train_tokenization_cache, overwrite=args.overwrite_cache)
+    dev_tokenization_memoizer = OnDiskTensorMemoizer(args.dev_tokenization_cache, overwrite=args.overwrite_cache)
+    test_tokenization_memoizer = OnDiskTensorMemoizer(args.test_tokenization_cache, overwrite=args.overwrite_cache)
     train_label_memoizer = dict()
     dev_label_memoizer = dict()
     test_label_memoizer = dict()

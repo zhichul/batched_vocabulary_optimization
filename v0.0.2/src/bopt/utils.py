@@ -145,3 +145,11 @@ class LogAddExpSafe(torch.autograd.Function):
         return g1, g2
 
 logaddexp_safe = lambda x, y: LogAddExpSafe.apply(x, y)
+
+def product(l):
+    if len(l) == 0:
+        raise AssertionError
+    out = 1
+    for item in l:
+        out *= item
+    return out
