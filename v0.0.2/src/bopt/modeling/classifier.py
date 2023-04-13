@@ -69,7 +69,8 @@ class Classifier(nn.Module):
             losses = self.model(input_ids=tokenizer_output.input_ids,
                                 position_ids=tokenizer_output.position_ids,
                                 labels=labels_ids,
-                                attn_bias=tokenizer_output.attention_bias)
+                                attn_bias=tokenizer_output.attention_bias,
+                                token_type_ids=tokenizer_output.type_ids)
             task_loss = losses[0]
             logits = losses[1]
             L1 = self.input_tokenizer.l1(avoid_tokens=list(setup.specials))
