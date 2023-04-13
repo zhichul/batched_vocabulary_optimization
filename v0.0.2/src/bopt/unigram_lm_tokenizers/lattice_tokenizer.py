@@ -1,3 +1,5 @@
+import os
+
 from bopt.unigram_lm_tokenizers.inference.entropy import entropy
 from bopt.unigram_lm_tokenizers.encoding.forward_encoding import integerize_for_forward, length
 from bopt.unigram_lm_tokenizers.encoding.linearized_encoding import extract_input_ids, extract_position_ids, \
@@ -34,7 +36,8 @@ class LatticeTokenizer(nn.Module):
                 remove_space: bool = False,
                 memoizer = None,
                 sentence_ids = None,
-                specials=set()):
+                specials=set(),
+                pad_token_id=0):
         if memoizer is None != sentence_ids is None: raise ValueError(
             "memoizer and sentence_ids have to be set at the same time")
         B, N, M, L, K = len(sentences), max_blocks, max_unit_length, max_block_length, 1
@@ -53,7 +56,7 @@ class LatticeTokenizer(nn.Module):
                                                    specials=specials).to(self.device).reshape(B, K*N, M, L) # B x KN x M x L
 
         # extract linearized ids
-        input_ids = extract_input_ids(forward_encodings, padding_id=0) #TODO: make depend on vocab B x KNE
+        input_ids = extract_input_ids(forward_encodings, padding_id=pad_token_id) # B x KNE
         position_ids = extract_position_ids(forward_encodings) # B x KNE
         attention_mask = extract_attention_mask(forward_encodings) # B x KNE
         NE = input_ids.size(-1) // (K)
@@ -73,9 +76,16 @@ class LatticeTokenizer(nn.Module):
                                         position_ids=position_ids,
                                         type_ids=type_ids,
                                         attention_bias=attention,
-                                        entropy=ent_scalar)
+                                        entropy=ent_scalar,
+                                        nchars=lengths.sum().item())
 
+    def l1(self, avoid_tokens=tuple()):
+        return self.unigramlm.l1(avoid_indices=[self.vocabulary.index(token) for token in avoid_tokens])
 
-
-
+    def save_to_folder(self, folder):
+        with open(os.path.join(folder, "learned_vocab.txt"), "wt") as f:
+            for v, w in zip(self.vocabulary,
+                            self.unigramlm.edge_log_potentials.weight.data.tolist()):
+                weght_str = '\t'.join([f'{i}' for i in w])
+                print(f"{v}\t{weght_str}", file=f)
 

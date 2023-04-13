@@ -1,5 +1,11 @@
-import torch
+from collections import OrderedDict
 
+import torch
+from torch import autograd
+
+from bopt.integerize import Integerizer
+
+from torch import logaddexp as logaddexp_old
 
 def increasing_roll_left(mat: torch.Tensor, padding_value):
     """
@@ -71,6 +77,9 @@ def increasing_roll_right(mat: torch.Tensor, padding_value):
     return rolled
 
 def col_shift(mat, amount:int, padding_value):
+    """
+    Shift matrice columns to the left or right
+    """
     size = mat.size()
     if not len(size) >= 2:
         raise ValueError(mat.size())
@@ -83,3 +92,56 @@ def col_shift(mat, amount:int, padding_value):
         return torch.cat([padding, mat], dim=-1)[...,:cols]
     if amount < 0:
         return torch.cat([mat, padding], dim=-1)[...,-cols:]
+
+def load_vocab(file):
+    units = []
+    with open(file, "rt") as f:
+        for line in f:
+            line = line.rstrip()
+            unit = line.split("\t")[0]
+            units.append(unit)
+    return Integerizer(units)
+
+def load_scalar_weights(file):
+    weights = []
+    with open(file, "rt") as f:
+        for line in f:
+            line = line.rstrip()
+            ws = line.split("\t")[1:]
+            weights.append([float(w) for w in ws])
+    return torch.tensor(weights)
+
+
+class LogAddExpSafe(torch.autograd.Function):
+    """Implemented by Jason Eisner 2020 adapted by Brian Lu 2023.
+    Implements a torch function that is exactly like logaddexp,
+    but is willing to zero out nans on the backward pass."""
+
+    @staticmethod
+    def forward(ctx, input, other):  # type: ignore
+        with torch.enable_grad():
+            output = logaddexp_old(input, other)  # internal copy of output
+        ctx.save_for_backward(input, other, output)
+        return output.clone()
+
+    @staticmethod
+    def backward(ctx, grad_output):  # type: ignore
+        input, other, output = ctx.saved_tensors
+        enabled = torch.is_anomaly_enabled()
+        torch.set_anomaly_enabled(False)
+        zeros = grad_output.new_zeros(grad_output.size())
+        if input.requires_grad and other.requires_grad:
+            grad_input, grad_other = autograd.grad(output, (input, other), grad_output, only_inputs=True)
+            g1, g2 = torch.where(grad_output == 0, zeros, grad_input), torch.where(grad_output == 0, zeros, grad_other)
+        elif input.requires_grad:
+            grad_input, = autograd.grad(output, (input,), grad_output, only_inputs=True)
+            g1, g2 = torch.where(grad_output == 0, zeros, grad_input), None
+        elif other.requires_grad:
+            grad_other, = autograd.grad(output, (other,), grad_output, only_inputs=True)
+            g1, g2 = None, torch.where(grad_output == 0, zeros, grad_other)
+        else:
+            g1, g2 = None, None
+        torch.set_anomaly_enabled(enabled)
+        return g1, g2
+
+logaddexp_safe = lambda x, y: LogAddExpSafe.apply(x, y)

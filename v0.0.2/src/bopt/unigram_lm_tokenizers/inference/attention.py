@@ -6,6 +6,7 @@ from bopt.unigram_lm_tokenizers.encoding.forward_encoding import NONEDGE_LOGPOT
 from bopt.unigram_lm_tokenizers.inference.forward_backward import conditional_marginals
 from bopt.unigram_lm_tokenizers.utils.indexing import linearize, serialize_by_start_position, edge_to_prev_node, \
     edge_to_next_node
+from bopt.utils import logaddexp_safe
 
 
 def attention_bias(attention_mask, edge_log_potentials):
@@ -16,9 +17,12 @@ def attention_bias(attention_mask, edge_log_potentials):
     conditional_marginals_output = conditional_marginals(edge_log_potentials)
     attention_base = tile_attention(conditional_marginals_output)
     edge_mask = (attention_mask[:,None,:] * attention_mask[:,:,None]).to(torch.bool) # output B x NE x NE
+    diagonal = torch.eye(edge_mask.size(-1), dtype=edge_mask.dtype, device=edge_mask.device).expand_as(edge_mask)
     edge_bias = attention_base.new_ones(attention_base.size()).fill_(NONEDGE_LOGPOT)
     edge_bias[edge_mask] = 0.0
+    edge_bias[diagonal] = 0.0
     attention_bias = attention_base + edge_bias
+    attention_bias[attention_bias == NONEDGE_LOGPOT] = NONEDGE_LOGPOT
     return attention_bias
 def tile_attention(conditional_marginals_output):
     """
@@ -43,11 +47,11 @@ def tile_attention(conditional_marginals_output):
     # assert (torch.tril(forward_attention.exp()) == 0).all()
     # assert (torch.triu(borward_attention.exp()) == 0).all()
 
-    blockwise_conditional_marginals = torch.logaddexp(backward_attention, forward_attention)
+    blockwise_conditional_marginals = logaddexp_safe(backward_attention, forward_attention)
     diagonal = torch.diag_embed(bcm.new_ones(E, dtype=torch.bool))
     self_base = bcm.new_ones((E,E)).fill_(NONEDGE_LOGPOT)
     self_base[diagonal] = 0.0
-    blockwise_conditional_marginals = torch.logaddexp(blockwise_conditional_marginals,  # to add self-attention diagonal
+    blockwise_conditional_marginals = logaddexp_safe(blockwise_conditional_marginals,  # to add self-attention diagonal
                     self_base.expand_as(blockwise_conditional_marginals))
     blockwise_marginals = bcm[..., -1:, :] # last position in backward is unconditioned
 

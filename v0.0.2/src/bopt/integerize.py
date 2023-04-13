@@ -84,7 +84,7 @@ class Integerizer(Generic[T]):
         """
         Does the collection contain this object?  (Implements `in`.)
         """
-        return self.index(obj) is not None
+        return obj in self._indices
 
     @overload
     def __getitem__(self, index: int) -> T: ...
@@ -99,19 +99,21 @@ class Integerizer(Generic[T]):
         """
         return self._objects[index]
 
-    def index(self, obj: T, add: bool = False, unk=False) -> Optional[int]:
+    def index(self, obj: T, add: bool = False, unk=False, default=False) -> Optional[int]:
         """
         The integer associated with a given object, or `None` if the object is not in the collection (OOV).
         Use `add=True` to add the object if it is not present.
         """
         try:
             return self._indices[obj]
-        except KeyError:
+        except KeyError as e:
             if not add:
+                if not default:
+                    raise e
+                print(f"WARNING:{obj} not contained in vocab, using default: {self.index(self.unk_token) if unk else None}")
                 if not unk:
                     return None
                 else:
-                    print(f"WARNING: {self.unk_token} used for {obj}")
                     return self.index(self.unk_token)
 
             # add the object to both data structures

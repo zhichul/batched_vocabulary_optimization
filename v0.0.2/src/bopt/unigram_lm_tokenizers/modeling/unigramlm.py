@@ -1,4 +1,5 @@
 import math
+from typing import List
 
 import torch
 import torch.nn as nn
@@ -13,6 +14,8 @@ class UnigramLM(nn.Module):
         self.edge_log_potentials = nn.Embedding(num_embeddings=vocabulary_size,
                                     embedding_dim=1,
                                     _weight=pretrained_log_potentials)
+        if pretrained_log_potentials is None:
+            self.edge_log_potentials.weight.data[...] = 0
 
     def forward(self, lattice_encoding: torch.Tensor):
         """
@@ -34,3 +37,12 @@ class UnigramLM(nn.Module):
     @property
     def device(self):
         return self.edge_log_potentials.weight.data.device
+
+    def set(self, indices: List[int], value: List[float]):
+        for i, v in zip(indices, value):
+            self.edge_log_potentials.weight.data[0, i] = v
+
+    def l1(self, avoid_indices=list()):
+        return ((self.edge_log_potentials.weight.exp().sum() -
+                self.edge_log_potentials.weight[avoid_indices,:].exp().sum())
+                / (self.edge_log_potentials.weight.size(1) * (self.edge_log_potentials.weight.size(0) - len(avoid_indices))))

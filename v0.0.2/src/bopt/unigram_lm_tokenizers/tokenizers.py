@@ -1,18 +1,20 @@
 from dataclasses import dataclass
-from typing import List, Union
+from typing import List, Union, Optional
 
 import torch
 import torch.nn as nn
 
 @dataclass
 class UnigramLMTokenizerOutput:
-    input_ids: torch.Tensor = None          # always set
-    attention_mask: torch.Tensor = None     # always set
-    position_ids: torch.Tensor = None       # always set
-    type_ids: torch.Tensor = None           # always set
-    attention_bias: torch.Tensor = None     # set when in full lattice mode
-    weights: torch.Tensor = None            # set when each input sentence produces multiple tokenizations
-    entropy: torch.Tensor = None            # set when requested
+    input_ids: Optional[torch.Tensor] = None          # always set
+    attention_mask: Optional[torch.Tensor] = None     # always set
+    position_ids: Optional[torch.Tensor] = None       # always set
+    type_ids: Optional[torch.Tensor] = None           # always set
+    attention_bias: Optional[torch.Tensor] = None     # set when in full lattice mode
+    weights: Optional[torch.Tensor] = None            # set when each input sentence produces multiple tokenizations
+    entropy: Optional[torch.Tensor] = None            # set when requested
+    nchars: Optional[torch.Tensor] = None        # set when requested
+
 class AbstractUnigramLMTokenizer(nn.Module):
 
     def forward(self, sentences: Union[List[str], List[List[str]]]):
@@ -20,7 +22,7 @@ class AbstractUnigramLMTokenizer(nn.Module):
         This method tokenizes a batch of sentences or sentence lists. It returns
         tensors that match the API of common downstream neural models.
         """
-        input_ids, attention_mask, position_ids, type_ids, attention_bias, weights, entropy = None, None, None, None, None, None, None, None
-        return UnigramLMTokenizerOutput(input_ids, attention_mask, position_ids, type_ids, attention_bias, weights, entropy)
+        input_ids, attention_mask, position_ids, type_ids, attention_bias, weights, entropy, nchars = None, None, None, None, None, None, None, None, None
+        return UnigramLMTokenizerOutput(input_ids, attention_mask, position_ids, type_ids, attention_bias, weights, entropy, nchars)
 
 

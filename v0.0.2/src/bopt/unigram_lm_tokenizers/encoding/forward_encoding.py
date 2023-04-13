@@ -1,3 +1,4 @@
+import code
 from typing import List, Dict, Set
 from bopt.integerize import Integerizer
 import torch
@@ -145,7 +146,6 @@ def integerize_for_forward(sentences: List[str],
         else: # load from cache
             block_encoding = memoizer[sentence_ids[i]]
         outputs.append(block_encoding)
-    print(torch.stack(outputs, dim=0))
     return torch.stack(outputs, dim=0)
 
 def integerize_blocks(blocks: List[List[str]], vocabulary: Integerizer, max_unit_length: int, max_block_length: int, specials=set()):
@@ -167,7 +167,8 @@ def integerize_blocks(blocks: List[List[str]], vocabulary: Integerizer, max_unit
                 forward_ids[length - 1, start + length - 1] = vocabulary.index(chunk)
             else:
                 for start in range(chunk_start, chunk_start + len(chunk)):  # this loop is skipped for emtpy sentences
-                    for length in range(min(block_length - start, M) + 1):
+                    for length in range(1, min(block_length - start, M) + 1):
+                        if length <= 0: code.interact(local=locals())
                         unit = chunk[start - chunk_start:start - chunk_start + length]
                         if length == 1 or unit in vocabulary:
                             # do indexing of all chars and all in-vocab substrings, and only characters can be unknown
@@ -178,4 +179,4 @@ def integerize_blocks(blocks: List[List[str]], vocabulary: Integerizer, max_unit
 
 def length(forward_encodings):
     L = forward_encodings.size(-1)
-    return L - (forward_encodings == PADEDGE_ID).sum(-1).sum(-1)
+    return (L - (forward_encodings == PADEDGE_ID).sum(-1).sum(-1))
