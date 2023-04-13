@@ -32,7 +32,7 @@ def test():
     output_potentials = unigramlm(encoding)
     print("Edge (log) potentials")
     print_lattice(encoding, vocabulary, log_potentials=output_potentials)
-    vout = viterbi_nbest(output_potentials, n=6)
+    vout = viterbi_nbest(output_potentials, n=6) # there's only five possible segmentations so the last one is garbage
     print(vout.mask)
     nbest_encoding = encoding.expand_as(vout.mask).clone()
     nbest_encoding[~vout.mask] = NONEDGE_ID
