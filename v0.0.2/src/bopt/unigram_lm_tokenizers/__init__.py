@@ -1,5 +1,6 @@
-from bopt.unigram_lm_tokenizers.label_tokenizers import LatticeLabelTokenizer
+from bopt.unigram_lm_tokenizers.label_tokenizers import LatticeLabelTokenizer, NBestLabelTokenizer
 from bopt.unigram_lm_tokenizers.lattice_tokenizer import LatticeTokenizer
+from bopt.unigram_lm_tokenizers.nbest_tokenizer import NBestTokenizer
 from bopt.utils import load_scalar_weights
 
 
@@ -8,7 +9,12 @@ def load_input_tokenizer(tokenizer_model, tokenizer_mode, vocabulary, weight_fil
         if tokenizer_mode == "lattice":
             if weight_file is None: return LatticeTokenizer(vocabulary)
             else: return LatticeTokenizer(vocabulary, load_scalar_weights(weight_file))
+        elif tokenizer_mode == "nbest" or tokenizer_mode == "1best":
+            if weight_file is None: return NBestTokenizer(vocabulary)
+            else: return NBestTokenizer(vocabulary, load_scalar_weights(weight_file))
 
 def load_label_tokenizer(tokenizer_mode, vocabulary):
     if tokenizer_mode == "lattice":
         return LatticeLabelTokenizer(vocabulary)
+    elif tokenizer_mode == "nbest" or tokenizer_mode == "1best":
+        return NBestLabelTokenizer(vocabulary)

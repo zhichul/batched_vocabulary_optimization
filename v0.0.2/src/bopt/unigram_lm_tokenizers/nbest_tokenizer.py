@@ -5,6 +5,7 @@ from bopt.unigram_lm_tokenizers import LatticeTokenizer
 from bopt.unigram_lm_tokenizers.encoding.forward_encoding import integerize_for_forward, length, NONEDGE_ID, PADEDGE_ID
 from bopt.unigram_lm_tokenizers.encoding.linearized_encoding import extract_input_ids, extract_position_ids, \
     extract_attention_mask, extract_token_encoding
+from bopt.unigram_lm_tokenizers.inference.entropy import entropy
 from bopt.unigram_lm_tokenizers.inference.viterbi import viterbi_nbest
 
 from typing import Union, List
@@ -30,7 +31,8 @@ class NBestTokenizer(LatticeTokenizer):
                 memoizer = None,
                 sentence_ids = None,
                 specials=set(),
-                pad_token_id=0):
+                pad_token_id=0,
+                subsample_vocab=None):
         if memoizer is None != sentence_ids is None: raise ValueError(
             "memoizer and sentence_ids have to be set at the same time")
         forward_encodings, input_ids, position_ids, attention_mask, type_ids, B, N, M, L, K = self.extract_encodings(
@@ -59,13 +61,19 @@ class NBestTokenizer(LatticeTokenizer):
         nbest_input_ids, nbest_attention_mask, nbest_position_ids, nbest_type_ids = extract_token_encoding(nbest_forward_encodings,
                                                                     use_lattice_position_ids=use_lattice_position_ids) # B x n x KNE
         weight = viterbi_nbest_output.weight.sum(1) # B x KN x n -> B x n
+
+        # compute and normalize entropy
+        ent = entropy(edge_log_potentials) # B x KN
+        lengths = length(forward_encodings) # B x KN
+
+        ent_scalar = ent.sum() / lengths.sum() # 1
         return UnigramLMTokenizerOutput(input_ids=nbest_input_ids,
                                         attention_mask=nbest_attention_mask,
                                         position_ids=nbest_position_ids,
                                         type_ids=nbest_type_ids,
                                         attention_bias=None,
-                                        entropy=None,
-                                        nchars=None,
+                                        entropy=ent_scalar,
+                                        nchars=lengths.sum().item(),
                                         weights=weight)
 
 

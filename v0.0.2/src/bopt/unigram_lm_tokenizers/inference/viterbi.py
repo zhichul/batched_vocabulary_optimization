@@ -35,7 +35,6 @@ def viterbi_nbest(edge_log_potentials: torch.FloatTensor, n=1):
 
         # this update corresponds to aggregating the `incoming` edge-alphas into the alpha of a node
         new_log_alphas, new_back_edge_index = edge_log_alphas[..., i].reshape(B, n * M).topk(k=n, dim=-1) # B x n
-        print(new_log_alphas, new_back_edge_index, edge_log_alphas[..., i].reshape(B, n * M))
         back_edge_indices.append(new_back_edge_index)
         node_nbest_log_alphas.append(new_log_alphas)
     d1_indices = torch.arange(B, dtype=torch.long, device=device)[:,None,None].expand(B, n, n)

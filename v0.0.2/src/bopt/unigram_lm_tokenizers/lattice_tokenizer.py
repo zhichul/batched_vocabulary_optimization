@@ -37,7 +37,8 @@ class LatticeTokenizer(nn.Module):
                 memoizer = None,
                 sentence_ids = None,
                 specials=set(),
-                pad_token_id=0):
+                pad_token_id=0,
+                subsample_vocab=None):
         if memoizer is None != sentence_ids is None: raise ValueError(
             "memoizer and sentence_ids have to be set at the same time")
         forward_encodings, input_ids, position_ids, attention_mask, type_ids, B, N, M, L, K = self.extract_encodings(
@@ -52,7 +53,8 @@ class LatticeTokenizer(nn.Module):
             memoizer = memoizer,
             sentence_ids = sentence_ids,
             specials = specials,
-            pad_token_id = pad_token_id
+            pad_token_id = pad_token_id,
+            subsample_vocab = subsample_vocab
             )
         # compute attention
         edge_log_potentials = self.unigramlm(forward_encodings) # B x KN x M x L
@@ -82,14 +84,20 @@ class LatticeTokenizer(nn.Module):
                 memoizer = None,
                 sentence_ids = None,
                 specials=set(),
-                pad_token_id=0):
+                pad_token_id=0,
+                subsample_vocab=None):
         B, N, M, L, K = len(sentences), max_blocks, max_unit_length, max_block_length, 1
         if isinstance(sentences[0], list):
             K = len(sentences[0])
             sentences = sum(sentences, [])
             if sentence_ids:
                 sentence_ids = sum(sentence_ids, [])
-        forward_encodings = integerize_for_forward(sentences, N, M, L, self.vocabulary,
+        if self.training and subsample_vocab is not None:
+            # only subsample in training
+            vocab = self.vocabulary.subsample(subsample_vocab,self.unigramlm.unigram_p().tolist())
+        else:
+            vocab = self.vocabulary
+        forward_encodings = integerize_for_forward(sentences, N, M, L, vocab,
                                                    space_character=space_character,
                                                    split_on_space=split_on_space,
                                                    add_dummy_space_start=add_dummy_space_start,

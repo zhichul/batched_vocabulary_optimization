@@ -21,10 +21,13 @@ def parse_arguments():
     parser.add_argument("--input_vocab", required=True, type=str, help="a tab separated file where first column contain the tokens")
     parser.add_argument("--output_vocab", required=True, type=str, help="a tab separated file where first column contain the tokens")
     parser.add_argument("--input_tokenizer_model", required=True, type=str, choices=["unigram", "nulm"])
-    parser.add_argument("--input_tokenizer_mode", required=True, type=str, choices=["1best", "lattice", "1sample", "nbest"])
+    parser.add_argument("--input_tokenizer_mode", required=True, type=str, choices=["lattice", "sample", "nbest", "1best"])
     parser.add_argument("--input_tokenizer_weights", required=False, type=str)
     parser.add_argument("--special_tokens", required=True, nargs="+", default=["[PAD]", "[UNK]", "[SP1]", "[SP2]", "[SP3]"])
     parser.add_argument("--pad_token", required=True, default="[PAD]")
+    parser.add_argument("--n", required=False, type=int, default=5, help="n for nbest or sample")
+    parser.add_argument("--use_lattice_position_ids", action="store_true", help="whether to use token based position ids or lattice based (char based)")
+    parser.add_argument("--subsample_vocab", required=False, default=None, type=float, help="how much to subsample vocabulary at training")
 
     # lattice tokenizer parameters
     parser.add_argument("--max_blocks", required=True, type=int)
@@ -48,10 +51,10 @@ def parse_arguments():
     parser.add_argument("--eval_steps", required=True, type=float, default=1000)
 
     # losses
-    parser.add_argument("--annealing", required=True, type=float, default=0.0)
-    parser.add_argument("--annealing_start_steps", required=True, type=int, default=0.0)
-    parser.add_argument("--annealing_end_steps", required=True, type=float, default=0.0)
-    parser.add_argument("--L1", required=True, type=float, default=0.0)
+    parser.add_argument("--annealing", required=False, type=float, default=0.0)
+    parser.add_argument("--annealing_start_steps", required=False, type=int, default=0.0)
+    parser.add_argument("--annealing_end_steps", required=False, type=float, default=0.0)
+    parser.add_argument("--L1", required=False, type=float, default=0.0)
 
     # gpu
     parser.add_argument("--gpu_batch_size", required=True, type=int, default=4)

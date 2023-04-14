@@ -35,3 +35,20 @@ class LatticeLabelTokenizer:
         """
         return (predictions_tensor[label_tensor != self.padding].reshape(*(label_tensor.size()[:-1]+(-1,))),
                 label_tensor[label_tensor != self.padding].reshape(*(label_tensor.size()[:-1] + (-1,))))
+
+class NBestLabelTokenizer(LatticeLabelTokenizer):
+
+    def __call__(self, labels: List[List[str]], seq_length, memoizer=None, ids=None):
+        # This also assumes the start_position based linearization order
+        outputs = []
+        for i, label in enumerate(labels):
+            if memoizer is None or (ids[i] not in memoizer):
+                label_ids = torch.ones((seq_length,), dtype=torch.long).fill_(self.padding)
+                for j, label_item in enumerate(label):
+                    label_ids[j] = self.vocbulary.index(label_item)
+                outputs.append(label_ids)
+                if memoizer:
+                    memoizer[ids[i]] = label_ids
+            else:
+                outputs.append(memoizer[ids[i]])
+        return torch.stack(outputs, dim=0).to(self.device)

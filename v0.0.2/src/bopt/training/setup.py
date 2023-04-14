@@ -29,6 +29,7 @@ def setup_classification(args):
 
     # load vocabularies
     input_vocab = load_vocab(args.input_vocab)
+    input_vocab.specials = set(args.special_tokens)
     output_vocab = load_vocab(args.output_vocab)
 
     # load datasets

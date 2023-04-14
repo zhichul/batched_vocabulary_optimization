@@ -46,3 +46,6 @@ class UnigramLM(nn.Module):
         return ((self.edge_log_potentials.weight.exp().sum() -
                 self.edge_log_potentials.weight[avoid_indices,:].exp().sum())
                 / (self.edge_log_potentials.weight.size(1) * (self.edge_log_potentials.weight.size(0) - len(avoid_indices))))
+
+    def unigram_p(self):
+        return torch.softmax(self.edge_log_potentials.weight.data[:,0])

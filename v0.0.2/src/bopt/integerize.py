@@ -2,6 +2,8 @@
 
 from typing import (Dict, Generic, Iterable, Iterator, List, Optional, TypeVar, overload, Union)
 
+import numpy as np
+
 T = TypeVar("T")  # see https://mypy.readthedocs.io/en/stable/generics.html
 
 
@@ -37,7 +39,7 @@ class Integerizer(Generic[T]):
     # If you are unfamiliar with the special __ method names, check out
     # https://docs.python.org/3/reference/datamodel.html#special-method-names .
 
-    def __init__(self, iterable: List[T] = [], unk_token="[UNK]"):
+    def __init__(self, iterable: List[T] = [], unk_token="[UNK]", specials=set()):
         """
         Initialize the collection to the empty set, or to the set of *unique* objects in its argument
         (in order of first occurrence).
@@ -58,6 +60,8 @@ class Integerizer(Generic[T]):
         # Python's built-in set API doesn't give us access to the
         # integer indices that the set uses internally.
         self.unk_token = unk_token
+        self.specials = specials
+        self.non_specials = None # hack TODO: fix this to be pretty
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, Integerizer):
@@ -143,6 +147,24 @@ class Integerizer(Generic[T]):
         else:
             return f"Integerizer({len(self)})"
 
+    def subsample(self, ratio, weights):
+        if self.non_specials is None:
+            self.non_specials = [(i,item) for i,item in enumerate(self._objects) if item not in self.specials]
+        # make new vocab
+        vocab = Integerizer()
+        vocab.specials = self.specials
+        vocab.unk_token = self.unk_token
+        # subsample nonspecials
+        subsample_size = int(ratio * (len(self) - len(self.specials)))
+        subsample = np.random.choice(self.non_specials, size=subsample_size, replace=False,
+                                     p=[weights[i] for i, item in self.non_specials])
+        vocab._objects = subsample
+        vocab._indices = {item: self._indices[item] for i, item in subsample}
+        # add the specials
+        for token in self.specials:
+            vocab._objects.append(token)
+            vocab._indices[token] = self._indices[token]
+        return vocab
 
 if __name__ == "__main__":
     import doctest
