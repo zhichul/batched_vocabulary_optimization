@@ -74,6 +74,10 @@ def viterbi_nbest(edge_log_potentials: torch.FloatTensor, n=1):
         block_nbest_indices.append(current_indices)
     block_nbest_indices = list(reversed(block_nbest_indices)) # N copies of Bh x n
     block_nbest_indices = torch.stack(block_nbest_indices, dim=1) # Bh x N x n
-    block_nbest_log_alpha = torch.gather(last_node_nbest_log_alpha, -1, block_nbest_indices)
+    block_nbest_log_alpha = torch.gather(last_node_nbest_log_alpha, -1, block_nbest_indices) # Bh x N x n
+    block_nbest_log_alpha = block_nbest_log_alpha + block_nbest_log_alphas[0][Bh_index, selection].reshape(Bh, n)
     block_nbest_edge_mask = torch.gather(edge_mask, 2, block_nbest_indices[...,None,None].expand_as(edge_mask))
+    # reexpand Bh
+    block_nbest_log_alpha = block_nbest_log_alpha.reshape(*(size[:-3] + block_nbest_log_alpha.size()[1:]))
+    block_nbest_edge_mask = block_nbest_edge_mask.reshape(*(size[:-3] + block_nbest_edge_mask.size()[1:]))
     return ViterbiOutput(mask=block_nbest_edge_mask, weight=block_nbest_log_alpha)

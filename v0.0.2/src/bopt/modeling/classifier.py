@@ -83,7 +83,7 @@ class Classifier(nn.Module):
                                     predictions=shortpredictions)
         if setup.args.input_tokenizer_mode == "nbest" or setup.args.input_tokenizer_mode == "1best":
             B = len(sentences)
-            n = setup.args.n if setup.args.input_tokenizer_mode == "nbest" else 1
+            n = setup.args.n if setup.args.input_tokenizer_mode == "nbest" and self.training else 1
             tokenizer_output: UnigramLMTokenizerOutput = self.input_tokenizer(sentences,
                                                                               n=n,
                                                                               use_lattice_position_ids=setup.args.use_lattice_position_ids,

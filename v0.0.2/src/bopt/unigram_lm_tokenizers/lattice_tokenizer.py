@@ -17,9 +17,9 @@ from bopt.unigram_lm_tokenizers.tokenizers import UnigramLMTokenizerOutput
 
 class LatticeTokenizer(nn.Module):
 
-    def __init__(self, vocabulary, pretrained_log_potentials=None):
+    def __init__(self, vocabulary, pretrained_log_potentials=None, log_space_parametrization=False):
         super().__init__()
-        self.unigramlm = UnigramLM(len(vocabulary), pretrained_log_potentials=pretrained_log_potentials)
+        self.unigramlm = UnigramLM(len(vocabulary), pretrained_log_potentials=pretrained_log_potentials, log_space_parametrization=log_space_parametrization)
         self.vocabulary = vocabulary
 
     @property
@@ -116,6 +116,8 @@ class LatticeTokenizer(nn.Module):
     def l1(self, avoid_tokens=tuple()):
         return self.unigramlm.l1(avoid_indices=[self.vocabulary.index(token) for token in avoid_tokens])
 
+    def clamp_weights(self):
+        self.unigramlm.clamp_weights()
     def save_to_folder(self, folder):
         with open(os.path.join(folder, "learned_vocab.txt"), "wt") as f:
             for v, w in zip(self.vocabulary,

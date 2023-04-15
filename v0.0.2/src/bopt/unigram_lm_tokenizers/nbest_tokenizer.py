@@ -47,7 +47,8 @@ class NBestTokenizer(LatticeTokenizer):
             memoizer = memoizer,
             sentence_ids = sentence_ids,
             specials = specials,
-            pad_token_id = pad_token_id
+            pad_token_id = pad_token_id,
+            subsample_vocab=subsample_vocab
             )
 
         # compute nbest
@@ -59,7 +60,7 @@ class NBestTokenizer(LatticeTokenizer):
 
         # extract integer ids
         nbest_input_ids, nbest_attention_mask, nbest_position_ids, nbest_type_ids = extract_token_encoding(nbest_forward_encodings,
-                                                                    use_lattice_position_ids=use_lattice_position_ids) # B x n x KNE
+                                                                    use_lattice_position_ids=use_lattice_position_ids) # B x n x seq_length
         weight = viterbi_nbest_output.weight.sum(1) # B x KN x n -> B x n
 
         # compute and normalize entropy

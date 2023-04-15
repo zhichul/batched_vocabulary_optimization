@@ -135,7 +135,7 @@ def integerize_for_forward(sentences: List[str],
                 # if split_on_white_space is true, split the sentence, chunk it, and recurse
                 chunks = sentence.split(space_character)
                 # this is one of the two places where modification to the input strings is done (adding dummy space)
-                chunks = [(space_character if not remove_space and add_dummy_space_start else "") + chunks[0]] + [(space_character if not remove_space else "") + chunk for chunk in chunks[1:]]
+                chunks = [(space_character if not remove_space and add_dummy_space_start and chunks[0] not in specials else "") + chunks[0]] + [(space_character if not remove_space and chunks[0] not in specials else "") + chunk for chunk in chunks[1:]]
                 blocks = blockify(chunks, N, L, specials=specials)
                 block_encoding = integerize_blocks(blocks, vocabulary, max_unit_length, max_block_length, specials=specials)
             else:

@@ -23,6 +23,7 @@ def parse_arguments():
     parser.add_argument("--input_tokenizer_model", required=True, type=str, choices=["unigram", "nulm"])
     parser.add_argument("--input_tokenizer_mode", required=True, type=str, choices=["lattice", "sample", "nbest", "1best"])
     parser.add_argument("--input_tokenizer_weights", required=False, type=str)
+    parser.add_argument("--log_space_parametrization", action="store_true")
     parser.add_argument("--special_tokens", required=True, nargs="+", default=["[PAD]", "[UNK]", "[SP1]", "[SP2]", "[SP3]"])
     parser.add_argument("--pad_token", required=True, default="[PAD]")
     parser.add_argument("--n", required=False, type=int, default=5, help="n for nbest or sample")

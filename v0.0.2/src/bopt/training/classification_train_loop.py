@@ -28,9 +28,6 @@ def train_classification(setup: ClassificationSetup):
         bar.set_description_str(f"Epoch={epoch} Step={step} Loss={sum(windowed_loss) / len(windowed_loss) if len(windowed_loss) else windowed_loss_avg:.2f}({len(windowed_loss) * setup.args.gpu_batch_size:>4d} exs)")
         state = TrainingState(step, epoch, bar.format_dict['elapsed'])
 
-        if step >= setup.args.train_steps:
-            break
-
         # maybe evaluate
         if ((raw_step) % (setup.args.train_batch_size // setup.args.gpu_batch_size) == 0) and (
                 step % setup.args.eval_steps == 0):
@@ -51,12 +48,16 @@ def train_classification(setup: ClassificationSetup):
                     "step": step,
                     "epoch": epoch,
                     "elapsed": state.elapsed,
+                    "train_loss": windowed_loss_avg,
                     "model_lr": setup.optimizer.named_param_groups["model_decay"]["lr"],
                     "tokenizer_lr": setup.optimizer.named_param_groups["tokenizer"]["lr"],
                 }
                 logline.update(eval_metrics)
                 print(json.dumps(logline), file=f)
                 print(logline)
+
+        if step >= setup.args.train_steps:
+            break
 
         # training
         ids, sentences, labels = batch
@@ -81,6 +82,7 @@ def train_classification(setup: ClassificationSetup):
             setup.optimizer.step()
             setup.classifier.model.zero_grad()
             setup.classifier.input_tokenizer.zero_grad()
+            setup.classifier.input_tokenizer.clamp_weights()
             step += 1
 
         # maybe step scheduler

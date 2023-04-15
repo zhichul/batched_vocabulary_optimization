@@ -65,7 +65,7 @@ def setup_classification(args):
     model, config = load_model(args.config, pad_token_id=input_vocab.index(args.pad_token), bias_mode=args.bias_mode)
 
     # tokenizer
-    input_tokenizer = load_input_tokenizer(args.input_tokenizer_model, args.input_tokenizer_mode, input_vocab, weight_file=args.input_tokenizer_weights)
+    input_tokenizer = load_input_tokenizer(args.input_tokenizer_model, args.input_tokenizer_mode, input_vocab, log_space_parametrization=args.log_space_parametrization, weight_file=args.input_tokenizer_weights)
     label_tokenizer = load_label_tokenizer(args.input_tokenizer_mode, output_vocab)
 
     # classifier
