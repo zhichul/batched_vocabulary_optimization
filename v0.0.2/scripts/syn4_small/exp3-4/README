@@ -1,1 +1,1 @@
-nbest=? + subsample_vocab=? ? ? + vsize = ? + LR = ? ? ? with seed 42
+exp3-3 without subsampling
