@@ -9,19 +9,15 @@ for SEED in 42
 do
 for SIZE in 768
 do
-for VSIZE in
+for VSIZE in 50 100 200 400
 do
-for N in
-do
-for LR in
-do
-for SUBSAMPLE in
+for N in 3 5 10 15
 do
 for INPUT_NAME in train dev
 do
 for CKPT in checkpoint-early-stopping checkpoint-final
 do
-OUTPUT_DIR=${ARTIFACT_PREFIX}/${SEED}/${SIZE}/${VSIZE}/${N}best/
+OUTPUT_DIR=${ARTIFACT_PREFIX}/${SEED}/${SIZE}/${VSIZE}/${N}best
 CHECKPOINT_DIR=${OUTPUT_DIR}/${CKPT}
 
 python3 -um bopt.tokenization.evaluate_tokenization \
@@ -32,8 +28,6 @@ echo ${CHECKPOINT_DIR}/${INPUT_NAME}.1best.tokenizations.f1.json
 cat ${CHECKPOINT_DIR}/${INPUT_NAME}.1best.tokenizations.f1.json
 
 
-done
-done
 done
 done
 done

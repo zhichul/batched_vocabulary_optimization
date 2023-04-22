@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-EXPID="3-2"
+EXPID="3-4"
 mkdir -p ${BLU_ARTIFACTS}/boptv2/syn4_small/exp${EXPID}
 DATA_PREFIX=${BLU_CORPORA}/vopt/syn/4/small
 ARTIFACT_PREFIX=${BLU_ARTIFACTS}/boptv2/syn4_small/exp${EXPID}
@@ -10,14 +10,13 @@ for SEED in 42
 do
 for SIZE in 768
 do
-for VSIZE in
+for VSIZE in 50 100 200 400
 do
-for N in
+for N in 10
 do
-for LR in
+for LR in 0.02 0.06 0.006
 do
-for SUBSAMPLE in
-OUTPUT_DIR=${ARTIFACT_PREFIX}/${SEED}/${SIZE}/${VSIZE}/${N}best/
+OUTPUT_DIR=${ARTIFACT_PREFIX}/${SEED}/${SIZE}/${VSIZE}/${N}best/${LR}/None
 TRAIN_NAME=train.csv
 DEV_NAME=dev.csv
 TEST_NAME=dev.csv
@@ -48,6 +47,7 @@ CUDA_VISIBLE_DEVICES=0 CUDA_LAUNCH_BLOCKING=1 python3 -O -um bopt.train \
     --output_vocab ${DATA_PREFIX}/output_vocab.txt \
     --input_tokenizer_model unigram \
     --input_tokenizer_mode nbest \
+    --temperature 0.2 \
     --special_tokens "[UNK]" "[CLS]" "[SEP]" "[PAD]" "[MASK]" "[WBD]" "[SP1]" "[SP2]" "[SP3]" "[SP4]" "[SP5]" \
     --pad_token "[PAD]" \
     --n ${N} \
@@ -60,7 +60,7 @@ CUDA_VISIBLE_DEVICES=0 CUDA_LAUNCH_BLOCKING=1 python3 -O -um bopt.train \
     --split_on_space \
     \
     --task_model_learning_rate 6.25e-5 \
-    --input_tokenizer_learning_rate 0.02 \
+    --input_tokenizer_learning_rate ${LR} \
     --train_batch_size 1024 \
     --train_steps 600 \
     --patience 10 \
@@ -71,6 +71,7 @@ CUDA_VISIBLE_DEVICES=0 CUDA_LAUNCH_BLOCKING=1 python3 -O -um bopt.train \
     \
     --gpu_batch_size 128 \
     --device "cuda"
+done
 done
 done
 done

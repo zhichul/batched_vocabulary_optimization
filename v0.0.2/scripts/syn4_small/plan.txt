@@ -1,0 +1,47 @@
+Some basic experiments for us and baselines:
+
+Systems
+1. Lattice E2E Optimized for Dev Accuracy
+    Hyperparameters = [seed, L1, annealing, input_tokenizer_learning_rate]
+    Possible Additional Hyperparameters = [dropout]
+
+2. UnigramLM Optimized for Dev Accuracy
+    Hyperparameters = [vsize, seed]
+    Possible Additional Hyperparameters = [dropout]
+
+3. Hiraoka+2020 Optimized for Dev Accuracy
+    Hyperparameters = [vsize, seed, nbest, input_tokenizer_learning_rate, subsampling_rate]
+    Possible Additional Hyperparameters = [dropout]
+
+4. Hiraoka+2021 Optimized for Dev Accuracy
+    Hyperparameters = [vsize, seed, nbest, input_tokenizer_learning_rate, subsampling_rate]
+    Possible Additional Hyperparameters = [dropout]
+    Requires Coding = [new argument for how to use weight possibly a reinforce flag, use that flag in classifier to combine loss]
+
+
+5. Lattice E2E + NULM Optimized for Dev Accuracy
+    Hyperparameters = [seed, L1, annealing, input_tokenizer_learning_rate]
+    Possible Additional Hyperparameters = [dropout]
+    Requires Coding = [new unigram model, new option in load_tokenizers,
+        tying the embedding parameter with the bert embedding in classifier,
+        pretraining code to fit to some p]
+
+6. Hiraoka+2020 + NULM Optimized for Dev Accuracy
+    Hyperparameters = [seed, L1, annealing, input_tokenizer_learning_rate]
+    Possible Additional Hyperparameters = [dropout]
+
+7. Hiraoka+2021 + NULM Optimized for Dev Accuracy
+    Hyperparameters = [vsize, seed, nbest, input_tokenizer_learning_rate, subsampling_rate]
+    Possible Additional Hyperparameters = [dropout]
+
+6. Supervised Baseline (Maybe BERT + CRF?)
+    Requires Coding = [new model, new setup / training loop, can be ad hoc]
+
+Metrics
+1. Accuracy
+2. Segmentation F1 Token + Boundary
+
+Questions
+Q1. How much can our method learn about tokenization from a downstream task that relies heavily on tokenization?
+Q2. How much does having a good tokenization help, anyways?
+Q3. Can our method be used with small models?

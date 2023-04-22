@@ -17,7 +17,7 @@ for INPUT_NAME in train dev
 do
 for CKPT in checkpoint-early-stopping checkpoint-final
 do
-OUTPUT_DIR=${ARTIFACT_PREFIX}/${SEED}/${SIZE}/${VSIZE}/${N}best/
+OUTPUT_DIR=${ARTIFACT_PREFIX}/${SEED}/${SIZE}/${VSIZE}/${N}best
 CHECKPOINT_DIR=${OUTPUT_DIR}/${CKPT}
 
 python3 -um bopt.tokenization.evaluate_tokenization \

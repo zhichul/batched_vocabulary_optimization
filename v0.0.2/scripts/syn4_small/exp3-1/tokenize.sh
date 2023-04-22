@@ -36,7 +36,6 @@ python3 -O -um bopt.tokenize \
     --split_on_space \
     < ${DATA_PREFIX}/${INPUT_NAME}.txt \
     > ${CHECKPOINT_DIR}/${INPUT_NAME}.1best.tokenizations.jsonl
-    rm -f ${CHECKPOINT_DIR}/${INPUT_NAME}.txt.1best.tokenizations.jsonl
 
 done
 done
