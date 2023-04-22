@@ -1,3 +1,4 @@
+import code
 from collections import OrderedDict
 
 import torch
@@ -6,6 +7,7 @@ from torch import autograd
 from bopt.integerize import Integerizer
 
 from torch import logaddexp as logaddexp_old
+from torch import log as log_old
 
 def increasing_roll_left(mat: torch.Tensor, padding_value):
     """
@@ -142,9 +144,41 @@ class LogAddExpSafe(torch.autograd.Function):
         else:
             g1, g2 = None, None
         torch.set_anomaly_enabled(enabled)
+        # if g1 is not None and g1.isnan().any() or g2 is not None and g2.isnan().any():
+        #     code.interact(local=locals())
         return g1, g2
 
 logaddexp_safe = lambda x, y: LogAddExpSafe.apply(x, y)
+
+class LogSafe(torch.autograd.Function):
+    """Implemented by Jason Eisner 2020 adapted by Brian Lu 2023.
+    Implements a torch function that is exactly like logaddexp,
+    but is willing to zero out nans on the backward pass."""
+
+    @staticmethod
+    def forward(ctx, input):  # type: ignore
+        with torch.enable_grad():
+            output = log_old(input)  # internal copy of output
+        ctx.save_for_backward(input, output)
+        return output.clone()
+
+    @staticmethod
+    def backward(ctx, grad_output):  # type: ignore
+        input, output = ctx.saved_tensors
+        enabled = torch.is_anomaly_enabled()
+        torch.set_anomaly_enabled(False)
+        zeros = grad_output.new_zeros(grad_output.size())
+        if input.requires_grad:
+            grad_input, = autograd.grad(output, (input), grad_output, only_inputs=True)
+            g1 = torch.where(grad_output == 0, zeros, grad_input)
+            # if g1.isnan().any():
+            #     code.interact(local=locals())
+        else:
+            g1 = None
+        torch.set_anomaly_enabled(enabled)
+        return g1
+
+log_safe = lambda x: LogSafe.apply(x)
 
 def product(l):
     if len(l) == 0:

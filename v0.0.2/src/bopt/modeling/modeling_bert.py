@@ -54,6 +54,8 @@ from transformers.modeling_utils import (
 )
 from transformers.utils import logging
 
+from bopt.utils import log_safe, logaddexp_safe
+
 EPSILON = 1e-6
 DEBUG = False
 
@@ -441,13 +443,17 @@ class BertSelfAttention(nn.Module):
                 attention_threshold = attn_bias.exp()
                 attention_probs = torch.min(attention_transformer, attention_threshold)
             elif bias_mode == "albo":
-                eye = torch.eye(attn_bias.size(-1), dtype=attn_bias.dtype, device=attn_bias.device).unsqueeze(0)
-                log_marginals = attn_bias * (1 - eye)  # prevent underflow by allowing one nonzero marginal
-                log_attention_probs = torch.log_softmax(attention_scores, dim=-1)
-                log_numerators = log_marginals + log_attention_probs
-                log_adjustment = torch.log(1-(1-EPSILON) * log_marginals.exp()) + log_attention_probs
-                log_denominators = torch.logaddexp(torch.logsumexp(log_numerators, dim=-1,keepdim=True), log_adjustment)
+                eye = torch.eye(attn_bias.size(-1), dtype=torch.bool, device=attn_bias.device).unsqueeze(0).expand_as(attn_bias)
+                attn_bias[eye] = 0
+                attn_bias[(attn_bias > 0) & (attn_bias < EPSILON)] = 0 # avoid nunerical issues but also don't cover bugs
+                log_numerators = attn_bias + attention_scores
+                log_adjustment = log_safe(1- attn_bias.exp()) + attention_scores
+                log_adjustment[log_adjustment == -math.inf] = -math.inf # block gradients
+                log_denominators = logaddexp_safe(torch.logsumexp(log_numerators, dim=-1,keepdim=True).expand_as(log_adjustment), log_adjustment)
+                log_denominators[log_denominators == -math.inf] = -math.inf # block gradients
                 attention_probs = (log_numerators - log_denominators).exp()
+                # if (attention_probs.isnan()).any():
+                #     code.interact(local=locals())
                 if DEBUG: code.interact(local=locals())
                 # min_ = log_denominators.min()
                 # max_ = log_denominators.max()

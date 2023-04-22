@@ -12,7 +12,7 @@ def setup(args):
     input_vocab.specials = set(args.special_tokens)
 
     # tokenizer
-    input_tokenizer = load_input_tokenizer(args.input_tokenizer_model, args.input_tokenizer_mode, input_vocab, weight_file=args.input_tokenizer_weights)
+    input_tokenizer = load_input_tokenizer(args.input_tokenizer_model, args.input_tokenizer_mode, input_vocab, weight_file=args.input_tokenizer_weights, log_space_parametrization=args.log_space_parametrization)
 
     specials = set(args.special_tokens)
 

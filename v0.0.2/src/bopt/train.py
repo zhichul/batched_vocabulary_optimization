@@ -6,7 +6,7 @@ from bopt.training.classification_train_loop import train_classification
 
 
 def main():
-
+    # torch.set_anomaly_enabled(True)
     args = parse_arguments()
     if args.task == "classification":
         setup = setup_classification(args)

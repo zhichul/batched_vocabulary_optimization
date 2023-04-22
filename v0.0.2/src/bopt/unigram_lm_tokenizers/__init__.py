@@ -11,7 +11,7 @@ def load_input_tokenizer(tokenizer_model, tokenizer_mode, vocabulary, log_space_
             else: return LatticeTokenizer(vocabulary, pretrained_log_potentials=load_scalar_weights(weight_file), log_space_parametrization=log_space_parametrization)
         elif tokenizer_mode == "nbest" or tokenizer_mode == "1best":
             if weight_file is None: return NBestTokenizer(vocabulary, log_space_parametrization=log_space_parametrization)
-            else: return NBestTokenizer(vocabulary, pretrained_log_potentials=load_scalar_weights(weight_file) , log_space_parametrization=log_space_parametrization)
+            else: return NBestTokenizer(vocabulary, pretrained_log_potentials=load_scalar_weights(weight_file), log_space_parametrization=log_space_parametrization)
 
 def load_label_tokenizer(tokenizer_mode, vocabulary):
     if tokenizer_mode == "lattice":

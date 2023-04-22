@@ -21,7 +21,7 @@ class UnigramLM(nn.Module):
             self.edge_log_potentials.weight.data = self.edge_log_potentials.weight.data.exp()
             self.clamp_weights()
 
-    def forward(self, lattice_encoding: torch.Tensor):
+    def forward(self, lattice_encoding: torch.Tensor, temperature=1.0):
         """
         Given a batch of edge id matrices (forward or backward),
         return a batch of edge log potential matrices, where NONEDGE_IDs have
@@ -39,7 +39,7 @@ class UnigramLM(nn.Module):
         edge_log_potentials[nonedge_mask] = NONEDGE_LOGPOT
         edge_log_potentials[padedge_mask] = PADEDGE_LOGPOT
 
-        return edge_log_potentials
+        return edge_log_potentials * temperature
 
     @property
     def device(self):
@@ -63,8 +63,15 @@ class UnigramLM(nn.Module):
                 real_weights[avoid_indices,:].sum())
                 / (real_weights.size(1) * (real_weights.size(0) - len(avoid_indices))))
 
-    def unigram_p(self):
+    def unigram_p(self, temperature=1.0):
         if self.log_space_parametrization:
-            return torch.softmax(self.edge_log_potentials.weight.data[:,0], -1)
+            return torch.softmax(self.edge_log_potentials.weight.data[:,0] * temperature, -1)
         else:
-            return self.edge_log_potentials.weight.data[:,0] / self.edge_log_potentials.weight.data[:,0].sum()
+            return torch.softmax(self.edge_log_potentials.weight.data[:,0].log() * temperature, -1)
+
+    def log_weights(self):
+        if self.log_space_parametrization:
+            log_weights = self.edge_log_potentials.weight.data
+        else:
+            log_weights = self.edge_log_potentials.weight.data.log()
+        return log_weights

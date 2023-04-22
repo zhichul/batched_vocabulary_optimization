@@ -60,7 +60,8 @@ class Classifier(nn.Module):
                                                                                tokenization_memoizer,
                                                                                sentence_ids,
                                                                                specials=setup.specials,
-                                                                               pad_token_id=self.model.config.pad_token_id)
+                                                                               pad_token_id=self.model.config.pad_token_id,
+                                                                               temperature=setup.args.temperature)
 
             labels_ids= self.label_tokenizer(labels,
                                            setup.args.max_unit_length,
@@ -98,7 +99,8 @@ class Classifier(nn.Module):
                                                                               sentence_ids=sentence_ids,
                                                                               specials=setup.specials,
                                                                               pad_token_id=self.model.config.pad_token_id,
-                                                                              subsample_vocab=setup.args.subsample_vocab)
+                                                                              subsample_vocab=setup.args.subsample_vocab,
+                                                                              temperature=setup.args.temperature)
             seq_length =  tokenizer_output.input_ids.size(-1)
             labels_ids = self.label_tokenizer(labels,
                                               seq_length,

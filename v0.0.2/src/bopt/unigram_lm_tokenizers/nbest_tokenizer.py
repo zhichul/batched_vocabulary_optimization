@@ -32,7 +32,8 @@ class NBestTokenizer(LatticeTokenizer):
                 sentence_ids = None,
                 specials=set(),
                 pad_token_id=0,
-                subsample_vocab=None):
+                subsample_vocab=None,
+                temperature=1.0):
         if memoizer is None != sentence_ids is None: raise ValueError(
             "memoizer and sentence_ids have to be set at the same time")
         forward_encodings, input_ids, position_ids, attention_mask, type_ids, B, N, M, L, K = self.extract_encodings(
@@ -48,11 +49,12 @@ class NBestTokenizer(LatticeTokenizer):
             sentence_ids = sentence_ids,
             specials = specials,
             pad_token_id = pad_token_id,
-            subsample_vocab=subsample_vocab
+            subsample_vocab=subsample_vocab,
+            temperature=temperature
             )
 
         # compute nbest
-        edge_log_potentials = self.unigramlm(forward_encodings) # B x KN x M x L
+        edge_log_potentials = self.unigramlm(forward_encodings, temperature=temperature) # B x KN x M x L
         viterbi_nbest_output = viterbi_nbest(edge_log_potentials, n=n) # B x KN x n x M x L
         nbest_forward_encodings = forward_encodings.unsqueeze(2).expand_as(viterbi_nbest_output.mask).clone() # materialize so no list bugs
         nbest_forward_encodings[~viterbi_nbest_output.mask] = NONEDGE_ID

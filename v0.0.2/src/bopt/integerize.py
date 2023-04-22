@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import code
 from typing import (Dict, Generic, Iterable, Iterator, List, Optional, TypeVar, overload, Union)
 
 import numpy as np
@@ -103,7 +103,7 @@ class Integerizer(Generic[T]):
         """
         return self._objects[index]
 
-    def index(self, obj: T, add: bool = False, unk=False, default=False) -> Optional[int]:
+    def index(self, obj: T, add: bool = False, unk=False) -> Optional[int]:
         """
         The integer associated with a given object, or `None` if the object is not in the collection (OOV).
         Use `add=True` to add the object if it is not present.
@@ -112,12 +112,10 @@ class Integerizer(Generic[T]):
             return self._indices[obj]
         except KeyError as e:
             if not add:
-                if not default:
-                    raise e
-                print(f"WARNING:{obj} not contained in vocab, using default: {self.index(self.unk_token) if unk else None}")
                 if not unk:
-                    return None
+                    raise e
                 else:
+                    # print(f"WARNING:{obj} not contained in vocab, using default: {self.index(self.unk_token) if unk else None}")
                     return self.index(self.unk_token)
 
             # add the object to both data structures
@@ -156,10 +154,13 @@ class Integerizer(Generic[T]):
         vocab.unk_token = self.unk_token
         # subsample nonspecials
         subsample_size = int(ratio * (len(self) - len(self.specials)))
-        subsample = np.random.choice(self.non_specials, size=subsample_size, replace=False,
-                                     p=[weights[i] for i, item in self.non_specials])
-        vocab._objects = subsample
-        vocab._indices = {item: self._indices[item] for i, item in subsample}
+        weights =  np.array([weights[i] for i, item in self.non_specials])
+        weights /= weights.sum()
+        subsample = np.random.choice(list(range(len(self.non_specials))), size=subsample_size, replace=False,
+                                     p=weights)
+        vocab._objects = [self.non_specials[i][1] for i in subsample]
+        vocab._indices = {self.non_specials[i][1]: self.non_specials[i][0] for i in subsample}
+
         # add the specials
         for token in self.specials:
             vocab._objects.append(token)

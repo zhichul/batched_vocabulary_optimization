@@ -29,6 +29,7 @@ def parse_arguments():
     parser.add_argument("--n", required=False, type=int, default=5, help="n for nbest or sample")
     parser.add_argument("--use_lattice_position_ids", action="store_true", help="whether to use token based position ids or lattice based (char based)")
     parser.add_argument("--subsample_vocab", required=False, default=None, type=float, help="how much to subsample vocabulary at training")
+    parser.add_argument("--temperature", required=False, default=1.0, type=float, help="hyperparameter for flattening the distribution over tokenizations")
 
     # lattice tokenizer parameters
     parser.add_argument("--max_blocks", required=True, type=int)

@@ -38,7 +38,8 @@ class LatticeTokenizer(nn.Module):
                 sentence_ids = None,
                 specials=set(),
                 pad_token_id=0,
-                subsample_vocab=None):
+                subsample_vocab=None,
+                temperature=1.0):
         if memoizer is None != sentence_ids is None: raise ValueError(
             "memoizer and sentence_ids have to be set at the same time")
         forward_encodings, input_ids, position_ids, attention_mask, type_ids, B, N, M, L, K = self.extract_encodings(
@@ -54,10 +55,11 @@ class LatticeTokenizer(nn.Module):
             sentence_ids = sentence_ids,
             specials = specials,
             pad_token_id = pad_token_id,
-            subsample_vocab = subsample_vocab
+            subsample_vocab = subsample_vocab,
+            temperature = temperature
             )
         # compute attention
-        edge_log_potentials = self.unigramlm(forward_encodings) # B x KN x M x L
+        edge_log_potentials = self.unigramlm(forward_encodings, temperature=temperature) # B x KN x M x L
         attention = attention_bias(attention_mask, edge_log_potentials) # B x KNE x KNE
 
         # compute and normalize entropy
@@ -85,7 +87,8 @@ class LatticeTokenizer(nn.Module):
                 sentence_ids = None,
                 specials=set(),
                 pad_token_id=0,
-                subsample_vocab=None):
+                subsample_vocab=None,
+                temperature=1.0):
         B, N, M, L, K = len(sentences), max_blocks, max_unit_length, max_block_length, 1
         if isinstance(sentences[0], list):
             K = len(sentences[0])
@@ -94,7 +97,7 @@ class LatticeTokenizer(nn.Module):
                 sentence_ids = sum(sentence_ids, [])
         if self.training and subsample_vocab is not None:
             # only subsample in training
-            vocab = self.vocabulary.subsample(subsample_vocab,self.unigramlm.unigram_p().tolist())
+            vocab = self.vocabulary.subsample(subsample_vocab,self.unigramlm.unigram_p(temperature=temperature).tolist())
         else:
             vocab = self.vocabulary
         forward_encodings = integerize_for_forward(sentences, N, M, L, vocab,
@@ -120,8 +123,8 @@ class LatticeTokenizer(nn.Module):
         self.unigramlm.clamp_weights()
     def save_to_folder(self, folder):
         with open(os.path.join(folder, "learned_vocab.txt"), "wt") as f:
-            for v, w in zip(self.vocabulary,
-                            self.unigramlm.edge_log_potentials.weight.data.tolist()):
+            log_weights = self.unigramlm.log_weights().tolist()
+            for v, w in zip(self.vocabulary, log_weights):
                 weght_str = '\t'.join([f'{i}' for i in w])
                 print(f"{v}\t{weght_str}", file=f)
 
