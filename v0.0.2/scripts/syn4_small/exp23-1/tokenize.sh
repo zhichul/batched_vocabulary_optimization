@@ -13,7 +13,7 @@ for VSIZE in 50 100 200 400
 do
 for N in 10
 do
-for DATA in small #100 500 full
+for DATA in 100 500 small full
 do
 for INPUT_NAME in train dev test
 do
