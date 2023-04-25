@@ -9,7 +9,7 @@ for DATA in 100 500 small full
 do
 for SIZE in 768
 do
-for INPUT_NAME in train dev
+for INPUT_NAME in train dev test
 do
 for CKPT in checkpoint-early-stopping checkpoint-final
 do

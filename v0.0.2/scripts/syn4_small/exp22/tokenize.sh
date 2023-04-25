@@ -13,7 +13,7 @@ for VSIZE in 50 100 200 400
 do
 for DATA in 100 500 small full
 do
-for INPUT_NAME in train dev test
+for INPUT_NAME in test
 do
 for CKPT in checkpoint-early-stopping checkpoint-final
 do

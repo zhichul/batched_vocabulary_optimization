@@ -12,7 +12,7 @@ do
 for SEED in 42 44 46
 do
 OUTPUT_DIR=${ARTIFACT_PREFIX}/${SEED}/${SIZE}/${L1}/${DATA}
-python3 -m experiments.scripts.best_dev ${OUTPUT_DIR}/log.json dev_accuracy max
+python3 -m experiments.scripts.best_dev ${OUTPUT_DIR}/log.json dev_accuracy max --add_field hello world
 done
 done
 echo ""

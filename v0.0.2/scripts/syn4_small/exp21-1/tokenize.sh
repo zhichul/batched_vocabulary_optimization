@@ -13,7 +13,7 @@ for L1 in 0.01 0.1 1.0
 do
 for DATA in 100 500 small full
 do
-for INPUT_NAME in train dev test
+for INPUT_NAME in test
 do
 for CKPT in checkpoint-early-stopping checkpoint-final
 do

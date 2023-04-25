@@ -10,7 +10,7 @@ for DATA in 100 500 small full
 do
 for SIZE in 768
 do
-for INPUT_NAME in train dev
+for INPUT_NAME in train dev test
 do
 for VSIZE in 50 100 200 400
 do

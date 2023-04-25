@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-EXPID="24-1"
+EXPID="23-2"
 mkdir -p ${BLU_ARTIFACTS}/boptv2/syn4_small/exp${EXPID}
 DATA_PREFIX=${BLU_CORPORA}/vopt/syn/4/small
 ARTIFACT_PREFIX=${BLU_ARTIFACTS}/boptv2/syn4_small/exp${EXPID}
@@ -9,15 +9,17 @@ for SEED in 42 44 46
 do
 for SIZE in 768
 do
-for L1 in 0.01 0.1 1.0
+for VSIZE in 50 100 200 400
 do
-for DATA in 100 500 small full
+for N in 10
 do
-for INPUT_NAME in test
+for DATA in small 100 500 full
+do
+for INPUT_NAME in train dev test
 do
 for CKPT in checkpoint-early-stopping checkpoint-final
 do
-OUTPUT_DIR=${ARTIFACT_PREFIX}/${SEED}/${SIZE}/${L1}/${DATA}
+OUTPUT_DIR=${ARTIFACT_PREFIX}/${SEED}/${SIZE}/${VSIZE}/${N}best/${DATA}
 CHECKPOINT_DIR=${OUTPUT_DIR}/${CKPT}
 
 python3 -O -um bopt.tokenize \
@@ -37,7 +39,7 @@ python3 -O -um bopt.tokenize \
     < ${DATA_PREFIX}/${INPUT_NAME}.txt \
     > ${CHECKPOINT_DIR}/${INPUT_NAME}.1best.tokenizations.jsonl
 
-    rm -f ${CHECKPOINT_DIR}/${INPUT_NAME}.txt.1best.tokenizations.jsonl
+done
 done
 done
 done

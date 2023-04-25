@@ -1,0 +1,1 @@
+{"step": 1590, "dev_accuracy": 0.5766666531562805, "test_accuracy": 0.5986666679382324, "vsize": "50", "dropout": "0.1", "seed": "42", "data": "100", "token_precision": 0.3553408480944713, "token_recall": 0.4828592268417214, "token_f1": 0.409400123685838, "boundary_precision": 0.48936170212765956, "boundary_recall": 0.7657864523536165, "boundary_f1": 0.5971351835273052}

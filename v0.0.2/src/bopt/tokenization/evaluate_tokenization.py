@@ -47,7 +47,7 @@ def f1(tp, ap, at):
 
 token_precision, token_recall, token_f1 = f1(token_tp, token_ap, token_at)
 boundary_precision, boundary_recall, boundary_f1 = f1(boundary_tp, boundary_ap, boundary_at)
-print({"token_precision": token_precision, "token_recall": token_recall, "token_f1": token_f1, "boundary_precision": boundary_precision, "boundary_recall": boundary_recall, "boundary_f1":boundary_f1})
+print(json.dumps({"token_precision": token_precision, "token_recall": token_recall, "token_f1": token_f1, "boundary_precision": boundary_precision, "boundary_recall": boundary_recall, "boundary_f1":boundary_f1}))
 
 
 
