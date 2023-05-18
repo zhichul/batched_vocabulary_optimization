@@ -1,12 +1,16 @@
+import code
 import glob
 import os.path
+import random
+
+import torch.utils.data
 
 from bopt.data import preprocessors
 from bopt.modeling import load_model
 from bopt.modeling.classifier import Classifier
 from bopt.training import ClassificationSetup
 from bopt.training.optimizer import build_optimizers
-from bopt.unigram_lm_tokenizers import load_input_tokenizer, load_label_tokenizer
+from bopt.unigram_lm_tokenizers.loading import load_input_tokenizer, load_label_tokenizer
 from bopt.utils import load_vocab
 from experiments.utils.functions import ramp_function
 from experiments.utils.memoizer import OnDiskTensorMemoizer
@@ -33,12 +37,18 @@ def setup_classification(args):
     output_vocab = load_vocab(args.output_vocab)
 
     # load datasets
-    train_dataset = preprocessors[args.domain](args.train_dataset)
-    dev_dataset = preprocessors[args.domain](args.dev_dataset)
-    test_dataset = preprocessors[args.domain](args.test_dataset)
+    train_dataset = preprocessors[args.domain](args.train_dataset, args)
+    train_monitor_dataset = torch.utils.data.Subset(train_dataset, list(range(100)))
+    dev_dataset = preprocessors[args.domain](args.dev_dataset, args)
+    test_dataset = preprocessors[args.domain](args.test_dataset, args)
 
     train_dataloader = DataLoader(train_dataset,
                                   sampler=RandomSampler(train_dataset),
+                                  batch_size=args.gpu_batch_size,
+                                  num_workers=args.data_num_workers,
+                                  collate_fn=list_collate)
+    train_monitor_dataloader = DataLoader(train_monitor_dataset,
+                                  sampler=RandomSampler(train_monitor_dataset),
                                   batch_size=args.gpu_batch_size,
                                   num_workers=args.data_num_workers,
                                   collate_fn=list_collate)
@@ -62,10 +72,11 @@ def setup_classification(args):
     test_label_memoizer = dict()
 
     # model
-    model, config = load_model(args.config, pad_token_id=input_vocab.index(args.pad_token), bias_mode=args.bias_mode)
+    model, config = load_model(args.config, pad_token_id=input_vocab.index(args.pad_token), bias_mode=args.bias_mode, saved_model=args.pretrained_model, ignore=args.pretrained_ignore)
 
     # tokenizer
-    input_tokenizer = load_input_tokenizer(args.input_tokenizer_model, args.input_tokenizer_mode, input_vocab, log_space_parametrization=args.log_space_parametrization, weight_file=args.input_tokenizer_weights)
+    input_tokenizer = load_input_tokenizer(args.input_tokenizer_model, args.input_tokenizer_mode, input_vocab, log_space_parametrization=args.log_space_parametrization, weight_file=args.input_tokenizer_weights,
+                                           num_hidden_layers=args.nulm_num_hidden_layers, hidden_size=args.nulm_hidden_size, tie_embeddings=args.nulm_tie_embeddings, model=model)
     label_tokenizer = load_label_tokenizer(args.input_tokenizer_mode, output_vocab)
 
     # classifier
@@ -85,6 +96,7 @@ def setup_classification(args):
 
     return ClassificationSetup(args=args,
                                train_dataloader=train_dataloader,
+                               train_monitor_dataloader=train_monitor_dataloader,
                                dev_dataloader=dev_dataloader,
                                test_dataloader=test_dataloader,
                                train_tokenization_memoizer=train_tokenization_memoizer,

@@ -74,7 +74,8 @@ def integerize_for_forward(sentences: List[str],
                            remove_space: bool = False,
                            memoizer = None,
                            sentence_ids = None,
-                           specials=set()) -> torch.Tensor:
+                           specials=set(),
+                           try_word_initial_when_unk=False) -> torch.Tensor:
     """
     Given a list of sentences, this method extracts substrings from each,
     represented as a 2d matrix of vocabulary ids whose corresponding substrings
@@ -137,10 +138,10 @@ def integerize_for_forward(sentences: List[str],
                 # this is one of the two places where modification to the input strings is done (adding dummy space)
                 chunks = [(space_character if not remove_space and add_dummy_space_start and chunks[0] not in specials else "") + chunks[0]] + [(space_character if not remove_space and chunks[0] not in specials else "") + chunk for chunk in chunks[1:]]
                 blocks = blockify(chunks, N, L, specials=specials)
-                block_encoding = integerize_blocks(blocks, vocabulary, max_unit_length, max_block_length, specials=specials)
+                block_encoding = integerize_blocks(blocks, vocabulary, max_unit_length, max_block_length, specials=specials, try_word_initial_when_unk=try_word_initial_when_unk, word_initial_marker=space_character)
             else:
                 # otherwise integerize the sentence as a single block
-                block_encoding = integerize_blocks([[sentence]], vocabulary, M, L, specials=specials)
+                block_encoding = integerize_blocks([[sentence]], vocabulary, M, L, specials=specials, try_word_initial_when_unk=try_word_initial_when_unk, word_initial_marker=space_character)
             if memoizer:
                 memoizer[sentence_ids[i]] = block_encoding
         else: # load from cache
@@ -148,7 +149,8 @@ def integerize_for_forward(sentences: List[str],
         outputs.append(block_encoding)
     return torch.stack(outputs, dim=0)
 
-def integerize_blocks(blocks: List[List[str]], vocabulary: Integerizer, max_unit_length: int, max_block_length: int, specials=set()):
+def integerize_blocks(blocks: List[List[str]], vocabulary: Integerizer, max_unit_length: int, max_block_length: int, specials=set(),
+                      try_word_initial_when_unk=False, word_initial_marker="▁"):
     """
     Returns NxMxL where N is len(blocks), and M is max unit size, and L is max unit length
 
@@ -170,9 +172,14 @@ def integerize_blocks(blocks: List[List[str]], vocabulary: Integerizer, max_unit
                     for length in range(1, min(block_length - start, M) + 1):
                         if length <= 0: code.interact(local=locals())
                         unit = chunk[start - chunk_start:start - chunk_start + length]
-                        if length == 1 or unit in vocabulary:
+                        if unit in vocabulary:
                             # do indexing of all chars and all in-vocab substrings, and only characters can be unknown
-                            forward_ids[length - 1, start + length - 1] = vocabulary.index(unit, unk = length == 1)
+                            forward_ids[length - 1, start + length - 1] = vocabulary.index(unit)
+                        elif try_word_initial_when_unk and ((word_initial_marker + unit) in vocabulary):
+                            forward_ids[length - 1, start + length - 1] = vocabulary.index(word_initial_marker + unit)
+                        elif length == 1:
+                            forward_ids[length - 1, start + length - 1] = vocabulary.index(vocabulary.unk_token)
+
             chunk_start += len_c(chunk, specials)
         outputs.append(forward_ids)
     return torch.stack(outputs, dim=0)

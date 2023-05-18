@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-for DATA in 100 500 # small full
+for DATA in 100 500 small full
 do
 for SIZE in 42 92 126 142 192 392
 do

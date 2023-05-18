@@ -60,8 +60,10 @@ class Classifier(nn.Module):
                                                                                tokenization_memoizer,
                                                                                sentence_ids,
                                                                                specials=setup.specials,
+                                                                               try_word_initial_when_unk=setup.args.try_word_initial_when_unk,
                                                                                pad_token_id=self.model.config.pad_token_id,
-                                                                               temperature=setup.args.temperature)
+                                                                               temperature=setup.args.temperature,
+                                                                               collapse_padding=setup.args.collapse_padding)
 
             labels_ids= self.label_tokenizer(labels,
                                            setup.args.max_unit_length,
@@ -98,6 +100,7 @@ class Classifier(nn.Module):
                                                                               memoizer=tokenization_memoizer,
                                                                               sentence_ids=sentence_ids,
                                                                               specials=setup.specials,
+                                                                              try_word_initial_when_unk=setup.args.try_word_initial_when_unk,
                                                                               pad_token_id=self.model.config.pad_token_id,
                                                                               subsample_vocab=setup.args.subsample_vocab,
                                                                               temperature=setup.args.temperature)
@@ -125,7 +128,43 @@ class Classifier(nn.Module):
                                     logits=logits,
                                     labels=shortlabels,
                                     predictions=shortpredictions,)
-
+        if setup.args.input_tokenizer_mode == "bert":
+            B = len(sentences)
+            tokenizer_output = self.input_tokenizer.encode_batch(sentences)
+            max_length = max(len(out.tokens) for out in tokenizer_output)
+            input_ids = torch.zeros(B, max_length, dtype=torch.long)
+            position_ids = torch.zeros(B, max_length, dtype=torch.long)
+            attention_mask = torch.zeros(B, max_length, dtype=torch.long)
+            type_ids = torch.zeros(B, max_length, dtype=torch.long)
+            for i in range(input_ids.size(0)):
+                l = len(tokenizer_output[i].tokens)
+                input_ids[i, :l] = torch.tensor(tokenizer_output[i].ids, dtype=torch.long)
+                position_ids[i, :l] = torch.tensor(list(range(l)), dtype=torch.long)
+                attention_mask[i, :l] = torch.tensor(tokenizer_output[i].attention_mask, dtype=torch.long)
+                type_ids[i, :l] = torch.tensor(tokenizer_output[i].type_ids, dtype=torch.long)
+            input_ids = input_ids.to(setup.args.device)
+            position_ids = position_ids.to(setup.args.device)
+            attention_mask = attention_mask.to(setup.args.device)
+            type_ids = type_ids.to(setup.args.device)
+            labels_ids = self.label_tokenizer(labels,
+                                              max_length,
+                                              label_memoizer,
+                                              label_ids).to(setup.args.device) # hack for accessing device
+            losses = self.model(input_ids=input_ids,
+                                position_ids=position_ids,
+                                attention_mask=attention_mask,
+                                token_type_ids=type_ids)
+            logits = losses[0] # B x n x seq_len x |output_vocab|
+            logits = logits.reshape(B,max_length,-1) # 1best mode does not use the weights
+            task_loss = CrossEntropyLoss()(logits.view(-1, logits.size(-1)), labels_ids.view(-1))
+            shortpredictions, shortlabels = self.label_tokenizer.retrieve_predictions(self.extract_predictions(logits),
+                                                                                      labels_ids)
+            return ClassifierOutput(task_loss=task_loss,
+                                    regularizers=Regularizers(entropy=None, l1=None,
+                                                              nchars=None),
+                                    logits=logits,
+                                    labels=shortlabels,
+                                    predictions=shortpredictions,)
 
 
     def extract_predictions(self, logits):

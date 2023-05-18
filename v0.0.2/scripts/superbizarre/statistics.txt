@@ -1,0 +1,72 @@
+(dl22) blu@blu-Z690-CLASSIFIED:~/jhu/bopt/v0.0.2/scripts/superbizarre/exp1-1$ csv_extractor 0 < /export/a01/corpora/superbizarre/data/arxiv/csv/arxiv_train.csv > tmp
+(dl22) blu@blu-Z690-CLASSIFIED:~/jhu/bopt/v0.0.2/scripts/superbizarre/exp1-1$ python3
+Python 3.9.12 (main, Apr  5 2022, 06:56:58)
+[GCC 7.5.0] :: Anaconda, Inc. on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> max(map(len, open("tmp", "rt").readlines()))
+26
+>>>
+(dl22) blu@blu-Z690-CLASSIFIED:~/jhu/bopt/v0.0.2/scripts/superbizarre/exp1-1$ csv_extractor 0 < /export/a01/corpora/superbizarre/data/arxiv/csv/arxiv_dev.csv > tmp
+(dl22) blu@blu-Z690-CLASSIFIED:~/jhu/bopt/v0.0.2/scripts/superbizarre/exp1-1$ python3
+Python 3.9.12 (main, Apr  5 2022, 06:56:58)
+[GCC 7.5.0] :: Anaconda, Inc. on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> max(map(len, open("tmp", "rt").readlines()))
+30
+>>>
+(dl22) blu@blu-Z690-CLASSIFIED:~/jhu/bopt/v0.0.2/scripts/superbizarre/exp1-1$ csv_extractor 0 < /export/a01/corpora/superbizarre/data/arxiv/csv/arxiv_test.csv > tmp
+(dl22) blu@blu-Z690-CLASSIFIED:~/jhu/bopt/v0.0.2/scripts/superbizarre/exp1-1$ python3
+Python 3.9.12 (main, Apr  5 2022, 06:56:58)
+[GCC 7.5.0] :: Anaconda, Inc. on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> max(map(len, open("tmp", "rt").readlines()))
+27
+>>>
+(dl22) blu@blu-Z690-CLASSIFIED:~/jhu/bopt/v0.0.2/scripts/superbizarre/exp1-1$ csv_extractor 0 < /export/a01/corpora/superbizarre/data/amazon/csv/amazon_test.csv > tmp
+(dl22) blu@blu-Z690-CLASSIFIED:~/jhu/bopt/v0.0.2/scripts/superbizarre/exp1-1$ python3
+Python 3.9.12 (main, Apr  5 2022, 06:56:58)
+[GCC 7.5.0] :: Anaconda, Inc. on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> max(map(len, open("tmp", "rt").readlines()))
+32
+>>>
+(dl22) blu@blu-Z690-CLASSIFIED:~/jhu/bopt/v0.0.2/scripts/superbizarre/exp1-1$ csv_extractor 0 < /export/a01/corpora/superbizarre/data/amazon/csv/amazon_dev.csv > tmp
+(dl22) blu@blu-Z690-CLASSIFIED:~/jhu/bopt/v0.0.2/scripts/superbizarre/exp1-1$ python3
+Python 3.9.12 (main, Apr  5 2022, 06:56:58)
+[GCC 7.5.0] :: Anaconda, Inc. on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> max(map(len, open("tmp", "rt").readlines()))
+37
+>>>
+(dl22) blu@blu-Z690-CLASSIFIED:~/jhu/bopt/v0.0.2/scripts/superbizarre/exp1-1$ csv_extractor 0 < /export/a01/corpora/superbizarre/data/amazon/csv/amazon_train.csv > tmp
+(dl22) blu@blu-Z690-CLASSIFIED:~/jhu/bopt/v0.0.2/scripts/superbizarre/exp1-1$ python3
+Python 3.9.12 (main, Apr  5 2022, 06:56:58)
+[GCC 7.5.0] :: Anaconda, Inc. on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> max(map(len, open("tmp", "rt").readlines()))
+39
+>>>
+(dl22) blu@blu-Z690-CLASSIFIED:~/jhu/bopt/v0.0.2/scripts/superbizarre/exp1-1$ csv_extractor 0 < /export/a01/corpora/superbizarre/data/reddit/csv/reddit_train.csv > tmp
+(dl22) blu@blu-Z690-CLASSIFIED:~/jhu/bopt/v0.0.2/scripts/superbizarre/exp1-1$ python3
+Python 3.9.12 (main, Apr  5 2022, 06:56:58)
+[GCC 7.5.0] :: Anaconda, Inc. on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> max(map(len, open("tmp", "rt").readlines()))
+78
+>>>
+(dl22) blu@blu-Z690-CLASSIFIED:~/jhu/bopt/v0.0.2/scripts/superbizarre/exp1-1$ csv_extractor 0 < /export/a01/corpora/superbizarre/data/reddit/csv/reddit_dev.csv > tmp
+(dl22) blu@blu-Z690-CLASSIFIED:~/jhu/bopt/v0.0.2/scripts/superbizarre/exp1-1$ python3
+Python 3.9.12 (main, Apr  5 2022, 06:56:58)
+[GCC 7.5.0] :: Anaconda, Inc. on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> max(map(len, open("tmp", "rt").readlines()))
+29
+>>>
+(dl22) blu@blu-Z690-CLASSIFIED:~/jhu/bopt/v0.0.2/scripts/superbizarre/exp1-1$ csv_extractor 0 < /export/a01/corpora/superbizarre/data/reddit/csv/reddit_test.csv > tmp
+(dl22) blu@blu-Z690-CLASSIFIED:~/jhu/bopt/v0.0.2/scripts/superbizarre/exp1-1$ python3
+Python 3.9.12 (main, Apr  5 2022, 06:56:58)
+[GCC 7.5.0] :: Anaconda, Inc. on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> max(map(len, open("tmp", "rt").readlines()))
+36
+>>>

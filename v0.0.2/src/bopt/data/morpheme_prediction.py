@@ -3,7 +3,7 @@ from experiments.utils.datasets import IDExampleDataset
 from typing import List
 import csv
 
-def preprocess_morpheme_prediction_dataset(file):
+def preprocess_morpheme_prediction_dataset(file, args):
     examples = []
     with open(file) as csvfile:
         reader = csv.DictReader(csvfile, fieldnames=["id", "label", "text", "features", "segmentation"])

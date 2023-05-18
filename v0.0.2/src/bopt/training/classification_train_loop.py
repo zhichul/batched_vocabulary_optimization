@@ -49,9 +49,10 @@ def train_classification(setup: ClassificationSetup):
                     "epoch": epoch,
                     "elapsed": state.elapsed,
                     "train_loss": windowed_loss_avg,
-                    "model_lr": setup.optimizer.named_param_groups["model_decay"]["lr"],
-                    "tokenizer_lr": setup.optimizer.named_param_groups["tokenizer"]["lr"],
+                    "model_lr": setup.optimizer.named_param_groups["model_decay"]["lr"]
                 }
+                if setup.args.input_tokenizer_model in ["unigram", "nulm"]:
+                    logline["tokenizer_lr"] = setup.optimizer.named_param_groups["tokenizer"]["lr"]
                 logline.update(eval_metrics)
                 print(json.dumps(logline), file=f)
                 print(logline)
@@ -81,13 +82,18 @@ def train_classification(setup: ClassificationSetup):
                 raise AssertionError
             setup.optimizer.step()
             setup.classifier.model.zero_grad()
-            setup.classifier.input_tokenizer.zero_grad()
-            setup.classifier.input_tokenizer.clamp_weights()
+            if setup.args.input_tokenizer_model in ["unigram", "nulm"]:
+                setup.classifier.input_tokenizer.zero_grad()
+                setup.classifier.input_tokenizer.clamp_weights()
             step += 1
 
         # maybe step scheduler
         windowed_loss.append(loss.item())
         if len(windowed_loss) >= (setup.args.lr_adjustment_window_size // setup.args.gpu_batch_size):
+            if setup.args.annealing > 0 and setup.args.annealing_start_steps <= step <= setup.args.annealing_end_steps:
+                setup.scheduler._reset()
+                # reset so never step down due to increasing entropy loss factor, and continue with new baseline after
+                # the annealing factor is maxed out
             windowed_loss_avg = sum(windowed_loss) / len(windowed_loss)
             setup.scheduler.step(windowed_loss_avg)
             windowed_loss = []

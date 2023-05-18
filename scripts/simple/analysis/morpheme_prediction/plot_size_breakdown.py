@@ -41,7 +41,7 @@ STYLES = ["o", "^"]
 # TRAIN_FILE = "/export/a01/corpora/vopt/syn/3/full/train.csv"
 
 
-# def load_tokenizer(input_vocab, weights, device, csp=None, specials=tuple()):
+# def load_input_tokenizer(input_vocab, weights, device, csp=None, specials=tuple()):
 #     tokenizer = Tokenizer(vocab=input_vocab,
 #                           weights=weights,
 #                           log_space_parametrization=False,

@@ -1,23 +1,20 @@
 #!/usr/bin/env bash
-EXPID="21-1"
-mkdir -p ${BLU_ARTIFACTS}/boptv2/syn4_small/exp${EXPID}
-ARTIFACT_PREFIX=${BLU_ARTIFACTS}/boptv2/syn4_small/exp${EXPID}
-SCRIPT_PREFIX=${HOME}/jhu/bopt/v0.0.2/scripts/syn4_small/exp${EXPID}
+EXPID="1-1"
+mkdir -p ${BLU_ARTIFACTS}/boptv2/superbizarre/exp${EXPID}
+DATA_PREFIX=${BLU_CORPORA}/superbizarre/data
+ARTIFACT_PREFIX=${BLU_ARTIFACTS}/boptv2/superbizarre/exp${EXPID}
+SCRIPT_PREFIX=${HOME}/jhu/bopt/v0.0.2/scripts/superbizarre/exp${EXPID}
 
-for SEED in 42 44 46 48 50
+for SEED in 42 44 46
 do
-for SIZE in 768
+for L1 in 0.1 1.0 0.01
 do
-for L1 in 0.01 0.1 1.0
-do
-for DATA in 100 500 small full
-do
-DATA_PREFIX=${BLU_CORPORA}/vopt/syn/4/${DATA}
-OUTPUT_DIR=${ARTIFACT_PREFIX}/${SEED}/${SIZE}/${L1}/${DATA}
-TRAIN_NAME=train.csv
-DEV_NAME=dev.csv
-TEST_NAME=test.csv
-CONFIG_NAME=${SCRIPT_PREFIX}/config${SIZE}.json
+OUTPUT_DIR=${ARTIFACT_PREFIX}/${SEED}/${L1}
+TRAIN_NAME=arxiv/csv/arxiv_train.csv
+DEV_NAME=arxiv/csv/arxiv_dev.csv
+TEST_NAME=arxiv/csv/arxiv_test.csv
+PRETRAINED_MODEL=${BLU_ARTIFACTS}/bert
+CONFIG_NAME=${SCRIPT_PREFIX}/config768.json
 
 CUDA_VISIBLE_DEVICES=0 CUDA_LAUNCH_BLOCKING=1 python3 -O -um bopt.train \
     --output_directory ${OUTPUT_DIR} \
@@ -30,49 +27,47 @@ CUDA_VISIBLE_DEVICES=0 CUDA_LAUNCH_BLOCKING=1 python3 -O -um bopt.train \
     \
     --seed ${SEED} \
     --task classification \
-    --domain morpheme_prediction \
+    --domain superbizarre_prediction \
     --train_dataset ${DATA_PREFIX}/${TRAIN_NAME} \
     --dev_dataset ${DATA_PREFIX}/${DEV_NAME} \
     --test_dataset ${DATA_PREFIX}/${TEST_NAME} \
     --data_num_workers 1 \
     \
     --bias_mode mult_then_renorm \
-    --config  ${CONFIG_NAME} \
+    --config ${CONFIG_NAME} \
+    --pretrained_model ${PRETRAINED_MODEL} \
+    --pretrained_ignore cls.predictions.decoder.weight cls.predictions.bias \
     \
-    --input_vocab ${DATA_PREFIX}/substring-vocab-max_length=9-min_count=1.txt \
-    --output_vocab ${DATA_PREFIX}/output_vocab.txt \
+    --input_vocab ${BLU_ARTIFACTS}/bert/vocab.txt \
+    --output_vocab ${DATA_PREFIX}/labels.txt \
     --input_tokenizer_model unigram \
     --input_tokenizer_mode lattice \
-    --special_tokens "[UNK]" "[CLS]" "[SEP]" "[PAD]" "[MASK]" "[WBD]" "[SP1]" "[SP2]" "[SP3]" "[SP4]" "[SP5]" \
+    --special_tokens "[UNK]" "[CLS]" "[SEP]" "[PAD]" "[MASK]" \
     --pad_token "[PAD]" \
-    --log_space_parametrization \
     \
     --max_blocks 1 \
-    --max_unit_length 9 \
-    --max_block_length 12 \
-    --space_character " " \
-    --remove_space \
+    --max_unit_length 19 \
+    --max_block_length 48 \
+    --space_character "▁" \
     --split_on_space \
+    --collapse_padding \
     \
     --task_model_learning_rate 6.25e-5 \
     --input_tokenizer_learning_rate 0.02 \
     --train_batch_size 1024 \
-    --train_steps 600 \
+    --train_steps 1200 \
     --patience 10 \
-    --lr_adjustment_window_size 2048 \
+    --lr_adjustment_window_size 58447 \
     --reduce_factor 0.25 \
     \
-    --eval_steps 30 \
+    --eval_steps 60 \
     \
     --annealing 10.0 \
-    --annealing_start_steps 300 \
-    --annealing_end_steps 450 \
+    --annealing_start_steps 600 \
+    --annealing_end_steps 900 \
     --L1 ${L1} \
     \
     --gpu_batch_size 128 \
     --device "cuda"
-
-done
-done
 done
 done

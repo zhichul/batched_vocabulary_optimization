@@ -1,4 +1,6 @@
+import code
 import math
+import os
 from typing import List
 
 import torch
@@ -75,3 +77,10 @@ class UnigramLM(nn.Module):
         else:
             log_weights = self.edge_log_potentials.weight.data.log()
         return log_weights
+
+    def save_to_folder(self, folder, vocabulary):
+        with open(os.path.join(folder, "learned_vocab.txt"), "wt") as f:
+            log_weights = self.log_weights().tolist()
+            for v, w in zip(vocabulary, log_weights):
+                weght_str = '\t'.join([f'{i}' for i in w])
+                print(f"{v}\t{weght_str}", file=f)

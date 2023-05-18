@@ -31,6 +31,7 @@ class NBestTokenizer(LatticeTokenizer):
                 memoizer = None,
                 sentence_ids = None,
                 specials=set(),
+                try_word_initial_when_unk=False,
                 pad_token_id=0,
                 subsample_vocab=None,
                 temperature=1.0):
@@ -48,6 +49,7 @@ class NBestTokenizer(LatticeTokenizer):
             memoizer = memoizer,
             sentence_ids = sentence_ids,
             specials = specials,
+            try_word_initial_when_unk=try_word_initial_when_unk,
             pad_token_id = pad_token_id,
             subsample_vocab=subsample_vocab,
             temperature=temperature

@@ -27,6 +27,7 @@ def tokenization_loop(setup: TokenizationSetup):
                       add_dummy_space_start=setup.args.add_dummy_space_start,
                       remove_space=setup.args.remove_space,
                       specials=setup.specials,
+                      try_word_initial_when_unk=setup.args.try_word_initial_when_unk,
                       pad_token_id=-1,
                       temperature=setup.args.temperature) # pad should never be used in single sentence mode, so this is a fail check
             tokenizations = []

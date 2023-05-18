@@ -2,6 +2,7 @@ import json
 import os
 
 import torch
+from tokenizers import Tokenizer
 
 from bopt.training import TrainingState
 
@@ -11,7 +12,8 @@ def save_classification_checkpoint(output_dir, checkpoint_name, state: TrainingS
     os.makedirs(checkpointdir, exist_ok=True)
 
     # save tokenizer
-    classifier.input_tokenizer.save_to_folder(checkpointdir)
+    if not isinstance(classifier.input_tokenizer, Tokenizer):
+        classifier.input_tokenizer.save_to_folder(checkpointdir)
 
     # If we save using the predefined names, we can load using `from_pretrained`
     output_model_file = os.path.join(checkpointdir, "pytorch_model.bin")

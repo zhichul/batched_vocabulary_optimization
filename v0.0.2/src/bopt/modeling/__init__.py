@@ -2,13 +2,18 @@ import os
 from dataclasses import dataclass
 from typing import Optional, Any
 
+import torch
+
 from bopt.modeling.modeling_bert import BertConfig, BertForMaskedLM
 
 
-def load_model(config, pad_token_id=0, saved_model=None, bias_mode=None):
+def load_model(config, pad_token_id=0, saved_model=None, bias_mode=None, ignore=set()):
     if saved_model is not None:
-        config = BertConfig.from_json_file(os.path.join(saved_model, "config.json"))
-        model = BertForMaskedLM.from_pretrained(saved_model)
+        # allows overriding configuration file
+        state_dict = torch.load(os.path.join(saved_model, "pytorch_model.bin"))
+        state_dict = {k:v for k,v in state_dict.items() if k not in ignore}
+        model = BertForMaskedLM.from_pretrained(None, state_dict=state_dict, config=config)
+        config = model.config
     else:
         config = BertConfig.from_json_file(config)
         config.pad_token_id = pad_token_id

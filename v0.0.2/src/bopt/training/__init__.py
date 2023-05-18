@@ -6,6 +6,7 @@ from typing import Optional, Any
 class ClassificationSetup:
     args :Optional[Any] = None
     train_dataloader :Optional[Any] = None
+    train_monitor_dataloader :Optional[Any] = None
     dev_dataloader :Optional[Any] = None
     test_dataloader :Optional[Any] = None
     train_tokenization_memoizer :Optional[Any] = None

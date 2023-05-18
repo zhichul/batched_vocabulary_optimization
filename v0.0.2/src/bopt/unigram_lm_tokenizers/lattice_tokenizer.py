@@ -1,7 +1,7 @@
 import os
 
 from bopt.unigram_lm_tokenizers.inference.entropy import entropy
-from bopt.unigram_lm_tokenizers.encoding.forward_encoding import integerize_for_forward, length
+from bopt.unigram_lm_tokenizers.encoding.forward_encoding import integerize_for_forward, length, NONEDGE_LOGPOT
 from bopt.unigram_lm_tokenizers.encoding.linearized_encoding import extract_input_ids, extract_position_ids, \
     extract_attention_mask, extract_type_ids
 from bopt.unigram_lm_tokenizers.inference.attention import attention_bias
@@ -17,9 +17,9 @@ from bopt.unigram_lm_tokenizers.tokenizers import UnigramLMTokenizerOutput
 
 class LatticeTokenizer(nn.Module):
 
-    def __init__(self, vocabulary, pretrained_log_potentials=None, log_space_parametrization=False):
+    def __init__(self, unigramlm, vocabulary):
         super().__init__()
-        self.unigramlm = UnigramLM(len(vocabulary), pretrained_log_potentials=pretrained_log_potentials, log_space_parametrization=log_space_parametrization)
+        self.unigramlm = unigramlm
         self.vocabulary = vocabulary
 
     @property
@@ -37,9 +37,11 @@ class LatticeTokenizer(nn.Module):
                 memoizer = None,
                 sentence_ids = None,
                 specials=set(),
+                try_word_initial_when_unk=False,
                 pad_token_id=0,
                 subsample_vocab=None,
-                temperature=1.0):
+                temperature=1.0,
+                collapse_padding=False):
         if memoizer is None != sentence_ids is None: raise ValueError(
             "memoizer and sentence_ids have to be set at the same time")
         forward_encodings, input_ids, position_ids, attention_mask, type_ids, B, N, M, L, K = self.extract_encodings(
@@ -54,6 +56,7 @@ class LatticeTokenizer(nn.Module):
             memoizer = memoizer,
             sentence_ids = sentence_ids,
             specials = specials,
+            try_word_initial_when_unk = try_word_initial_when_unk,
             pad_token_id = pad_token_id,
             subsample_vocab = subsample_vocab,
             temperature = temperature
@@ -61,6 +64,25 @@ class LatticeTokenizer(nn.Module):
         # compute attention
         edge_log_potentials = self.unigramlm(forward_encodings, temperature=temperature) # B x KN x M x L
         attention = attention_bias(attention_mask, edge_log_potentials) # B x KNE x KNE
+
+        # efficiency improvement
+        if collapse_padding:
+            max_length = attention_mask.sum(dim=-1).max()
+            new_input_ids = input_ids.new_zeros(input_ids.size(0), max_length)
+            new_position_ids = input_ids.new_zeros(input_ids.size(0), max_length)
+            new_attention_mask = input_ids.new_zeros(input_ids.size(0), max_length)
+            new_type_ids = input_ids.new_zeros(input_ids.size(0), max_length)
+            new_attention = attention.new_zeros(input_ids.size(0), max_length, max_length).fill_(NONEDGE_LOGPOT)
+            new_attention[:, list(range(max_length)), list(range(max_length))] = 0.0
+            for i in range(input_ids.size(0)):
+                nonpad = attention_mask[i].to(torch.bool)
+                l = nonpad.sum().item()
+                new_input_ids[i, :l] = input_ids[i, nonpad]
+                new_position_ids[i, :l] = position_ids[i, nonpad]
+                new_attention_mask[i, :l] = attention_mask[i, nonpad]
+                new_type_ids[i, :l] = type_ids[i, nonpad]
+                new_attention[i, :l, :l] = attention[i, nonpad][:, nonpad]
+            input_ids, position_ids, attention_mask, type_ids, attention = new_input_ids, new_position_ids, new_attention_mask, new_type_ids, new_attention
 
         # compute and normalize entropy
         ent = entropy(edge_log_potentials) # B x KN
@@ -86,6 +108,7 @@ class LatticeTokenizer(nn.Module):
                 memoizer = None,
                 sentence_ids = None,
                 specials=set(),
+                try_word_initial_when_unk=False,
                 pad_token_id=0,
                 subsample_vocab=None,
                 temperature=1.0):
@@ -107,7 +130,8 @@ class LatticeTokenizer(nn.Module):
                                                    remove_space=remove_space,
                                                    memoizer=memoizer,
                                                    sentence_ids=sentence_ids,
-                                                   specials=specials).to(self.device).reshape(B, K*N, M, L) # B x KN x M x L
+                                                   specials=specials,
+                                                   try_word_initial_when_unk=try_word_initial_when_unk).to(self.device).reshape(B, K*N, M, L) # B x KN x M x L
 
         # extract linearized ids
         input_ids = extract_input_ids(forward_encodings, padding_id=pad_token_id) # B x KNE
@@ -122,9 +146,5 @@ class LatticeTokenizer(nn.Module):
     def clamp_weights(self):
         self.unigramlm.clamp_weights()
     def save_to_folder(self, folder):
-        with open(os.path.join(folder, "learned_vocab.txt"), "wt") as f:
-            log_weights = self.unigramlm.log_weights().tolist()
-            for v, w in zip(self.vocabulary, log_weights):
-                weght_str = '\t'.join([f'{i}' for i in w])
-                print(f"{v}\t{weght_str}", file=f)
+        self.unigramlm.save_to_folder(folder, self.vocabulary)
 
