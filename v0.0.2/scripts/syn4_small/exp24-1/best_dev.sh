@@ -9,7 +9,7 @@ for DATA in 100 500 small full
 do
 for L1 in 0.01 0.1 1.0
 do
-for SEED in 42 44 46
+for SEED in 42 44 46 48 50 52 54 56 58 60
 do
 OUTPUT_DIR=${ARTIFACT_PREFIX}/${SEED}/${SIZE}/${L1}/${DATA}
 python3 -m experiments.scripts.best_dev ${OUTPUT_DIR}/log.json dev_accuracy max

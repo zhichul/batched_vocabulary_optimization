@@ -25,22 +25,22 @@ def parse_arguments():
     parser.add_argument("--input_tokenizer_model", required=True, type=str, choices=["unigram", "nulm", "bert"])
     parser.add_argument("--input_tokenizer_mode", required=True, type=str, choices=["lattice", "sample", "nbest", "1best", "bert"])
     parser.add_argument("--input_tokenizer_weights", required=False, type=str)
-    parser.add_argument("--nulm_num_hidden_layers", required=False, type=int, default=1)
-    parser.add_argument("--nulm_hidden_size", required=False, type=int, default=768)
+    parser.add_argument("--nulm_num_hidden_layers", required=False, type=int, default=None)
+    parser.add_argument("--nulm_hidden_size", required=False, type=int, default=None)
     parser.add_argument("--nulm_tie_embeddings", action="store_true", help="forces the transformer to use the same embeddings as the nulm")
     parser.add_argument("--log_space_parametrization", action="store_true")
-    parser.add_argument("--special_tokens", required=True, nargs="+", default=["[PAD]", "[UNK]", "[SP1]", "[SP2]", "[SP3]"])
+    parser.add_argument("--special_tokens", required=True, nargs="+", default=None)
     parser.add_argument("--try_word_initial_when_unk", action="store_true")
-    parser.add_argument("--pad_token", required=True, default="[PAD]")
-    parser.add_argument("--n", required=False, type=int, default=5, help="n for nbest or sample")
+    parser.add_argument("--pad_token", required=True, default=None)
+    parser.add_argument("--n", required=False, type=int, default=None, help="n for nbest or sample")
     parser.add_argument("--use_lattice_position_ids", action="store_true", help="whether to use token based position ids or lattice based (char based)")
     parser.add_argument("--subsample_vocab", required=False, default=None, type=float, help="how much to subsample vocabulary at training")
     parser.add_argument("--temperature", required=False, default=1.0, type=float, help="hyperparameter for flattening the distribution over tokenizations")
 
     # lattice tokenizer parameters
-    parser.add_argument("--max_blocks", required=False, type=int)
-    parser.add_argument("--max_unit_length", required=False, type=int)
-    parser.add_argument("--max_block_length", required=False, type=int)
+    parser.add_argument("--max_blocks", required=False, type=int, default=None)
+    parser.add_argument("--max_unit_length", required=False, type=int, default=None)
+    parser.add_argument("--max_block_length", required=False, type=int, default=None)
     parser.add_argument("--space_character", required=False, type=str, default="▁")
     parser.add_argument("--remove_space", action="store_true")
     parser.add_argument("--split_on_space", action="store_true")
@@ -61,8 +61,8 @@ def parse_arguments():
 
     # losses
     parser.add_argument("--annealing", required=False, type=float, default=0.0)
-    parser.add_argument("--annealing_start_steps", required=False, type=int, default=0.0)
-    parser.add_argument("--annealing_end_steps", required=False, type=float, default=0.0)
+    parser.add_argument("--annealing_start_steps", required=False, type=int, default=0)
+    parser.add_argument("--annealing_end_steps", required=False, type=int, default=0)
     parser.add_argument("--L1", required=False, type=float, default=0.0)
 
     # gpu
