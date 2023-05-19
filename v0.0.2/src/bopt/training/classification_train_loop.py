@@ -51,7 +51,7 @@ def train_classification(setup: ClassificationSetup):
                     "train_loss": windowed_loss_avg,
                     "model_lr": setup.optimizer.named_param_groups["model_decay"]["lr"]
                 }
-                if setup.args.input_tokenizer_model in ["unigram", "nulm"]:
+                if setup.args.input_tokenizer_model in ["unigram", "nulm"] and setup.args.input_tokenizer_learning_rate: # only do this if training
                     logline["tokenizer_lr"] = setup.optimizer.named_param_groups["tokenizer"]["lr"]
                 logline.update(eval_metrics)
                 print(json.dumps(logline), file=f)
@@ -82,7 +82,7 @@ def train_classification(setup: ClassificationSetup):
                 raise AssertionError
             setup.optimizer.step()
             setup.classifier.model.zero_grad()
-            if setup.args.input_tokenizer_model in ["unigram", "nulm"]:
+            if setup.args.input_tokenizer_model in ["unigram", "nulm"] and setup.args.input_tokenizer_learning_rate: # only do this if training
                 setup.classifier.input_tokenizer.zero_grad()
                 setup.classifier.input_tokenizer.clamp_weights()
             step += 1

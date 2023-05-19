@@ -59,7 +59,6 @@ CUDA_VISIBLE_DEVICES=0 CUDA_LAUNCH_BLOCKING=1 python3 -O -um bopt.train \
     --split_on_space \
     \
     --task_model_learning_rate 6.25e-5 \
-    --input_tokenizer_learning_rate 0.02 \
     --train_batch_size 1024 \
     --train_steps 1200 \
     --patience 10 \
