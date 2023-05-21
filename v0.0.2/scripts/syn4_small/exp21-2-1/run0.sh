@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
-EXPID="21-2"
+EXPID="21-2-1"
 mkdir -p ${BLU_ARTIFACTS}/boptv2/syn4_small/exp${EXPID}
 ARTIFACT_PREFIX=${BLU_ARTIFACTS}/boptv2/syn4_small/exp${EXPID}
 SCRIPT_PREFIX=${HOME}/jhu/bopt/v0.0.2/scripts/syn4_small/exp${EXPID}
 
-for SEED in 52 #54 56 58 60
+for SEED in 42 44 46 48 50
 do
 for SIZE in 768
 do
-for L1 in 0.01 #0.1 1.0
+for L1 in 0.01 0.1 1.0
 do
-for DATA in 100 500 #small full
+for DATA in 100 500 small full
 do
 DATA_PREFIX=${BLU_CORPORA}/vopt/syn/4/${DATA}
 OUTPUT_DIR=${ARTIFACT_PREFIX}/${SEED}/${SIZE}/${L1}/${DATA}
@@ -18,8 +18,9 @@ TRAIN_NAME=train.csv
 DEV_NAME=dev.csv
 TEST_NAME=test.csv
 CONFIG_NAME=${SCRIPT_PREFIX}/config${SIZE}.json
+EPOCH_SIZE=$(wc -l < ${DATA_PREFIX}/${TRAIN_NAME})
 
-CUDA_VISIBLE_DEVICES=1 CUDA_LAUNCH_BLOCKING=1 python3 -O -um bopt.train \
+CUDA_VISIBLE_DEVICES=0 CUDA_LAUNCH_BLOCKING=1 python3 -O -um bopt.train \
     --output_directory ${OUTPUT_DIR} \
     --overwrite_output_directory \
     \
@@ -58,8 +59,8 @@ CUDA_VISIBLE_DEVICES=1 CUDA_LAUNCH_BLOCKING=1 python3 -O -um bopt.train \
     --input_tokenizer_learning_rate 0.02 \
     --train_batch_size 1024 \
     --train_steps 3000 \
-    --patience 10 \
-    --lr_adjustment_window_size 2048 \
+    --patience 150 \
+    --lr_adjustment_window_size ${EPOCH_SIZE} \
     --reduce_factor 0.25 \
     \
     --eval_steps 150 \

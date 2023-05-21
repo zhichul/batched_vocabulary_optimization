@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-EXPID="21-2"
+EXPID="21-2-1"
 mkdir -p ${BLU_ARTIFACTS}/boptv2/syn4_small/exp${EXPID}
 DATA_PREFIX=${BLU_CORPORA}/vopt/syn/4/small
 ARTIFACT_PREFIX=${BLU_ARTIFACTS}/boptv2/syn4_small/exp${EXPID}

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-EXPID="21-1"
+EXPID="21-2-1"
 mkdir -p ${BLU_ARTIFACTS}/boptv2/syn4_small/exp${EXPID}
 ARTIFACT_PREFIX=${BLU_ARTIFACTS}/boptv2/syn4_small/exp${EXPID}
 
@@ -7,7 +7,6 @@ rm -f hyperopt-results.json
 touch hyperopt-results.json
 for DATA in 100 500 small full
 do
-  # extract results for a specific training data size into a single file
   touch hyperopt.${DATA}.tmp
   for SIZE in 768
   do
@@ -36,15 +35,15 @@ do
     dev_accuracy \
     test_accuracy \
     train_accuracy \
-    dev_entroy \
-    test_entropy \
     l1 \
     seed \
+    dev_entroy \
+    test_entropy \
     --output_json \
     --add_field data ${DATA} > hyperopt.${DATA}.results.tmp
 
   # merge with tokenization results
-  for INPUT_NAME in train dev test
+  for INPUT_NAME in train.100 dev test
   do
     python3 -m experiments.scripts.json_join \
       --path "${ARTIFACT_PREFIX}/{0}/${SIZE}/{1}/${DATA}/checkpoint-final/${INPUT_NAME}.1best.tokenizations.f1.json" \
@@ -65,4 +64,3 @@ do
   rm -f hyperopt.${DATA}.tmp
 
 done
-

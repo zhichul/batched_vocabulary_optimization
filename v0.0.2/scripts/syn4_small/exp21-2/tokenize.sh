@@ -9,13 +9,13 @@ for DATA in 100 500 small full
 do
 for SIZE in 768
 do
-for INPUT_NAME in train dev test
+for INPUT_NAME in train.100 dev test
 do
 for CKPT in checkpoint-early-stopping checkpoint-final
 do
 for L1 in 0.01 0.1 1.0
 do
-for SEED in 42 44 46 48 50 52 54 56 68 60
+for SEED in 42 44 46 48 50 52 54 56 58 60
 do
 OUTPUT_DIR=${ARTIFACT_PREFIX}/${SEED}/${SIZE}/${L1}/${DATA}
 CHECKPOINT_DIR=${OUTPUT_DIR}/${CKPT}
@@ -37,7 +37,6 @@ python3 -O -um bopt.tokenize \
     < ${DATA_PREFIX}/${INPUT_NAME}.txt \
     > ${CHECKPOINT_DIR}/${INPUT_NAME}.1best.tokenizations.jsonl
 
-    rm -f ${CHECKPOINT_DIR}/${INPUT_NAME}.txt.1best.tokenizations.jsonl
 done
 done
 done

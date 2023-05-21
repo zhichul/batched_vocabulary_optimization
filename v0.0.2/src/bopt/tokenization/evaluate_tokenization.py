@@ -42,8 +42,10 @@ for gold_line, predicted_line in zip(label_tokenizations, predicted_tokenization
         boundary_at += len(gold_boundaries) * weight
 
 def f1(tp, ap, at):
-    p, r = tp / ap, tp / at
-    return p, r, 2 * p * r / (p + r)
+    if ap == 0: p = 0
+    else: p = tp / ap
+    r = tp / at
+    return p, r, 2 * p * r / (p + r) if (p+r) > 0 else 0
 
 token_precision, token_recall, token_f1 = f1(token_tp, token_ap, token_at)
 boundary_precision, boundary_recall, boundary_f1 = f1(boundary_tp, boundary_ap, boundary_at)
