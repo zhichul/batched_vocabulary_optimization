@@ -10,7 +10,7 @@ for SIZE in 768
 do
 for L1 in 0.01 0.1 1.0
 do
-for DATA in 100 500 small full
+for DATA in  full #100 500 small
 do
 DATA_PREFIX=${BLU_CORPORA}/vopt/syn/4/${DATA}
 OUTPUT_DIR=${ARTIFACT_PREFIX}/${SEED}/${SIZE}/${L1}/${DATA}

@@ -14,7 +14,7 @@
   "position_embedding_type": "absolute",
   "type_vocab_size": 2,
   "use_cache": false,
-  "vocab_size": 7601,
+  "vocab_size": 23052,
   "override_output_vocab_size": 134,
   "tie_word_embeddings": false
 }
