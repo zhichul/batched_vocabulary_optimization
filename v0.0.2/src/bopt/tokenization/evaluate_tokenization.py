@@ -74,6 +74,8 @@ def main():
             predicted_tokens = set([(b, len(t)) for t, b in predicted_line["tokenizations"][j]]) # the representation of a token is rboundary + length of token
             for rb, length in predicted_tokens:
                 unique_predicted_tokens.add(predicted_line["text"][lboundary(length, rb):rb])
+            for rb, length in gold_tokens:
+                unique_gold_tokens.add(gold_line["text"][lboundary(length, rb):rb])
             token_tp += sum(token in predicted_tokens for token in gold_tokens) * weight
             token_ap += len(predicted_tokens) * weight
             token_at += len(gold_tokens) * weight

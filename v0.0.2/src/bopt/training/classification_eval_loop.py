@@ -46,4 +46,4 @@ def eval_classification(setup: ClassificationSetup, state: TrainingState):
     save_classification_predictions(test_predictions, f"{os.path.join(setup.args.output_directory, f'test-predictions-{state.step}.tsv')}")
     save_classification_predictions(test_labels, f"{os.path.join(setup.args.output_directory, f'test-labels-{state.step}.tsv')}")
 
-    return {"train_accuracy": train_monitor_acc, "dev_accuracy": dev_acc, "test_accuracy": test_acc, "dev_entroy": dev_entropy, "test_entropy": test_entropy}
+    return {"train_accuracy": train_monitor_acc, "dev_accuracy": dev_acc, "train_entropy": train_entropy, "test_accuracy": test_acc, "dev_entroy": dev_entropy, "test_entropy": test_entropy}
