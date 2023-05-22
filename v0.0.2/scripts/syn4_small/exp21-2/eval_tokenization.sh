@@ -22,7 +22,8 @@ CHECKPOINT_DIR=${OUTPUT_DIR}/${CKPT}
 
 python3 -um bopt.tokenization.evaluate_tokenization \
     ${DATA_PREFIX}/${INPUT_NAME}.1best.tokenizations.jsonl \
-    ${CHECKPOINT_DIR}/${INPUT_NAME}.1best.tokenizations.jsonl > ${CHECKPOINT_DIR}/${INPUT_NAME}.1best.tokenizations.f1.json
+    ${CHECKPOINT_DIR}/${INPUT_NAME}.1best.tokenizations.jsonl \
+    --categories_file ${DATA_PREFIX}/${INPUT_NAME}.tokenization_categories.jsonl > ${CHECKPOINT_DIR}/${INPUT_NAME}.1best.tokenizations.f1.json
 
 echo ${CHECKPOINT_DIR}/${INPUT_NAME}.1best.tokenizations.f1.json
 cat ${CHECKPOINT_DIR}/${INPUT_NAME}.1best.tokenizations.f1.json
