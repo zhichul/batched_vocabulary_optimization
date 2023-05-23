@@ -1,0 +1,2 @@
+Full size, 100 500 2k 11k condition, lattice with 0.01 0.1 1.0 L1 and 10 seeds (42 44 46... 60), and log_space_parametrization, ALBO,  and learning rate schedule fixed so that annealing actually happens
+(So the training parameters are a replica of exp1-2 really rather than exp1-1)
