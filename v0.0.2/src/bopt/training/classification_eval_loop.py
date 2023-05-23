@@ -3,7 +3,8 @@ import os
 
 from tqdm import tqdm
 
-from bopt.training import ClassificationSetup, TrainingState
+from bopt.training import ClassificationTrainingSetup, TrainingState
+from bopt.inference.classification_eval_loop import evaluate
 
 import torch
 
@@ -11,28 +12,11 @@ from experiments.metrics.accuracy import accuracy
 from experiments.predictions.classification import save_classification_predictions
 
 
-def eval_classification(setup: ClassificationSetup, state: TrainingState):
-    def eval(dataloader, mode):
-        predictions = []
-        labels = []
-        entropy = 0
-        characters = 0
-        for batch in tqdm(dataloader):
-            ids, sentences, lbs = batch
-            output = setup.classifier(setup, ids, sentences, lbs, mode=mode)
-            predictions.append(output.predictions)
-            labels.append(output.labels)
-            if output.regularizers.entropy:  # when a bert tokenizer is used entropy is not defined
-                entropy += output.regularizers.entropy.item() * output.regularizers.nchars
-                characters += output.regularizers.nchars
-        predictions = torch.cat(predictions, dim=0)
-        labels = torch.cat(labels, dim=0)
-        entropy = entropy / characters if characters > 0 else 0
-        return predictions, labels, entropy, characters
+def eval_classification(setup: ClassificationTrainingSetup, state: TrainingState):
 
-    train_predictions, train_labels, train_entropy, train_characters = eval(setup.train_monitor_dataloader, "train")
-    dev_predictions, dev_labels, dev_entropy, dev_characters = eval(setup.dev_dataloader, "dev")
-    test_predictions, test_labels, test_entropy, test_characters = eval(setup.test_dataloader, "test")
+    train_predictions, train_labels, train_entropy, train_characters = evaluate(setup, setup.train_monitor_dataloader, "train")
+    dev_predictions, dev_labels, dev_entropy, dev_characters = evaluate(setup, setup.dev_dataloader, "dev")
+    test_predictions, test_labels, test_entropy, test_characters = evaluate(setup, setup.test_dataloader, "test")
 
     # calculate accuracy, save model if bested, log predictions, log to the global log
     train_monitor_acc = accuracy(train_predictions, train_labels)

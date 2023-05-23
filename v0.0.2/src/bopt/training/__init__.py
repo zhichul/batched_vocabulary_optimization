@@ -3,7 +3,7 @@ from typing import Optional, Any
 
 
 @dataclass
-class ClassificationSetup:
+class ClassificationTrainingSetup:
     args :Optional[Any] = None
     train_dataloader :Optional[Any] = None
     train_monitor_dataloader :Optional[Any] = None

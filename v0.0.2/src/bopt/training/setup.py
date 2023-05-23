@@ -8,22 +8,17 @@ import torch.utils.data
 from bopt.data import preprocessors
 from bopt.modeling import load_model
 from bopt.modeling.classifier import Classifier
-from bopt.training import ClassificationSetup
+from bopt.training import ClassificationTrainingSetup
 from bopt.training.optimizer import build_optimizers
 from bopt.unigram_lm_tokenizers.loading import load_input_tokenizer, load_label_tokenizer
 from bopt.utils import load_vocab
 from experiments.utils.functions import ramp_function
 from experiments.utils.memoizer import OnDiskTensorMemoizer
 from experiments.utils.seeding import seed
+from experiments.utils.datasets import list_collate
 
 from torch.utils.data import DataLoader, RandomSampler
 
-def list_collate(examples):
-    outputs = [[] for _ in range(len(examples[0]))]
-    for example in examples:
-        for column in range(len(examples[0])):
-            outputs[column].append(example[column])
-    return outputs
 
 def setup_classification(args):
     seed(args.seed)
@@ -94,19 +89,19 @@ def setup_classification(args):
                   args.annealing_start_steps,
                   args.annealing_end_steps)
 
-    return ClassificationSetup(args=args,
-                               train_dataloader=train_dataloader,
-                               train_monitor_dataloader=train_monitor_dataloader,
-                               dev_dataloader=dev_dataloader,
-                               test_dataloader=test_dataloader,
-                               train_tokenization_memoizer=train_tokenization_memoizer,
-                               dev_tokenization_memoizer=dev_tokenization_memoizer,
-                               test_tokenization_memoizer=test_tokenization_memoizer,
-                               train_label_memoizer=train_label_memoizer,
-                               dev_label_memoizer=dev_label_memoizer,
-                               test_label_memoizer=test_label_memoizer,
-                               classifier=classifier,
-                               optimizer=optimizer,
-                               scheduler=scheduler,
-                               specials=specials,
-                               annealing_scheduler=annealing_scheduler)
+    return ClassificationTrainingSetup(args=args,
+                                       train_dataloader=train_dataloader,
+                                       train_monitor_dataloader=train_monitor_dataloader,
+                                       dev_dataloader=dev_dataloader,
+                                       test_dataloader=test_dataloader,
+                                       train_tokenization_memoizer=train_tokenization_memoizer,
+                                       dev_tokenization_memoizer=dev_tokenization_memoizer,
+                                       test_tokenization_memoizer=test_tokenization_memoizer,
+                                       train_label_memoizer=train_label_memoizer,
+                                       dev_label_memoizer=dev_label_memoizer,
+                                       test_label_memoizer=test_label_memoizer,
+                                       classifier=classifier,
+                                       optimizer=optimizer,
+                                       scheduler=scheduler,
+                                       specials=specials,
+                                       annealing_scheduler=annealing_scheduler)

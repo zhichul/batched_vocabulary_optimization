@@ -7,7 +7,7 @@ import torch.nn as nn
 from torch.nn import CrossEntropyLoss
 
 from bopt.modeling import Regularizers
-from bopt.training import ClassificationSetup
+from bopt.training import ClassificationTrainingSetup
 from bopt.unigram_lm_tokenizers.tokenizers import UnigramLMTokenizerOutput
 
 @dataclass
@@ -28,7 +28,7 @@ class Classifier(nn.Module):
         self.label_tokenizer = label_tokenizer
 
     def forward(self,
-                setup: ClassificationSetup,
+                setup: ClassificationTrainingSetup,
                 ids: List[str],
                 sentences: Union[List[str],
                 List[List[str]]], labels: List[List[str]],
@@ -36,12 +36,15 @@ class Classifier(nn.Module):
         if mode == "train":
             tokenization_memoizer = setup.train_tokenization_memoizer
             label_memoizer = setup.train_label_memoizer
-        if mode == "dev":
+        elif mode == "dev":
             tokenization_memoizer = setup.dev_tokenization_memoizer
             label_memoizer = setup.dev_label_memoizer
-        if mode == "test":
+        elif mode == "test":
             tokenization_memoizer = setup.test_tokenization_memoizer
             label_memoizer = setup.test_label_memoizer
+        else:
+            tokenization_memoizer = None
+            label_memoizer = None
         if isinstance(sentences[0], list):
             # multiple sentence setup
             sentence_ids = [[f"{id}-{j}" for j in range(len(sentence_group))] for id,sentence_group in zip(ids, sentences)]

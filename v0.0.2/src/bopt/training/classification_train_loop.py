@@ -10,11 +10,11 @@ from bopt.modeling.classifier import ClassifierOutput
 from bopt.training import TrainingState
 from bopt.training.classification_eval_loop import eval_classification
 from bopt.training.saving import save_classification_checkpoint
-from bopt.training.setup import ClassificationSetup
+from bopt.training.setup import ClassificationTrainingSetup
 from bopt.training.utils import load_forever
 
 
-def train_classification(setup: ClassificationSetup):
+def train_classification(setup: ClassificationTrainingSetup):
     with open(os.path.join(setup.args.output_directory, "log.json"), "wt") as f:
         pass
     step = 0
