@@ -1,4 +1,8 @@
 function lattice_hyperopt () {
+  # this function optimizes the hyperparameters other than training DATA,
+  # and the step (always takes the final iteration, i.e. after entropy regularization)
+  # then merges the tokenization metrics in from the final iteration, and saves
+  # to hyperopt-results.json
   mkdir -p ${BLU_ARTIFACTS}/boptv2/syn4_small/exp${EXPID}
   ARTIFACT_PREFIX=${BLU_ARTIFACTS}/boptv2/syn4_small/exp${EXPID}
 
