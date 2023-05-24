@@ -31,7 +31,7 @@ def setup_classification(args):
                                   collate_fn=list_collate)
 
     # model
-    model, config = load_model(config=os.path.join(args.output_directory, "config.json"), pad_token_id=None, bias_mode=args.bias_mode, saved_model=args.model_path, ignore=set())
+    model, config = load_model(config=os.path.join(args.model_path, "config.json"), pad_token_id=None, bias_mode=args.bias_mode, saved_model=args.model_path, ignore=set())
 
     # tokenizer
     input_tokenizer = load_input_tokenizer(args.input_tokenizer_model, args.input_tokenizer_mode, input_vocab, log_space_parametrization=args.log_space_parametrization, weight_file=args.input_tokenizer_weights,

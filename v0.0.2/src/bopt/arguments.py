@@ -6,7 +6,8 @@ def add_model_arguments(parser, mode="train"):
     if mode=="train":
         parser.add_argument("--config", type=str)
         parser.add_argument("--pretrained_model", type=str)
-        parser.add_argument("--pretrained_ignore", type=str, nargs="+")
+        parser.add_argument("--pretrained_ignore", type=str, nargs="+", default=None)
+        parser.add_argument("--pretrained_include", type=str, nargs="+", default=None)
     elif mode=="infer":
         parser.add_argument("--model_path", type=str, required=True)
 
@@ -46,6 +47,7 @@ def add_tokenizer_arguments(parser, mode="train"):
 def add_training_arguments(parser):
     # training
     parser.add_argument("--task_model_learning_rate", required=True, type=float, default=6.25e-5)
+    parser.add_argument("--task_model_embedding_learning_rate", required=False, type=float, default=None)
     parser.add_argument("--input_tokenizer_learning_rate", required=False, type=float, default=None)
     parser.add_argument("--train_batch_size", required=True, type=int, default=32)
     parser.add_argument("--train_steps", required=True, type=int, default=10_000)

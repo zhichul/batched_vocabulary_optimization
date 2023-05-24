@@ -56,7 +56,7 @@ from transformers.utils import logging
 
 from bopt.utils import log_safe, logaddexp_safe
 
-EPSILON = 1e-6
+EPSILON = 1e-2
 DEBUG = False
 
 logger = logging.get_logger(__name__)
@@ -452,8 +452,8 @@ class BertSelfAttention(nn.Module):
                 log_denominators = logaddexp_safe(torch.logsumexp(log_numerators, dim=-1,keepdim=True).expand_as(log_adjustment), log_adjustment)
                 log_denominators[log_denominators == -math.inf] = -math.inf # block gradients
                 attention_probs = (log_numerators - log_denominators).exp()
-                # if (attention_probs.isnan()).any():
-                #     code.interact(local=locals())
+                if (attention_probs.isnan()).any():
+                    code.interact(local=locals())
                 if DEBUG: code.interact(local=locals())
                 # min_ = log_denominators.min()
                 # max_ = log_denominators.max()

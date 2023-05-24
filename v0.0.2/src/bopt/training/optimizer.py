@@ -1,9 +1,11 @@
+import code
+
 import torch
 from torch.optim import Adam
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 
-def build_optimizers(args, model, tokenizer, model_lr, tokenizer_lr):
+def build_optimizers(args, model, tokenizer, model_lr, tokenizer_lr, embedding_lr=None):
     """
     Sets up separate learning rates for the task model and the tokenizer parameters.
 
@@ -13,9 +15,13 @@ def build_optimizers(args, model, tokenizer, model_lr, tokenizer_lr):
     """
     no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
     model_params = list(model.named_parameters())
+    if embedding_lr is None:
+        embedding_lr = model_lr
     optimizer_grouped_parameters = [
-        {'name': 'model_decay', 'params': [p for n, p in model_params if not any(nd in n for nd in no_decay)], 'weight_decay': 0.0}, # TODO: if we want weight decay
-        {'name': 'model_nodecay','params': [p for n, p in model_params if any(nd in n for nd in no_decay)], 'weight_decay': 0.0},
+        {'name': 'model_decay', 'params': [p for n, p in model_params if not any(nd in n for nd in no_decay) and ".embeddings." in n], 'weight_decay': 0.0, "lr": embedding_lr}, # TODO: if we want weight decay
+        {'name': 'model_decay', 'params': [p for n, p in model_params if not any(nd in n for nd in no_decay) and ".embeddings." not in n], 'weight_decay': 0.0}, # TODO: if we want weight decay
+        {'name': 'model_nodecay','params': [p for n, p in model_params if any(nd in n for nd in no_decay) and ".embeddings." in n], 'weight_decay': 0.0, "lr": embedding_lr},
+        {'name': 'model_nodecay', 'params': [p for n, p in model_params if any(nd in n for nd in no_decay) and  ".embeddings." not in n], 'weight_decay': 0.0},
     ]
     if args.input_tokenizer_learning_rate:
         optimizer_grouped_parameters.append({'name': 'tokenizer', 'params': tokenizer.parameters(), 'weight_decay': 0.0, 'lr': tokenizer_lr})

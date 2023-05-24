@@ -67,7 +67,7 @@ def setup_classification(args):
     test_label_memoizer = dict()
 
     # model
-    model, config = load_model(args.config, pad_token_id=input_vocab.index(args.pad_token), bias_mode=args.bias_mode, saved_model=args.pretrained_model, ignore=args.pretrained_ignore)
+    model, config = load_model(args.config, pad_token_id=input_vocab.index(args.pad_token), bias_mode=args.bias_mode, saved_model=args.pretrained_model, ignore=args.pretrained_ignore, include=args.pretrained_include)
 
     # tokenizer
     input_tokenizer = load_input_tokenizer(args.input_tokenizer_model, args.input_tokenizer_mode, input_vocab, log_space_parametrization=args.log_space_parametrization, weight_file=args.input_tokenizer_weights,
@@ -79,7 +79,7 @@ def setup_classification(args):
 
 
     # optimizer
-    optimizer, scheduler = build_optimizers(args, model, input_tokenizer, args.task_model_learning_rate, args.input_tokenizer_learning_rate)
+    optimizer, scheduler = build_optimizers(args, model, input_tokenizer, args.task_model_learning_rate, args.input_tokenizer_learning_rate, embedding_lr=args.task_model_embedding_learning_rate)
 
     specials = set(args.special_tokens)
 
