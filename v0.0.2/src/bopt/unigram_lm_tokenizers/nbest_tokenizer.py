@@ -34,7 +34,8 @@ class NBestTokenizer(LatticeTokenizer):
                 try_word_initial_when_unk=False,
                 pad_token_id=0,
                 subsample_vocab=None,
-                temperature=1.0):
+                temperature=1.0,
+                output_inputs=False):
         if memoizer is None != sentence_ids is None: raise ValueError(
             "memoizer and sentence_ids have to be set at the same time")
         forward_encodings, input_ids, position_ids, attention_mask, type_ids, B, N, M, L, K = self.extract_encodings(
@@ -79,6 +80,7 @@ class NBestTokenizer(LatticeTokenizer):
                                         attention_bias=None,
                                         entropy=ent_scalar,
                                         nchars=lengths.sum().item(),
-                                        weights=weight)
-
+                                        weights=weight,
+                                        edge_log_potentials=edge_log_potentials if output_inputs else None,
+                                        forward_encodings=forward_encodings if output_inputs else None)
 

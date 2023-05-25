@@ -73,9 +73,9 @@ class UnigramLM(nn.Module):
 
     def log_weights(self):
         if self.log_space_parametrization:
-            log_weights = self.edge_log_potentials.weight.data
+            log_weights = self.edge_log_potentials.weight
         else:
-            log_weights = self.edge_log_potentials.weight.data.log()
+            log_weights = self.edge_log_potentials.weight.log()
         return log_weights
 
     def save_to_folder(self, folder, vocabulary):

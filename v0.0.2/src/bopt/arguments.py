@@ -64,6 +64,11 @@ def add_training_arguments(parser):
     parser.add_argument("--annealing_end_steps", required=False, type=int, default=0)
     parser.add_argument("--L1", required=False, type=float, default=0.0)
 
+    # flags for dynamics logging
+    # parser.add_argument("--learning_dynamics_logging_steps")
+    parser.add_argument("--log_learning_dynamics", action="store_true")
+
+
 def add_device_arguments(parser):
     # gpu
     parser.add_argument("--gpu_batch_size", required=True, type=int, default=4)

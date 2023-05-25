@@ -18,6 +18,14 @@ class ClassifierOutput:
     logits:Optional[Any] = None
     labels:Optional[Any] = None
     predictions:Optional[Any] = None
+    attentions:Optional[Any] = None
+    input_ids:Optional[Any] = None
+    position_ids:Optional[Any] = None
+    type_ids:Optional[Any] = None
+    attention_mask:Optional[Any] = None
+    attention_bias:Optional[Any] = None
+    edge_log_potentials:Optional[Any] = None
+    forward_encodings:Optional[Any] = None
 
 class Classifier(nn.Module):
 
@@ -32,7 +40,9 @@ class Classifier(nn.Module):
                 ids: List[str],
                 sentences: Union[List[str],
                 List[List[str]]], labels: List[List[str]],
-                mode):
+                mode,
+                output_attentions=False,
+                output_inputs=False):
         if mode == "train":
             tokenization_memoizer = setup.train_tokenization_memoizer
             label_memoizer = setup.train_label_memoizer
@@ -66,7 +76,8 @@ class Classifier(nn.Module):
                                                                                try_word_initial_when_unk=setup.args.try_word_initial_when_unk,
                                                                                pad_token_id=self.model.config.pad_token_id,
                                                                                temperature=setup.args.temperature,
-                                                                               collapse_padding=setup.args.collapse_padding)
+                                                                               collapse_padding=setup.args.collapse_padding,
+                                                                               output_inputs=output_inputs)
 
             labels_ids= self.label_tokenizer(labels,
                                            setup.args.max_unit_length,
@@ -77,7 +88,9 @@ class Classifier(nn.Module):
                                 position_ids=tokenizer_output.position_ids,
                                 labels=labels_ids,
                                 attn_bias=tokenizer_output.attention_bias,
-                                token_type_ids=tokenizer_output.type_ids)
+                                token_type_ids=tokenizer_output.type_ids,
+                                return_dict=True,
+                                output_attentions=output_attentions)
             task_loss = losses[0]
             logits = losses[1]
             L1 = self.input_tokenizer.l1(avoid_tokens=list(setup.specials))
@@ -86,7 +99,16 @@ class Classifier(nn.Module):
                                     regularizers=Regularizers(entropy=tokenizer_output.entropy, l1=L1, nchars=tokenizer_output.nchars),
                                     logits=logits,
                                     labels=shortlabels,
-                                    predictions=shortpredictions)
+                                    predictions=shortpredictions,
+                                    attentions=losses["attentions"] if output_attentions else None,
+                                    input_ids=tokenizer_output.input_ids if output_inputs else None,
+                                    position_ids=tokenizer_output.input_ids if output_inputs else None,
+                                    type_ids=tokenizer_output.type_ids if output_inputs else None,
+                                    attention_mask=tokenizer_output.attention_mask if output_inputs else None,
+                                    attention_bias=tokenizer_output.attention_bias if output_inputs else None,
+                                    edge_log_potentials=tokenizer_output.edge_log_potentials if output_inputs else None,
+                                    forward_encodings=tokenizer_output.forward_encodings if output_inputs else None)
+
         if setup.args.input_tokenizer_mode == "nbest" or setup.args.input_tokenizer_mode == "1best":
             B = len(sentences)
             n = setup.args.n if setup.args.input_tokenizer_mode == "nbest" and self.training else 1
@@ -106,7 +128,8 @@ class Classifier(nn.Module):
                                                                               try_word_initial_when_unk=setup.args.try_word_initial_when_unk,
                                                                               pad_token_id=self.model.config.pad_token_id,
                                                                               subsample_vocab=setup.args.subsample_vocab,
-                                                                              temperature=setup.args.temperature)
+                                                                              temperature=setup.args.temperature,
+                                                                              output_inputs=output_inputs)
             seq_length =  tokenizer_output.input_ids.size(-1)
             labels_ids = self.label_tokenizer(labels,
                                               seq_length,
@@ -115,7 +138,9 @@ class Classifier(nn.Module):
             losses = self.model(input_ids=tokenizer_output.input_ids.reshape(-1,seq_length),
                                 position_ids=tokenizer_output.position_ids.reshape(-1,seq_length),
                                 attention_mask=tokenizer_output.attention_mask.reshape(-1,seq_length),
-                                token_type_ids=tokenizer_output.type_ids.reshape(-1,seq_length))
+                                token_type_ids=tokenizer_output.type_ids.reshape(-1,seq_length),
+                                return_dict=True,
+                                output_attentions=output_attentions)
             logits = losses[0] # B x n x seq_len x |output_vocab|
             if setup.args.input_tokenizer_mode == "nbest":
                 logits = (logits.reshape(B,n,seq_length,-1) * torch.softmax(tokenizer_output.weights, -1)[..., None, None]).sum(1) # weighted sum over the n best tokenizations
@@ -130,7 +155,15 @@ class Classifier(nn.Module):
                                                               nchars=tokenizer_output.nchars),
                                     logits=logits,
                                     labels=shortlabels,
-                                    predictions=shortpredictions,)
+                                    predictions=shortpredictions,
+                                    attentions=losses["attentions"] if output_attentions else None,
+                                    input_ids=tokenizer_output.input_ids if output_inputs else None,
+                                    position_ids=tokenizer_output.input_ids if output_inputs else None,
+                                    type_ids=tokenizer_output.type_ids if output_inputs else None,
+                                    attention_mask=tokenizer_output.attention_mask if output_inputs else None,
+                                    attention_bias=tokenizer_output.attention_bias if output_inputs else None,
+                                    edge_log_potentials=tokenizer_output.edge_log_potentials if output_inputs else None,
+                                    forward_encodings=tokenizer_output.forward_encodings if output_inputs else None)
         if setup.args.input_tokenizer_mode == "bert":
             B = len(sentences)
             tokenizer_output = self.input_tokenizer.encode_batch(sentences)
@@ -156,7 +189,9 @@ class Classifier(nn.Module):
             losses = self.model(input_ids=input_ids,
                                 position_ids=position_ids,
                                 attention_mask=attention_mask,
-                                token_type_ids=type_ids)
+                                token_type_ids=type_ids,
+                                return_dict=True,
+                                output_attentions=output_attentions)
             logits = losses[0] # B x n x seq_len x |output_vocab|
             logits = logits.reshape(B,max_length,-1) # 1best mode does not use the weights
             task_loss = CrossEntropyLoss()(logits.view(-1, logits.size(-1)), labels_ids.view(-1))
@@ -167,7 +202,11 @@ class Classifier(nn.Module):
                                                               nchars=None),
                                     logits=logits,
                                     labels=shortlabels,
-                                    predictions=shortpredictions,)
+                                    predictions=shortpredictions,
+                                    attentions=losses["attentions"] if output_attentions else None,
+                                    input_ids=input_ids if output_inputs else None,
+                                    position_ids=position_ids if output_inputs else None,
+                                    attention_mask=attention_mask if output_inputs else None)
 
 
     def extract_predictions(self, logits):

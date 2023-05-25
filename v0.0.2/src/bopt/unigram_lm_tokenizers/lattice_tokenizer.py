@@ -41,7 +41,8 @@ class LatticeTokenizer(nn.Module):
                 pad_token_id=0,
                 subsample_vocab=None,
                 temperature=1.0,
-                collapse_padding=False):
+                collapse_padding=False,
+                output_inputs=False):
         if memoizer is None != sentence_ids is None: raise ValueError(
             "memoizer and sentence_ids have to be set at the same time")
         forward_encodings, input_ids, position_ids, attention_mask, type_ids, B, N, M, L, K = self.extract_encodings(
@@ -95,7 +96,9 @@ class LatticeTokenizer(nn.Module):
                                         type_ids=type_ids,
                                         attention_bias=attention,
                                         entropy=ent_scalar,
-                                        nchars=lengths.sum().item())
+                                        nchars=lengths.sum().item(),
+                                        edge_log_potentials=edge_log_potentials if output_inputs else None,
+                                        forward_encodings=forward_encodings if output_inputs else None)
 
     def extract_encodings(self, sentences: Union[List[str], List[List[str]]],
                 max_blocks = 1,

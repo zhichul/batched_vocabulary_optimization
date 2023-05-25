@@ -132,14 +132,12 @@ class LogAddExpSafe(torch.autograd.Function):
         enabled = torch.is_anomaly_enabled()
         torch.set_anomaly_enabled(False)
         zeros = grad_output.new_zeros(grad_output.size())
+        grad_input, grad_other = output.grad_fn(grad_output)
         if input.requires_grad and other.requires_grad:
-            grad_input, grad_other = autograd.grad(output, (input, other), grad_output, only_inputs=True)
             g1, g2 = torch.where(grad_output == 0, zeros, grad_input), torch.where(grad_output == 0, zeros, grad_other)
         elif input.requires_grad:
-            grad_input, = autograd.grad(output, (input,), grad_output, only_inputs=True)
             g1, g2 = torch.where(grad_output == 0, zeros, grad_input), None
         elif other.requires_grad:
-            grad_other, = autograd.grad(output, (other,), grad_output, only_inputs=True)
             g1, g2 = None, torch.where(grad_output == 0, zeros, grad_other)
         else:
             g1, g2 = None, None
