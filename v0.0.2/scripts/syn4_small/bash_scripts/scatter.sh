@@ -13,7 +13,7 @@ function scatter_data() {
       do
         for SEED in 42 44 46 48 50 52 54 56 58 60
         do
-          for CKPT in checkpoint-early-stopping checkpoint-final
+          for CKPT in checkpoint-final # checkpoint-early-stopping
           do
             for L1 in 0.01 0.1 1.0
             do
@@ -82,173 +82,110 @@ function scatter_data() {
   rm -f scatter/*.tmp
 }
 
-declare -A METRIC_LABELS=(
-                           ["dev_accuracy"]="dev accuracy"
-                           ["train_accuracy"]="train accuracy"
-                           ["dev_unique_predicted_tokens"]="dev unique predicted tokens"
-                           ["train.100_unique_predicted_tokens"]="train unique predicted tokens"
-                           ["dev_unique_gold_tokens"]="dev unique gold tokens"
-                           ["train.100_unique_gold_tokens"]="train unique gold tokens"
-                           ["dev_prefix_unique_gold_tokens"]="dev prefix unique gold tokens"
-                           ["dev_stem_unique_gold_tokens"]="dev stem unique gold tokens"
-                           ["dev_suffix_unique_gold_tokens"]="dev suffix unique gold tokens"
-                           ["train.100_prefix_unique_gold_tokens"]="train.100 prefix unique gold tokens"
-                           ["train.100_stem_unique_gold_tokens"]="train.100 stem unique gold tokens"
-                           ["train.100_suffix_unique_gold_tokens"]="train.100 suffix unique gold tokens"
-                           ["dev_boundary_f1"]="dev boundary f1"
-                           ["dev_boundary_precision"]="dev boundary precision"
-                           ["dev_boundary_recall"]="dev boundary recall"
-                           ["train.100_boundary_f1"]="train boundary f1"
-                           ["train.100_boundary_precision"]="train boundary precision"
-                           ["train.100_boundary_recall"]="train boundary recall"
-                           ["dev_prefix_boundary_f1"]="dev prefix boundary f1"
-                           ["dev_prefix_boundary_precision"]="dev prefix boundary precision"
-                           ["dev_prefix_boundary_recall"]="dev prefix boundary recall"
-                           ["train.100_prefix_boundary_f1"]="train prefix boundary f1"
-                           ["train.100_prefix_boundary_precision"]="train prefix boundary precision"
-                           ["train.100_prefix_boundary_recall"]="train prefix boundary recall"
-                           ["dev_stem_boundary_f1"]="dev stem boundary f1"
-                           ["dev_stem_boundary_precision"]="dev stem boundary precision"
-                           ["dev_stem_boundary_recall"]="dev stem boundary recall"
-                           ["train.100_stem_boundary_f1"]="train stem boundary f1"
-                           ["train.100_stem_boundary_precision"]="train stem boundary precision"
-                           ["train.100_stem_boundary_recall"]="train stem boundary recall"
-                           ["dev_suffix_boundary_f1"]="dev suffix boundary f1"
-                           ["dev_suffix_boundary_precision"]="dev suffix boundary precision"
-                           ["dev_suffix_boundary_recall"]="dev suffix boundary recall"
-                           ["train.100_suffix_boundary_f1"]="train suffix boundary f1"
-                           ["train.100_suffix_boundary_precision"]="train suffix boundary precision"
-                           ["train.100_suffix_boundary_recall"]="train suffix boundary recall"
-                         )
+declare -A METRIC_X=(
+["dev_accuracy_vs_dev_boundary_f1"]="dev_boundary_f1"
+["train_accuracy_vs_train_boundary_f1"]="train.100_boundary_f1"
+["dev_accuracy_vs_dev_boundary_recall"]="dev_boundary_recall"
+["train_accuracy_vs_train_boundary_recall"]="train.100_boundary_recall"
+["dev_accuracy_vs_dev_boundary_precision"]="dev_boundary_precision"
+["train_accuracy_vs_train_boundary_precision"]="train.100_boundary_precision"
+["dev_accuracy_vs_train_unique_predicted_tokens"]="train.100_unique_predicted_tokens"
+["train_accuracy_vs_train_unique_predicted_tokens"]="train.100_unique_predicted_tokens"
+)
+declare -A METRIC_Y=(
+["dev_accuracy_vs_dev_boundary_f1"]="dev_accuracy"
+["train_accuracy_vs_train_boundary_f1"]="train_accuracy"
+["dev_accuracy_vs_dev_boundary_recall"]="dev_accuracy"
+["train_accuracy_vs_train_boundary_recall"]="train_accuracy"
+["dev_accuracy_vs_dev_boundary_precision"]="dev_accuracy"
+["train_accuracy_vs_train_boundary_precision"]="train_accuracy"
+["dev_accuracy_vs_train_unique_predicted_tokens"]="dev_accuracy"
+["train_accuracy_vs_train_unique_predicted_tokens"]="train_accuracy"
+)
+declare -A METRIC_XLABELS=(
+["dev_accuracy_vs_dev_boundary_f1"]="dev boundary f1"
+["train_accuracy_vs_train_boundary_f1"]="train boundary f1"
+["dev_accuracy_vs_dev_boundary_recall"]="dev boundary recall"
+["train_accuracy_vs_train_boundary_recall"]="train boundary recall"
+["dev_accuracy_vs_dev_boundary_precision"]="dev boundary precision"
+["train_accuracy_vs_train_boundary_precision"]="train boundary precision"
+["dev_accuracy_vs_train_unique_predicted_tokens"]="train unique predicted tokens"
+["train_accuracy_vs_train_unique_predicted_tokens"]="train unique predicted tokens"
+)
+declare -A METRIC_YLABELS=(
+["dev_accuracy_vs_dev_boundary_f1"]="dev accuracy"
+["train_accuracy_vs_train_boundary_f1"]="train accuracy"
+["dev_accuracy_vs_dev_boundary_recall"]="dev accuracy"
+["train_accuracy_vs_train_boundary_recall"]="train accuracy"
+["dev_accuracy_vs_dev_boundary_precision"]="dev accuracy"
+["train_accuracy_vs_train_boundary_precision"]="train accuracy"
+["dev_accuracy_vs_train_unique_predicted_tokens"]="dev accuracy"
+["train_accuracy_vs_train_unique_predicted_tokens"]="train accuracy"
+)
 declare -A METRIC_NAMES=(
-                           ["dev_accuracy"]="dev_accuracy"
-                           ["train_accuracy"]="train_accuracy"
-                           ["dev_unique_predicted_tokens"]="dev_unique_predicted_tokens"
-                           ["train.100_unique_predicted_tokens"]="train_unique_predicted_tokens"
-                           ["dev_unique_gold_tokens"]="dev_unique_gold_tokens"
-                           ["train.100_unique_gold_tokens"]="train_unique_gold_tokens"
-                           ["dev_prefix_unique_gold_tokens"]="dev_prefix_unique_gold_tokens"
-                           ["dev_stem_unique_gold_tokens"]="dev_stem_unique_gold_tokens"
-                           ["dev_suffix_unique_gold_tokens"]="dev_suffix_unique_gold_tokens"
-                           ["train.100_prefix_unique_gold_tokens"]="train_prefix_unique_gold_tokens"
-                           ["train.100_stem_unique_gold_tokens"]="train_stem_unique_gold_tokens"
-                           ["train.100_suffix_unique_gold_tokens"]="train_suffix_unique_gold_tokens"
-                           ["dev_boundary_f1"]="dev_boundary_f1"
-                           ["dev_boundary_precision"]="dev_boundary_precision"
-                           ["dev_boundary_recall"]="dev_boundary_recall"
-                           ["train.100_boundary_f1"]="train_boundary_f1"
-                           ["train.100_boundary_precision"]="train_boundary_precision"
-                           ["train.100_boundary_recall"]="train_boundary_recall"
-                           ["dev_prefix_boundary_f1"]="dev_prefix_boundary_f1"
-                           ["dev_prefix_boundary_precision"]="dev_prefix_boundary_precision"
-                           ["dev_prefix_boundary_recall"]="dev_prefix_boundary_recall"
-                           ["train.100_prefix_boundary_f1"]="train_prefix_boundary_f1"
-                           ["train.100_prefix_boundary_precision"]="train_prefix_boundary_precision"
-                           ["train.100_prefix_boundary_recall"]="train_prefix_boundary_recall"
-                           ["dev_stem_boundary_f1"]="dev_stem_boundary_f1"
-                           ["dev_stem_boundary_precision"]="dev_stem_boundary_precision"
-                           ["dev_stem_boundary_recall"]="dev_stem_boundary_recall"
-                           ["train.100_stem_boundary_f1"]="train_stem_boundary_f1"
-                           ["train.100_stem_boundary_precision"]="train_stem_boundary_precision"
-                           ["train.100_stem_boundary_recall"]="train_stem_boundary_recall"
-                           ["dev_suffix_boundary_f1"]="dev_suffix_boundary_f1"
-                           ["dev_suffix_boundary_precision"]="dev_suffix_boundary_precision"
-                           ["dev_suffix_boundary_recall"]="dev_suffix_boundary_recall"
-                           ["train.100_suffix_boundary_f1"]="train_suffix_boundary_f1"
-                           ["train.100_suffix_boundary_precision"]="train_suffix_boundary_precision"
-                           ["train.100_suffix_boundary_recall"]="train_suffix_boundary_recall"
+["dev_accuracy_vs_dev_boundary_f1"]="dev_accuracy_vs_dev_boundary_f1"
+["train_accuracy_vs_train_boundary_f1"]="train_accuracy_vs_train_boundary_f1"
+["dev_accuracy_vs_dev_boundary_recall"]="dev_accuracy_vs_dev_boundary_recall"
+["train_accuracy_vs_train_boundary_recall"]="train_accuracy_vs_train_boundary_recall"
+["dev_accuracy_vs_dev_boundary_precision"]="dev_accuracy_vs_dev_boundary_precision"
+["train_accuracy_vs_train_boundary_precision"]="train_accuracy_vs_train_boundary_precision"
+["dev_accuracy_vs_train_unique_predicted_tokens"]="dev_accuracy_vs_train_unique_predicted_tokens"
+["train_accuracy_vs_train_unique_predicted_tokens"]="train_accuracy_vs_train_unique_predicted_tokens"
                          )
+declare -A METRIC_XMIN=(
+["dev_accuracy_vs_dev_boundary_f1"]=0.0
+["train_accuracy_vs_train_boundary_f1"]=0.0
+["dev_accuracy_vs_dev_boundary_recall"]=0.0
+["train_accuracy_vs_train_boundary_recall"]=0.0
+["dev_accuracy_vs_dev_boundary_precision"]=0.0
+["train_accuracy_vs_train_boundary_precision"]=0.0
+["dev_accuracy_vs_train_unique_predicted_tokens"]=0
+["train_accuracy_vs_train_unique_predicted_tokens"]=0
+)
+declare -A METRIC_XMAX=(
+["dev_accuracy_vs_dev_boundary_f1"]=1.05
+["train_accuracy_vs_train_boundary_f1"]=1.05
+["dev_accuracy_vs_dev_boundary_recall"]=1.05
+["train_accuracy_vs_train_boundary_recall"]=1.05
+["dev_accuracy_vs_dev_boundary_precision"]=1.05
+["train_accuracy_vs_train_boundary_precision"]=1.05
+["dev_accuracy_vs_train_unique_predicted_tokens"]=500
+["train_accuracy_vs_train_unique_predicted_tokens"]=500
+)
 declare -A METRIC_YMIN=(
-                           ["dev_accuracy"]=0.0
-                           ["train_accuracy"]=0.0
-                           ["dev_unique_predicted_tokens"]=0
-                           ["train.100_unique_predicted_tokens"]=0
-                           ["dev_unique_gold_tokens"]=0
-                           ["train.100_unique_gold_tokens"]=0
-                           ["dev_prefix_unique_gold_tokens"]=0
-                           ["dev_stem_unique_gold_tokens"]=0
-                           ["dev_suffix_unique_gold_tokens"]=0
-                           ["train.100_prefix_unique_gold_tokens"]=0
-                           ["train.100_stem_unique_gold_tokens"]=0
-                           ["train.100_suffix_unique_gold_tokens"]=0
-                           ["dev_boundary_f1"]=0.0
-                           ["dev_boundary_precision"]=0.0
-                           ["dev_boundary_recall"]=0.0
-                           ["train.100_boundary_f1"]=0.0
-                           ["train.100_boundary_precision"]=0.0
-                           ["train.100_boundary_recall"]=0.0
-                           ["dev_prefix_boundary_f1"]=0.0
-                           ["dev_prefix_boundary_precision"]=0.0
-                           ["dev_prefix_boundary_recall"]=0.0
-                           ["train.100_prefix_boundary_f1"]=0.0
-                           ["train.100_prefix_boundary_precision"]=0.0
-                           ["train.100_prefix_boundary_recall"]=0.0
-                           ["dev_stem_boundary_f1"]=0.0
-                           ["dev_stem_boundary_precision"]=0.0
-                           ["dev_stem_boundary_recall"]=0.0
-                           ["train.100_stem_boundary_f1"]=0.0
-                           ["train.100_stem_boundary_precision"]=0.0
-                           ["train.100_stem_boundary_recall"]=0.0
-                           ["dev_suffix_boundary_f1"]=0.0
-                           ["dev_suffix_boundary_precision"]=0.0
-                           ["dev_suffix_boundary_recall"]=0.0
-                           ["train.100_suffix_boundary_f1"]=0.0
-                           ["train.100_suffix_boundary_precision"]=0.0
-                           ["train.100_suffix_boundary_recall"]=0.0
-                         )
-
+["dev_accuracy_vs_dev_boundary_f1"]=0.0
+["train_accuracy_vs_train_boundary_f1"]=0.0
+["dev_accuracy_vs_dev_boundary_recall"]=0.0
+["train_accuracy_vs_train_boundary_recall"]=0.0
+["dev_accuracy_vs_dev_boundary_precision"]=0.0
+["train_accuracy_vs_train_boundary_precision"]=0.0
+["dev_accuracy_vs_train_unique_predicted_tokens"]=0.0
+["train_accuracy_vs_train_unique_predicted_tokens"]=0.0
+)
 declare -A METRIC_YMAX=(
-                           ["dev_accuracy"]=1.05
-                           ["train_accuracy"]=1.05
-                           ["dev_unique_predicted_tokens"]=500
-                           ["train.100_unique_predicted_tokens"]=500
-                           ["dev_unique_gold_tokens"]=500
-                           ["train.100_unique_gold_tokens"]=500
-                           ["dev_prefix_unique_gold_tokens"]=500
-                           ["dev_stem_unique_gold_tokens"]=500
-                           ["dev_suffix_unique_gold_tokens"]=500
-                           ["train.100_prefix_unique_gold_tokens"]=500
-                           ["train.100_stem_unique_gold_tokens"]=500
-                           ["train.100_suffix_unique_gold_tokens"]=500
-                           ["dev_boundary_f1"]=1.05
-                           ["dev_boundary_precision"]=1.05
-                           ["dev_boundary_recall"]=1.05
-                           ["train.100_boundary_f1"]=1.05
-                           ["train.100_boundary_precision"]=1.05
-                           ["train.100_boundary_recall"]=1.05
-                           ["dev_prefix_boundary_f1"]=1.05
-                           ["dev_prefix_boundary_precision"]=1.05
-                           ["dev_prefix_boundary_recall"]=1.05
-                           ["train.100_prefix_boundary_f1"]=1.05
-                           ["train.100_prefix_boundary_precision"]=1.05
-                           ["train.100_prefix_boundary_recall"]=1.05
-                           ["dev_stem_boundary_f1"]=1.05
-                           ["dev_stem_boundary_precision"]=1.05
-                           ["dev_stem_boundary_recall"]=1.05
-                           ["train.100_stem_boundary_f1"]=1.05
-                           ["train.100_stem_boundary_precision"]=1.05
-                           ["train.100_stem_boundary_recall"]=1.05
-                           ["dev_suffix_boundary_f1"]=1.05
-                           ["dev_suffix_boundary_precision"]=1.05
-                           ["dev_suffix_boundary_recall"]=1.05
-                           ["train.100_suffix_boundary_f1"]=1.05
-                           ["train.100_suffix_boundary_precision"]=1.05
-                           ["train.100_suffix_boundary_recall"]=1.05
-                         )
+["dev_accuracy_vs_dev_boundary_f1"]=1.05
+["train_accuracy_vs_train_boundary_f1"]=1.05
+["dev_accuracy_vs_dev_boundary_recall"]=1.05
+["train_accuracy_vs_train_boundary_recall"]=1.05
+["dev_accuracy_vs_dev_boundary_precision"]=1.05
+["train_accuracy_vs_train_boundary_precision"]=1.05
+["dev_accuracy_vs_train_unique_predicted_tokens"]=1.05
+["train_accuracy_vs_train_unique_predicted_tokens"]=1.05
+)
 
 function scatter_plot() {
-  for METRIC in ${!METRIC_LABELS[@]}
+  for METRIC in ${!METRIC_X[@]}
   do
-    python3 -m experiments.plotting.scatter \
-      --output scatter/"${METRIC_NAMES[${METRIC}]}".png \
-      --scatter scatter/l1=0.01.runs.json l1=0.01 data ${METRIC} teal \
-      --scatter scatter/l1=0.1.runs.json l1=0.1 data ${METRIC} orange \
-      --scatter scatter/l1=1.0.runs.json l1=1.0 data ${METRIC} red \
-      --xmap full 11k \
-      --xmap small 2k \
-      --width 0.9 \
-      --ylim "${METRIC_YMIN[${METRIC}]}" "${METRIC_YMAX[${METRIC}]}"  \
-      --xlabel "number of training words" \
-      --ylabel "${METRIC_LABELS[${METRIC}]}"
+    for DATA in 100 500 small full
+    do
+      python3 -m experiments.plotting.scatter \
+        --output scatter/"${METRIC_NAMES[${METRIC}]}-data=${DATA}".png \
+        --scatter scatter/data=${DATA}.pos=char-pos.runs.json char-posid ${METRIC_X[${METRIC}]} ${METRIC_Y[${METRIC}]}  teal o \
+        --scatter scatter/data=${DATA}.pos=token-pos.runs.json token-posid ${METRIC_X[${METRIC}]} ${METRIC_Y[${METRIC}]} orange o \
+        --xlim "${METRIC_XMIN[${METRIC}]}" "${METRIC_XMAX[${METRIC}]}"  \
+        --ylim "${METRIC_YMIN[${METRIC}]}" "${METRIC_YMAX[${METRIC}]}"  \
+        --xlabel "${METRIC_XLABELS[${METRIC}]}" \
+        --ylabel "${METRIC_YLABELS[${METRIC}]}"
+    done
   done
 }

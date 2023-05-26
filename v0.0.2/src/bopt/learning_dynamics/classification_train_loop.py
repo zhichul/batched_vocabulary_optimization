@@ -32,6 +32,8 @@ def train_classification(setup: ClassificationTrainingSetup):
     conditional_marginal_grad_dynamics = defaultdict(list)
     weights_dynamics = defaultdict(list) # key is single unit
     weights_grad_dynamics = defaultdict(list)
+    attention_std_dynamics = defaultdict(list)
+    attention_grad_std_dynamics = defaultdict(list)
 
     best_dev_acc = -1
     windowed_loss_avg = math.inf
@@ -79,7 +81,14 @@ def train_classification(setup: ClassificationTrainingSetup):
         loss = 0
 
         # dynamics logging
-        loss = dynamics_batch(setup, step, ids, sentences, labels, weights_dynamics, attention_dynamics, conditional_marginal_dynamics, weights_grad_dynamics, attention_grad_dynamics, conditional_marginal_grad_dynamics)
+        loss = dynamics_batch(setup, step, ids, sentences, labels, weights_dynamics,
+                              attention_dynamics,
+                              attention_std_dynamics,
+                              conditional_marginal_dynamics,
+                              weights_grad_dynamics,
+                              attention_grad_dynamics,
+                              attention_grad_std_dynamics,
+                              conditional_marginal_grad_dynamics)
         # do backward
         loss.backward()
 
@@ -87,13 +96,12 @@ def train_classification(setup: ClassificationTrainingSetup):
         if (raw_step + 1) %  (setup.args.train_batch_size // setup.args.gpu_batch_size) == 0:
             # if logging learning dynamics, do it right before stepping
             if setup.args.log_learning_dynamics:
-                # for token, weight in enumerate(setup.classifier.input_tokenizer.unigramlm.log_weights().view(-1).tolist()):
-                #     weights_dynamics[(token,)].append((step, -1, weight))
-                #     weights_grad_dynamics[(token,)].append((step, -1, L1, setup.args.L1))
-                save_learning_dynamics_log(setup, step, weights_dynamics, attention_dynamics, conditional_marginal_dynamics, weights_grad_dynamics, attention_grad_dynamics, conditional_marginal_grad_dynamics)
+                save_learning_dynamics_log(setup, step, weights_dynamics, attention_dynamics, attention_std_dynamics, conditional_marginal_dynamics, weights_grad_dynamics, attention_grad_dynamics, attention_grad_std_dynamics, conditional_marginal_grad_dynamics)
                 # reinit for next step
                 attention_dynamics = defaultdict(list)  # key is a four tuple (layer, head, src, tgt), value is a list of attentions
+                attention_std_dynamics = defaultdict(list)  # key is a four tuple (layer, head, src, tgt), value is a list of attentions
                 attention_grad_dynamics = defaultdict(list)
+                attention_grad_std_dynamics = defaultdict(list)
                 conditional_marginal_dynamics = defaultdict( list)  # key is two tuple (src, tgt), value is a list of cmarginals
                 conditional_marginal_grad_dynamics = defaultdict(list)
                 weights_dynamics = defaultdict(list)  # key is single unit

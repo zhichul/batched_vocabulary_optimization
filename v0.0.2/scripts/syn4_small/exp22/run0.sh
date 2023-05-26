@@ -4,13 +4,13 @@ mkdir -p ${BLU_ARTIFACTS}/boptv2/syn4_small/exp${EXPID}
 ARTIFACT_PREFIX=${BLU_ARTIFACTS}/boptv2/syn4_small/exp${EXPID}
 SCRIPT_PREFIX=${HOME}/jhu/bopt/v0.0.2/scripts/syn4_small/exp${EXPID}
 
-for SEED in 42 44 46
+for SEED in 42 44 46 48 50
 do
 for SIZE in 768
 do
 for VSIZE in 50 100 200 400
 do
-for DATA in 100 full # 500 small
+for DATA in 100 500 small full
 do
 DATA_PREFIX=${BLU_CORPORA}/vopt/syn/4/${DATA}
 OUTPUT_DIR=${ARTIFACT_PREFIX}/${SEED}/${SIZE}/${VSIZE}/${DATA}

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-EXPID="21-3"
+source var.sh
 mkdir -p ${BLU_ARTIFACTS}/boptv2/syn4_small/exp${EXPID}
 ARTIFACT_PREFIX=${BLU_ARTIFACTS}/boptv2/syn4_small/exp${EXPID}
 SCRIPT_PREFIX=${HOME}/jhu/bopt/v0.0.2/scripts/syn4_small/exp${EXPID}
@@ -15,7 +15,7 @@ do
 for CKPT in checkpoint-early-stopping checkpoint-final
 do
 DATA_PREFIX=${BLU_CORPORA}/vopt/syn/4/${DATA}
-TOKENIZER_PREFIX=${BLU_ARTIFACTS}/boptv2/syn4_small/exp21-1/${SEED}/${SIZE}/${L1}/${DATA}/${CKPT}
+TOKENIZER_PREFIX=${TOKENIZER_ARTIFACT_PREFIX}/${SEED}/${SIZE}/${L1}/${DATA}/${CKPT}
 TRAIN_NAME=train.csv
 DEV_NAME=dev.csv
 TEST_NAME=test.csv

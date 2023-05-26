@@ -10,7 +10,7 @@ for SIZE in 768
 do
 for L1 in 0.01 0.1 1.0
 do
-for DATA in  full # 100 500 small
+for DATA in  100 500 small full
 do
 DATA_PREFIX=${BLU_CORPORA}/vopt/syn/4/${DATA}
 OUTPUT_DIR=${ARTIFACT_PREFIX}/${SEED}/${SIZE}/${L1}/${DATA}
@@ -19,7 +19,7 @@ DEV_NAME=dev.csv
 TEST_NAME=test.csv
 CONFIG_NAME=${SCRIPT_PREFIX}/config${SIZE}.json
 
-CUDA_VISIBLE_DEVICES=1 CUDA_LAUNCH_BLOCKING=1 python3 -O -um bopt.train \
+CUDA_VISIBLE_DEVICES=0 CUDA_LAUNCH_BLOCKING=1 python3 -O -um bopt.train \
     --output_directory ${OUTPUT_DIR} \
     --overwrite_output_directory \
     \

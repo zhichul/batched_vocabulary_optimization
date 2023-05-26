@@ -1,3 +1,4 @@
+import code
 from itertools import product
 
 import torch
@@ -6,7 +7,7 @@ from bopt.learning_dynamics.constants import ENTROPY, TASK_LOSS, L1
 from bopt.unigram_lm_tokenizers.encoding.forward_encoding import NONEDGE_ID, PADEDGE_ID
 
 
-def dynamics_batch(setup, step, ids, sentences, labels,
+def dynamics_batch_full(setup, step, ids, sentences, labels,
                    weights_dynamics,
                    attention_dynamics,
                    conditional_marginal_dynamics,
@@ -49,6 +50,49 @@ def dynamics_batch(setup, step, ids, sentences, labels,
     weights_grad_dynamics[tuple()].append((-1, TASK_LOSS, weights_grad))
     weights_grad_dynamics[tuple()].append((-1, ENTROPY, weights_grad_entropy))
     weights_grad_dynamics[tuple()].append((-1, L1, torch.zeros_like(weights).fill_(setup.args.L1)))
+    return loss
+
+def dynamics_batch(setup, step, ids, sentences, labels,
+                   weights_dynamics,
+                   attention_dynamics,
+                   attention_std_dynamics,
+                   conditional_marginal_dynamics,
+                   weights_grad_dynamics,
+                   attention_grad_dynamics,
+                   attention_grad_std_dynamics,
+                   conditional_marginal_grad_dynamics):
+    accumulation_factor = (setup.args.gpu_batch_size / setup.args.train_batch_size)
+    loss = 0
+    output = setup.classifier(setup, ids, sentences, labels, output_attentions=True, output_inputs=True,  mode="train")
+    # add to training loss
+    loss += output.task_loss
+    if setup.args.L1 > 0: loss += setup.args.L1 * output.regularizers.l1
+    if setup.args.annealing > 0:
+        loss += setup.annealing_scheduler(step) * output.regularizers.entropy
+    loss = loss * accumulation_factor
+    # dynamics logging start
+    attentions = output.attentions
+    attentions_grad = torch.autograd.grad(output.task_loss * accumulation_factor, attentions, retain_graph=True)
+    attentions_std = torch.std(torch.cat(attentions, dim=1), dim=1)
+    attentions = sum(attentions).sum(dim=1)
+    attentions_grad_std = torch.std(torch.cat(attentions_grad, dim=1), dim=1)
+    attentions_grad = sum(attentions_grad).sum(dim=1)
+    conditional_marginals = output.attention_bias
+    conditional_marginals_grad = torch.autograd.grad(output.task_loss * accumulation_factor, conditional_marginals,retain_graph=True)[0]
+    weights_grad = torch.autograd.grad(output.task_loss * accumulation_factor, output.edge_log_potentials, retain_graph=True)[0]
+    weights_grad_entropy = torch.autograd.grad(setup.annealing_scheduler(step) * output.regularizers.entropy * accumulation_factor, output.edge_log_potentials, retain_graph=True)[0]
+
+    attention_dynamics[tuple()].append((ids, attentions.detach().cpu()))
+    attention_std_dynamics[tuple()].append((ids, attentions_std.detach().cpu()))
+    attention_grad_dynamics[tuple()].append((ids,TASK_LOSS, attentions_grad.detach().cpu()))
+    attention_grad_std_dynamics[tuple()].append((ids, TASK_LOSS, attentions_grad_std.detach().cpu()))
+    conditional_marginal_dynamics[tuple()].append((ids,conditional_marginals.detach().cpu()))
+    conditional_marginal_grad_dynamics[tuple()].append((ids,TASK_LOSS, conditional_marginals_grad.detach().cpu()))
+    weights = setup.classifier.input_tokenizer.unigramlm.log_weights().reshape(-1)
+    weights_dynamics[tuple()] = ([], weights.detach().cpu())
+    weights_grad_dynamics[tuple()].append((ids, TASK_LOSS, weights_grad.detach().cpu()))
+    weights_grad_dynamics[tuple()].append(([], ENTROPY, weights_grad_entropy.detach().cpu()))
+    weights_grad_dynamics[tuple()].append(([], L1, torch.zeros_like(weights).fill_(setup.args.L1).detach().cpu()))
     return loss
 
 # def dynamics_batch(setup, step, ids, sentences, labels,
