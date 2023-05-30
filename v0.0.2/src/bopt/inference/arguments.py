@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 
-from bopt.arguments import add_model_arguments, add_tokenizer_arguments, add_training_arguments, add_device_arguments, add_logging_parameters
+from bopt.arguments import add_model_arguments, add_tokenizer_arguments, add_training_arguments, add_device_arguments, \
+    add_logging_parameters, add_task_arguments
 
 
 def parse_arguments():
@@ -8,8 +9,7 @@ def parse_arguments():
     parser = ArgumentParser()
 
     # data parameters
-    parser.add_argument("--task", required=True, type=str, choices=["classification"])
-    parser.add_argument("--domain", required=True, type=str, choices=["morpheme_prediction", "superbizarre_prediction"])
+    add_task_arguments(parser)
     parser.add_argument("--dataset", required=True, type=str)
     parser.add_argument("--name", required=True, type=str)
     parser.add_argument("--data_num_workers", required=True, type=int, default=1)

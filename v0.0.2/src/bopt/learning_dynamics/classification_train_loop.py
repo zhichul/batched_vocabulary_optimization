@@ -81,32 +81,13 @@ def train_classification(setup: ClassificationTrainingSetup):
         loss = 0
 
         # dynamics logging
-        loss = dynamics_batch(setup, step, ids, sentences, labels, weights_dynamics,
-                              attention_dynamics,
-                              attention_std_dynamics,
-                              conditional_marginal_dynamics,
-                              weights_grad_dynamics,
-                              attention_grad_dynamics,
-                              attention_grad_std_dynamics,
-                              conditional_marginal_grad_dynamics)
+        loss = dynamics_batch(setup, step, raw_step, ids, sentences, labels)
         # do backward
         loss.backward()
 
         # maybe step optimizer
         if (raw_step + 1) %  (setup.args.train_batch_size // setup.args.gpu_batch_size) == 0:
             # if logging learning dynamics, do it right before stepping
-            if setup.args.log_learning_dynamics:
-                save_learning_dynamics_log(setup, step, weights_dynamics, attention_dynamics, attention_std_dynamics, conditional_marginal_dynamics, weights_grad_dynamics, attention_grad_dynamics, attention_grad_std_dynamics, conditional_marginal_grad_dynamics)
-                # reinit for next step
-                attention_dynamics = defaultdict(list)  # key is a four tuple (layer, head, src, tgt), value is a list of attentions
-                attention_std_dynamics = defaultdict(list)  # key is a four tuple (layer, head, src, tgt), value is a list of attentions
-                attention_grad_dynamics = defaultdict(list)
-                attention_grad_std_dynamics = defaultdict(list)
-                conditional_marginal_dynamics = defaultdict( list)  # key is two tuple (src, tgt), value is a list of cmarginals
-                conditional_marginal_grad_dynamics = defaultdict(list)
-                weights_dynamics = defaultdict(list)  # key is single unit
-                weights_grad_dynamics = defaultdict(list)
-
             if not (setup.classifier.model.bert.embeddings.word_embeddings.weight.grad[setup.classifier.model.config.pad_token_id] == 0).all():
                 raise AssertionError
             setup.optimizer.step()

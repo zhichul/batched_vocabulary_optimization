@@ -4,7 +4,7 @@ mkdir -p ${BLU_ARTIFACTS2}/boptv2/syn4_small/exp${EXPID}
 ARTIFACT_PREFIX=${BLU_ARTIFACTS2}/boptv2/syn4_small/exp${EXPID}
 SCRIPT_PREFIX=${HOME}/jhu/bopt/v0.0.2/scripts/syn4_small/exp${EXPID}
 
-for SEED in 42 44 46
+for SEED in 44 46
 do
 for SIZE in 768
 do

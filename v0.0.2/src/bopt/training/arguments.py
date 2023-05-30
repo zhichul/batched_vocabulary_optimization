@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 
-from bopt.arguments import add_model_arguments, add_tokenizer_arguments, add_training_arguments, add_device_arguments, add_logging_parameters
+from bopt.arguments import add_model_arguments, add_tokenizer_arguments, add_training_arguments, add_device_arguments, \
+    add_logging_parameters, add_task_arguments
 
 
 def parse_arguments():
@@ -9,13 +10,12 @@ def parse_arguments():
 
     # data parameters
     parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--task", required=True, type=str, choices=["classification"])
-    parser.add_argument("--domain", required=True, type=str, choices=["morpheme_prediction", "superbizarre_prediction"])
     parser.add_argument("--train_dataset", required=True, type=str)
     parser.add_argument("--dev_dataset", required=True, type=str)
     parser.add_argument("--test_dataset", required=True, type=str)
     parser.add_argument("--data_num_workers", required=True, type=int, default=1)
 
+    add_task_arguments(parser)
     # # model parameters
     # parser.add_argument('--bias_mode', type=str, choices=["albo", "mult_then_renorm"], default="mult_then_renorm")
     # parser.add_argument("--config", type=str)

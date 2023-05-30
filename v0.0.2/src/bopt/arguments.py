@@ -1,3 +1,9 @@
+
+
+def add_task_arguments(parser):
+    parser.add_argument("--task", required=True, type=str, choices=["classification"])
+    parser.add_argument("--domain", required=True, type=str, choices=["morpheme_prediction", "superbizarre_prediction"])
+
 def add_model_arguments(parser, mode="train"):
     # model parameters
     parser.add_argument('--bias_mode', type=str, choices=["albo", "mult_then_renorm"], default="mult_then_renorm")
