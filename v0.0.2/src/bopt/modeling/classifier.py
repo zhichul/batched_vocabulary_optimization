@@ -6,6 +6,7 @@ import torch
 import torch.nn as nn
 from torch.nn import CrossEntropyLoss
 
+from bopt.bilevel import ClassificationBilevelTrainingSetup
 from bopt.modeling import Regularizers
 from bopt.training import ClassificationTrainingSetup
 from bopt.unigram_lm_tokenizers.tokenizers import UnigramLMTokenizerOutput
@@ -34,9 +35,10 @@ class Classifier(nn.Module):
         self.model = model
         self.input_tokenizer = input_tokenizer
         self.label_tokenizer = label_tokenizer
+        self._tokenizer_parameter_mask = tuple(name.startswith("input_tokenizer") for name, param in self.named_parameters())
 
     def forward(self,
-                setup: ClassificationTrainingSetup,
+                setup: Union[ClassificationTrainingSetup, ClassificationBilevelTrainingSetup],
                 ids: List[str],
                 sentences: Union[List[str],
                 List[List[str]]], labels: List[List[str]],
@@ -46,6 +48,12 @@ class Classifier(nn.Module):
         if mode == "train":
             tokenization_memoizer = setup.train_tokenization_memoizer
             label_memoizer = setup.train_label_memoizer
+        elif mode == "train_inner":
+            tokenization_memoizer = setup.train_inner_tokenization_memoizer
+            label_memoizer = setup.train_inner_label_memoizer
+        elif mode == "train_outer":
+            tokenization_memoizer = setup.train_outer_tokenization_memoizer
+            label_memoizer = setup.train_outer_label_memoizer
         elif mode == "dev":
             tokenization_memoizer = setup.dev_tokenization_memoizer
             label_memoizer = setup.dev_label_memoizer
@@ -212,3 +220,6 @@ class Classifier(nn.Module):
     def extract_predictions(self, logits):
         return torch.argmax(logits, dim=-1)
 
+    @property
+    def tokenizer_parameter_mask(self):
+        return self._tokenizer_parameter_mask

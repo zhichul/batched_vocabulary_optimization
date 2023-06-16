@@ -438,6 +438,7 @@ class BertSelfAttention(nn.Module):
             if bias_mode == "mult_then_renorm":
                 attention_scores += attn_bias
                 attention_probs = nn.Softmax(dim=-1)(attention_scores)
+                # print("attnbias", attn_bias.max().item(), attn_bias.min().item(), "attn", attention_scores.max().item(), attention_scores[attention_scores > -1000000].min().item())
             elif bias_mode == "norm_then_threshold":
                 attention_transformer = nn.Softmax(dim=-1)(attention_scores)
                 attention_threshold = attn_bias.exp()
@@ -452,6 +453,8 @@ class BertSelfAttention(nn.Module):
                 log_denominators = logaddexp_safe(torch.logsumexp(log_numerators, dim=-1,keepdim=True).expand_as(log_adjustment), log_adjustment)
                 log_denominators[log_denominators == -math.inf] = -math.inf # block gradients
                 attention_probs = (log_numerators - log_denominators).exp()
+                # print()
+                # print("attnbias", attn_bias.max().item(), attn_bias.min().item(), "attn", attention_scores.max().item(), attention_scores[attention_scores > -1000000].min().item())
                 if (attention_probs.isnan()).any():
                     code.interact(local=locals())
                 if DEBUG: code.interact(local=locals())
@@ -1519,6 +1522,8 @@ class BertForMaskedLM(BertPreTrainedModel):
             loss_fct = CrossEntropyLoss()  # -100 index = padding token
             masked_lm_loss = loss_fct(prediction_scores.view(-1, self.config.override_output_vocab_size if self.config.override_output_vocab_size else self.config.vocab_size), labels.view(-1))
 
+        if masked_lm_loss is not None and masked_lm_loss.isnan().any():
+            code.interact(local=locals())
         if not return_dict:
             output = (prediction_scores,) + outputs[2:]
             return ((masked_lm_loss,) + output) if masked_lm_loss is not None else output

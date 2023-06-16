@@ -9,6 +9,7 @@ from bopt.integerize import Integerizer
 from torch import logaddexp as logaddexp_old
 from torch import log as log_old
 
+DEBUG=False
 def increasing_roll_left(mat: torch.Tensor, padding_value):
     """
     This function rolls the rows of the input matrix (or tensor) by increasing
@@ -114,6 +115,81 @@ def load_scalar_weights(file):
     return torch.tensor(weights)
 
 
+class LogAddExpGradSafe(torch.autograd.Function):
+
+    @staticmethod
+    def forward(ctx, output, input, other, grad_output, create_graph):
+        enabled = torch.is_anomaly_enabled()
+        torch.set_anomaly_enabled(False)
+        # print("forward call in the logaddexp grad function")
+        r0 = input.requires_grad
+        r1 = other.requires_grad
+        grad0 = grad1 = None
+        # make a copy of the local graph for logaddexp that is detached from the rest of the graph
+        input, other, grad_output = input.detach(), other.detach(), grad_output.detach()
+        input.requires_grad = True
+        other.requires_grad = True
+        grad_output.requires_grad = True
+        with torch.enable_grad():
+            output = logaddexp_old(input, other)
+        with torch.set_grad_enabled(create_graph):
+            grad = autograd.grad(output, [t for t, rg in zip([input, other],[r0, r1]) if rg], grad_output, create_graph=create_graph, retain_graph=True, allow_unused=True)
+        if r0 and r1:
+            grad0, grad1 = grad
+        elif r0:
+            grad0 = grad[0]
+        elif r1:
+            grad1 = grad[0]
+        ctx.save_for_backward(grad0, grad1, output, input, other, grad_output)
+        torch.set_anomaly_enabled(enabled)
+        return grad0.detach() if grad0 is not None else None, grad1.detach() if grad1 is not None else None
+
+    @staticmethod
+    def backward(ctx, grad_output0, grad_output1):
+        enabled = torch.is_anomaly_enabled()
+        torch.set_anomaly_enabled(False)
+        # print("backward call in the logaddexp grad function")
+        grad0, grad1, output, input, other, grad_output = ctx.saved_tensors
+        gradable = [v for v in [output, input, other, grad_output] if v is not None and isinstance(v, torch.Tensor) and v.requires_grad] #left out output
+        grad_from0 = None
+        grad_from1 = None
+        zeros = grad_output.new_zeros(grad_output.size())
+        # if not DEBUG:
+        #     code.interact(local=locals())
+        if grad0 is not None:
+            # backprop through the local copy so that we don't end up recursing all the way
+            grad_from0 = autograd.grad((grad0,), gradable, grad_outputs=(grad_output0,), retain_graph=True, allow_unused=True)
+            grad_from0 = [torch.where((grad_output == 0) | (input == -torch.inf) | (input < -20), zeros, v) if v is not None else None for v in grad_from0]
+        if grad1 is not None:
+            # backprop through the local copy so that we don't end up recursing all the way
+            grad_from1 = autograd.grad((grad1,), gradable, grad_outputs=(grad_output1,), retain_graph=True, allow_unused=True)
+            grad_from1 = [torch.where((grad_output == 0) | (other == -torch.inf) | (other < -20), zeros, v)  if v is not None else None for v in grad_from1]
+        outputs = []
+        i = 0
+        for v in [output, input, other, grad_output]:
+            if v is None or not isinstance(v, torch.Tensor) or not v.requires_grad:
+                outputs.append(None)
+            else:
+                if (grad_from0 is None and grad_from1 is None):
+                    outputs.append(None)
+                else:
+                    grad = 0
+                    if grad_from0 is not None and grad_from0[i] is not None:
+                        grad += grad_from0[i]
+                    if grad_from1 is not None and grad_from1[i] is not None:
+                        grad += grad_from1[i]
+                    if isinstance(grad, int):
+                        outputs.append(None)
+                    else:
+                        outputs.append(grad)
+                i += 1
+        torch.set_anomaly_enabled(enabled)
+        # code.interact(local=locals())
+        if any(o.isnan().any() for o in outputs if o is not None):
+            print("NAAAHNNNNNNN")
+            code.interact(local=locals())
+        return tuple(outputs) + (None,) # last one is for create_graph
+
 class LogAddExpSafe(torch.autograd.Function):
     """Implemented by Jason Eisner 2020 adapted by Brian Lu 2023.
     Implements a torch function that is exactly like logaddexp,
@@ -132,7 +208,10 @@ class LogAddExpSafe(torch.autograd.Function):
         enabled = torch.is_anomaly_enabled()
         torch.set_anomaly_enabled(False)
         zeros = grad_output.new_zeros(grad_output.size())
-        grad_input, grad_other = output.grad_fn(grad_output)
+        create_graph = torch.is_grad_enabled()
+        grad_input, grad_other = LogAddExpGradSafe.apply(output, input, other, grad_output, create_graph)
+        # if not DEBUG:
+        #     code.interact(local=locals())
         if input.requires_grad and other.requires_grad:
             g1, g2 = torch.where(grad_output == 0, zeros, grad_input), torch.where(grad_output == 0, zeros, grad_other)
         elif input.requires_grad:
@@ -148,6 +227,61 @@ class LogAddExpSafe(torch.autograd.Function):
 
 logaddexp_safe = lambda x, y: LogAddExpSafe.apply(x, y)
 
+
+class LogGradSafe(torch.autograd.Function):
+    @staticmethod
+    def forward(ctx, output, input, grad_output, create_graph):  # type: ignore
+        # grad_input, =
+        enabled = torch.is_anomaly_enabled()
+        torch.set_anomaly_enabled(False)
+        r0 = input.requires_grad
+        grad0 = None
+        # make a copy of the local graph for logaddexp that is detached from the rest of the graph
+        input, grad_output = input.detach(), grad_output.detach()
+        input.requires_grad = True
+        grad_output.requires_grad = True
+        with torch.enable_grad():
+            output = log_old(input)
+        with torch.set_grad_enabled(create_graph):
+            grad, = autograd.grad(output, (input), grad_output, retain_graph=True, create_graph=create_graph, allow_unused=True)
+        if r0:
+            grad0 = grad
+        ctx.save_for_backward(grad0, output, input, grad_output)
+        torch.set_anomaly_enabled(enabled)
+        return grad0.detach() if grad0 is not None else None
+
+    @staticmethod
+    def backward(ctx, grad_output0):  # type: ignore
+        enabled = torch.is_anomaly_enabled()
+        torch.set_anomaly_enabled(False)
+        grad0, output, input, grad_output = ctx.saved_tensors
+        gradable = [v for v in [output, input, grad_output] if v is not None and isinstance(v, torch.Tensor) and v.requires_grad]  # left out output
+        grad_from0 = None
+        zeros = grad_output.new_zeros(grad_output.size())
+        if grad0 is not None:
+            # backprop through the local copy so that we don't end up recursing all the way
+            grad_from0 = autograd.grad((grad0,), gradable, grad_outputs=(grad_output0,), retain_graph=True, allow_unused=True)
+            grad_from0 = [torch.where((grad_output == 0) | (input == 0), zeros, v) if v is not None else None for v in grad_from0]
+        outputs = []
+        i = 0
+        for v in [output, input, grad_output]:
+            if v is None or not isinstance(v, torch.Tensor) or not v.requires_grad:
+                outputs.append(None)
+            else:
+                if grad_from0 is None:
+                    outputs.append(None)
+                else:
+                    if grad_from0[i] is not None:
+                        outputs.append(grad_from0[i])
+                    else:
+                        outputs.append(None)
+                i += 1
+        torch.set_anomaly_enabled(enabled)
+        # code.interact(local=locals())
+        if any(o.isnan().any() for o in outputs if o is not None):
+            print("NAAAHNNNNNNN")
+            code.interact(local=locals())
+        return tuple(outputs) + (None,)  # last one is for create_graph
 class LogSafe(torch.autograd.Function):
     """Implemented by Jason Eisner 2020 adapted by Brian Lu 2023.
     Implements a torch function that is exactly like logaddexp,
@@ -162,12 +296,16 @@ class LogSafe(torch.autograd.Function):
 
     @staticmethod
     def backward(ctx, grad_output):  # type: ignore
+        # print("############ logsafe backward")
         input, output = ctx.saved_tensors
         enabled = torch.is_anomaly_enabled()
         torch.set_anomaly_enabled(False)
         zeros = grad_output.new_zeros(grad_output.size())
         if input.requires_grad:
-            grad_input, = autograd.grad(output, (input), grad_output, only_inputs=True)
+            create_graph = torch.is_grad_enabled()
+            grad_input = LogGradSafe.apply(output, input, grad_output, create_graph)
+
+            # grad_input, = autograd.grad(output, (input), grad_output, retain_graph=True, create_graph=torch.is_grad_enabled())
             g1 = torch.where(grad_output == 0, zeros, grad_input)
             # if g1.isnan().any():
             #     code.interact(local=locals())

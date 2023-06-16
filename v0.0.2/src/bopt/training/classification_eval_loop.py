@@ -14,9 +14,9 @@ from experiments.predictions.classification import save_classification_predictio
 
 def eval_classification(setup: ClassificationTrainingSetup, state: TrainingState):
 
-    train_predictions, train_labels, train_entropy, train_characters = evaluate(setup, setup.train_monitor_dataloader, "train")
-    dev_predictions, dev_labels, dev_entropy, dev_characters = evaluate(setup, setup.dev_dataloader, "dev")
-    test_predictions, test_labels, test_entropy, test_characters = evaluate(setup, setup.test_dataloader, "test")
+    train_predictions, train_labels, train_entropy, train_characters, train_loss = evaluate(setup, setup.train_monitor_dataloader, "train")
+    dev_predictions, dev_labels, dev_entropy, dev_characters, dev_loss,  = evaluate(setup, setup.dev_dataloader, "dev")
+    test_predictions, test_labels, test_entropy, test_characters, test_loss = evaluate(setup, setup.test_dataloader, "test")
 
     # calculate accuracy, save model if bested, log predictions, log to the global log
     train_monitor_acc = accuracy(train_predictions, train_labels)
@@ -30,4 +30,12 @@ def eval_classification(setup: ClassificationTrainingSetup, state: TrainingState
     save_classification_predictions(test_predictions, f"{os.path.join(setup.args.output_directory, f'test-predictions-{state.step}.tsv')}")
     save_classification_predictions(test_labels, f"{os.path.join(setup.args.output_directory, f'test-labels-{state.step}.tsv')}")
 
-    return {"train_accuracy": train_monitor_acc, "dev_accuracy": dev_acc, "train_entropy": train_entropy, "test_accuracy": test_acc, "dev_entroy": dev_entropy, "test_entropy": test_entropy}
+    return {"train_accuracy": train_monitor_acc,
+            "dev_accuracy": dev_acc,
+            "test_accuracy": test_acc,
+            "train_loss": train_loss,
+            "dev_loss": dev_loss,
+            "test_loss": test_loss,
+            "train_entropy": train_entropy,
+            "dev_entroy": dev_entropy,
+            "test_entropy": test_entropy}
