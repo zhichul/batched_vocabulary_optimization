@@ -439,6 +439,10 @@ class BertSelfAttention(nn.Module):
                 attention_scores += attn_bias
                 attention_probs = nn.Softmax(dim=-1)(attention_scores)
                 # print("attnbias", attn_bias.max().item(), attn_bias.min().item(), "attn", attention_scores.max().item(), attention_scores[attention_scores > -1000000].min().item())
+            elif bias_mode == "full_attention":
+                attn_bias[attn_bias != -math.inf] = 0
+                attention_scores += attn_bias
+                attention_probs = nn.Softmax(dim=-1)(attention_scores)
             elif bias_mode == "norm_then_threshold":
                 attention_transformer = nn.Softmax(dim=-1)(attention_scores)
                 attention_threshold = attn_bias.exp()

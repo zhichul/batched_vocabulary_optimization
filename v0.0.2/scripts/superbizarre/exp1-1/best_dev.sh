@@ -7,6 +7,6 @@ do
 for L1 in 0.1 1.0 0.01
 do
 OUTPUT_DIR=${ARTIFACT_PREFIX}/${SEED}/${L1}
-python3 -m experiments.scripts.best_dev ${OUTPUT_DIR}/log.json dev_accuracy max
+python3 -m experiments.scripts.best_dev ${OUTPUT_DIR}/log.json step max dev_accuracy
 done
 done

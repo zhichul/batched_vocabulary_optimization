@@ -45,6 +45,9 @@ class Classifier(nn.Module):
                 mode,
                 output_attentions=False,
                 output_inputs=False):
+        if setup.args.gold_percentage is not None:
+            references = [pair[1] for pair in sentences]
+            sentences = [pair[0] for pair in sentences]
         if mode == "train":
             tokenization_memoizer = setup.train_tokenization_memoizer
             label_memoizer = setup.train_label_memoizer
@@ -110,7 +113,7 @@ class Classifier(nn.Module):
                                     predictions=shortpredictions,
                                     attentions=losses["attentions"] if output_attentions else None,
                                     input_ids=tokenizer_output.input_ids if output_inputs else None,
-                                    position_ids=tokenizer_output.input_ids if output_inputs else None,
+                                    position_ids=tokenizer_output.position_ids if output_inputs else None,
                                     type_ids=tokenizer_output.type_ids if output_inputs else None,
                                     attention_mask=tokenizer_output.attention_mask if output_inputs else None,
                                     attention_bias=tokenizer_output.attention_bias if output_inputs else None,
@@ -137,15 +140,29 @@ class Classifier(nn.Module):
                                                                               pad_token_id=self.model.config.pad_token_id,
                                                                               subsample_vocab=setup.args.subsample_vocab,
                                                                               temperature=setup.args.temperature,
-                                                                              output_inputs=output_inputs)
+                                                                              output_inputs=output_inputs,
+                                                                              max_tokens=-1 if (setup.args.gold_percentage is None or all(ref is None for ref in references)) else max(len(ref) for ref in references if ref is not None))
             seq_length =  tokenizer_output.input_ids.size(-1)
             labels_ids = self.label_tokenizer(labels,
                                               seq_length,
                                               label_memoizer,
                                               label_ids).to(self.input_tokenizer.device) # hack for accessing device
-            losses = self.model(input_ids=tokenizer_output.input_ids.reshape(-1,seq_length),
+
+            # do gold override
+            input_ids = tokenizer_output.input_ids.reshape(-1, seq_length)
+            attention_mask = tokenizer_output.attention_mask.reshape(-1, seq_length)
+            if setup.args.gold_percentage is not None:
+                if not setup.args.input_tokenizer_mode == "1best": raise AssertionError
+                for i, reference in enumerate(references):
+                    if reference is not None:
+                        input_ids[i, :] = 0
+                        input_ids[i, :len(reference)] = torch.tensor(reference, device=input_ids.device, dtype=input_ids.dtype)
+                        attention_mask[i, :] = 0
+                        attention_mask[i, :len(reference)] = 1
+
+            losses = self.model(input_ids=input_ids,
                                 position_ids=tokenizer_output.position_ids.reshape(-1,seq_length),
-                                attention_mask=tokenizer_output.attention_mask.reshape(-1,seq_length),
+                                attention_mask=attention_mask,
                                 token_type_ids=tokenizer_output.type_ids.reshape(-1,seq_length),
                                 return_dict=True,
                                 output_attentions=output_attentions)
@@ -165,10 +182,10 @@ class Classifier(nn.Module):
                                     labels=shortlabels,
                                     predictions=shortpredictions,
                                     attentions=losses["attentions"] if output_attentions else None,
-                                    input_ids=tokenizer_output.input_ids if output_inputs else None,
-                                    position_ids=tokenizer_output.input_ids if output_inputs else None,
+                                    input_ids=input_ids if output_inputs else None,
+                                    position_ids=tokenizer_output.position_ids if output_inputs else None,
                                     type_ids=tokenizer_output.type_ids if output_inputs else None,
-                                    attention_mask=tokenizer_output.attention_mask if output_inputs else None,
+                                    attention_mask=attention_mask if output_inputs else None,
                                     attention_bias=tokenizer_output.attention_bias if output_inputs else None,
                                     edge_log_potentials=tokenizer_output.edge_log_potentials if output_inputs else None,
                                     forward_encodings=tokenizer_output.forward_encodings if output_inputs else None)
@@ -176,6 +193,8 @@ class Classifier(nn.Module):
             B = len(sentences)
             tokenizer_output = self.input_tokenizer.encode_batch(sentences)
             max_length = max(len(out.tokens) for out in tokenizer_output)
+            if setup.args.gold_percentage is not None:
+                max_length = max(max_length, -1 if all(ref is None for ref in references) else max(len(ref) for ref in references if ref is not None))
             input_ids = torch.zeros(B, max_length, dtype=torch.long)
             position_ids = torch.zeros(B, max_length, dtype=torch.long)
             attention_mask = torch.zeros(B, max_length, dtype=torch.long)
@@ -194,6 +213,16 @@ class Classifier(nn.Module):
                                               max_length,
                                               label_memoizer,
                                               label_ids).to(setup.args.device) # hack for accessing device
+
+            # do gold override
+            if setup.args.gold_percentage is not None:
+                for i, reference in enumerate(references):
+                    if reference is not None:
+                        input_ids[i, :] = 0
+                        input_ids[i, :len(reference)] = torch.tensor(reference, device=input_ids.device, dtype=input_ids.dtype)
+                        attention_mask[i, :] = 0
+                        attention_mask[i, :len(reference)] = 1
+
             losses = self.model(input_ids=input_ids,
                                 position_ids=position_ids,
                                 attention_mask=attention_mask,

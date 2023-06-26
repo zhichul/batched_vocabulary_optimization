@@ -2,11 +2,11 @@
 
 def add_task_arguments(parser):
     parser.add_argument("--task", required=True, type=str, choices=["classification"])
-    parser.add_argument("--domain", required=True, type=str, choices=["morpheme_prediction", "superbizarre_prediction"])
+    parser.add_argument("--domain", required=True, type=str, choices=["morpheme_prediction", "superbizarre_prediction", "weibo_prediction", "morpheme_prediction_gold", "superbizarre_prediction_gold",])
 
 def add_model_arguments(parser, mode="train"):
     # model parameters
-    parser.add_argument('--bias_mode', type=str, choices=["albo", "mult_then_renorm"], default="mult_then_renorm")
+    parser.add_argument('--bias_mode', type=str, choices=["albo", "mult_then_renorm", "full_attention"], default="mult_then_renorm")
     parser.add_argument("--use_lattice_position_ids", action="store_true", help="whether to use token based position ids or lattice based (char based)")
     parser.add_argument("--collapse_padding", action="store_true")
     if mode=="train":
@@ -50,6 +50,8 @@ def add_tokenizer_arguments(parser, mode="train"):
     parser.add_argument("--split_on_space", action="store_true")
     parser.add_argument("--add_dummy_space_start", action="store_true")
 
+    parser.add_argument("--gold_percentage", required=False, type=float, default=None)
+
 def add_training_arguments(parser, mode="normal"):
     # training
     parser.add_argument("--task_model_learning_rate", required=True, type=float, default=6.25e-5)
@@ -87,9 +89,13 @@ def add_training_arguments(parser, mode="normal"):
         parser.add_argument("--random_restarts", required=False, type=int, default=1, help="number of restarts to use to estimate the outer gradient")
         parser.add_argument("--eval_random_restarts", required=False, type=int, default=1, help="number of restarts to use to estimate the outer gradient")
         parser.add_argument("--fix_transformer_initialization", required=False, action="store_true")
-        parser.add_argument("--momentum_coefficient", type=float, help="by default precision is 10e-2")
-        parser.add_argument("--momentum_coefficient_precision", type=lambda x:int(float(1/x)), help="precision value, but gets converted to denominator for the code", default=100)
         parser.add_argument("--eval_train_steps", required=True, type=int, default=600)
+        parser.add_argument("--log_trajectory", required=False, action="store_true")
+        parser.add_argument("--log_trajectory_steps", required=False, type=int, default=5)
+
+    parser.add_argument("--momentum_coefficient", type=float, help="by default precision is 10e-2")
+    parser.add_argument("--momentum_coefficient_precision", type=lambda x: int(float(1 / x)),
+                        help="precision value, but gets converted to denominator for the code", default=100)
 
 def add_device_arguments(parser, mode="normal"):
     # gpu

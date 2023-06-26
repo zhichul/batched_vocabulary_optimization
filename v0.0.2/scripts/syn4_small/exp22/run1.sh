@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-EXPID="22"
+source vars.sh
 mkdir -p ${BLU_ARTIFACTS}/boptv2/syn4_small/exp${EXPID}
 ARTIFACT_PREFIX=${BLU_ARTIFACTS}/boptv2/syn4_small/exp${EXPID}
 SCRIPT_PREFIX=${HOME}/jhu/bopt/v0.0.2/scripts/syn4_small/exp${EXPID}
@@ -19,7 +19,7 @@ DEV_NAME=dev.csv
 TEST_NAME=test.csv
 CONFIG_NAME=${SCRIPT_PREFIX}/config${SIZE}.json
 
-CUDA_VISIBLE_DEVICES=0 CUDA_LAUNCH_BLOCKING=1 python3 -O -um bopt.train \
+CUDA_VISIBLE_DEVICES=1 CUDA_LAUNCH_BLOCKING=1 python3 -O -um bopt.train \
     --output_directory ${OUTPUT_DIR} \
     --overwrite_output_directory \
     \

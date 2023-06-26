@@ -22,6 +22,7 @@ class InnerLoopOutput:
     g_2: Optional[Any] = None
     second_step:  Optional[Any] = None
     first_step:  Optional[Any] = None
+    logline: Optional[Any] = None
 
 
 @dataclass

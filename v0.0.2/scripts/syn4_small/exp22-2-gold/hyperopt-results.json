@@ -1,0 +1,4 @@
+{"step": 120, "dev_accuracy": 0.8639999628067017, "test_accuracy": 0.8606666326522827, "train_accuracy": 0.9933333396911621, "vsize": "gold", "seed": "46", "data": "100"}
+{"step": 180, "dev_accuracy": 0.9793333411216736, "test_accuracy": 0.9753333330154419, "train_accuracy": 0.9933333396911621, "vsize": "gold", "seed": "48", "data": "500"}
+{"step": 180, "dev_accuracy": 0.9913333058357239, "test_accuracy": 0.9886666536331177, "train_accuracy": 0.9933333396911621, "vsize": "gold", "seed": "42", "data": "small"}
+{"step": 180, "dev_accuracy": 0.9906666278839111, "test_accuracy": 0.9906666278839111, "train_accuracy": 0.9866666793823242, "vsize": "gold", "seed": "42", "data": "full"}

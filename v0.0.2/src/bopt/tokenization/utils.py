@@ -3,11 +3,13 @@ import json
 from bopt.unigram_lm_tokenizers.encoding.forward_encoding import len_c
 
 
-def display(text, tokenizations, weights, display_mode="json"):
+def display(text, tokenizations, weights, log_prob=None, display_mode="json"):
     output = {}
     output["text"] = text
     output["tokenizations"] = tokenizations
     output["weights"] = weights
+    if log_prob is not None:
+        output["reference_log_prob"] = log_prob
     if display_mode == "json":
         print(json.dumps(output))
     elif display_mode == "pretty_json":

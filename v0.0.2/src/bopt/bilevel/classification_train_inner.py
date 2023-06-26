@@ -20,11 +20,11 @@ from bopt.training.utils import load_forever
 
 
 
-def train_classification_inner(setup: ClassificationBilevelTrainingSetup, outer_step: int, warmup=False):
+def train_classification_inner(setup: ClassificationBilevelTrainingSetup, outer_step: int, warmup=False, random_init=0):
     if setup.args.bilevel_optimization_scheme == "reversible-learning":
-        return reversible_inner(setup, outer_step, warmup=warmup)
+        return reversible_inner(setup, outer_step, warmup=warmup, random_init=random_init)
     if setup.args.bilevel_optimization_scheme == "ift":
-        with open(os.path.join(setup.args.output_directory, f"log-inner-of-{outer_step if not warmup else 'warmup'}.json"), "wt") as f:
+        with open(os.path.join(setup.args.output_directory, f"step-{outer_step}-log.json"), "wt") as f:
             pass
 
     step = 0

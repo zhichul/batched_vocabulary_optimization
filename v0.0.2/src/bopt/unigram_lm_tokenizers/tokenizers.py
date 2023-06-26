@@ -16,6 +16,7 @@ class UnigramLMTokenizerOutput:
     nchars: Optional[torch.Tensor] = None             # set when requested
     edge_log_potentials: Optional[torch.Tensor] = None  # set when requested
     forward_encodings: Optional[torch.Tensor] = None  # set when requested
+    forward_alpha: Optional[torch.Tensor] = None  # set when requested
 
 class AbstractUnigramLMTokenizer(nn.Module):
 
@@ -24,7 +25,7 @@ class AbstractUnigramLMTokenizer(nn.Module):
         This method tokenizes a batch of sentences or sentence lists. It returns
         tensors that match the API of common downstream neural models.
         """
-        input_ids, attention_mask, position_ids, type_ids, attention_bias, weights, entropy, nchars, edge_log_potentials, forward_encodings = None, None, None, None, None, None, None, None, None, None, None, None
-        return UnigramLMTokenizerOutput(input_ids, attention_mask, position_ids, type_ids, attention_bias, weights, entropy, nchars, edge_log_potentials, forward_encodings)
+        input_ids, attention_mask, position_ids, type_ids, attention_bias, weights, entropy, nchars, edge_log_potentials, forward_encodings = None, None, None, None, None, None, None, None, None, None, None, None, None
+        return UnigramLMTokenizerOutput(input_ids, attention_mask, position_ids, type_ids, attention_bias, weights, entropy, nchars, edge_log_potentials, forward_encodings, None)
 
 

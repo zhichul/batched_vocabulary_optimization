@@ -5,6 +5,7 @@ from bopt.unigram_lm_tokenizers.encoding.forward_encoding import integerize_for_
 from bopt.unigram_lm_tokenizers.encoding.linearized_encoding import extract_input_ids, extract_position_ids, \
     extract_attention_mask, extract_type_ids
 from bopt.unigram_lm_tokenizers.inference.attention import attention_bias
+from bopt.unigram_lm_tokenizers.inference.forward_backward import forward_algorithm
 from bopt.unigram_lm_tokenizers.modeling.unigramlm import UnigramLM
 
 from typing import Union, List
@@ -42,7 +43,9 @@ class LatticeTokenizer(nn.Module):
                 subsample_vocab=None,
                 temperature=1.0,
                 collapse_padding=False,
-                output_inputs=False):
+                output_inputs=False,
+                output_forward_alpha=False,
+                references=None):
         if memoizer is None != sentence_ids is None: raise ValueError(
             "memoizer and sentence_ids have to be set at the same time")
         forward_encodings, input_ids, position_ids, attention_mask, type_ids, B, N, M, L, K = self.extract_encodings(
@@ -60,8 +63,9 @@ class LatticeTokenizer(nn.Module):
             try_word_initial_when_unk = try_word_initial_when_unk,
             pad_token_id = pad_token_id,
             subsample_vocab = subsample_vocab,
-            temperature = temperature
-            )
+            temperature = temperature,
+            references=references,
+        )
         # compute attention
         edge_log_potentials = self.unigramlm(forward_encodings, temperature=temperature) # B x KN x M x L
         attention = attention_bias(attention_mask, edge_log_potentials) # B x KNE x KNE
@@ -90,6 +94,9 @@ class LatticeTokenizer(nn.Module):
         lengths = length(forward_encodings) # B x KN
 
         ent_scalar = ent.sum() / lengths.sum() # 1
+
+        # do some extra work if requested
+        forward_alpha = forward_algorithm(edge_log_potentials).last_node_log_alphas if output_forward_alpha else None
         return UnigramLMTokenizerOutput(input_ids=input_ids,
                                         attention_mask=attention_mask,
                                         position_ids=position_ids,
@@ -98,7 +105,8 @@ class LatticeTokenizer(nn.Module):
                                         entropy=ent_scalar,
                                         nchars=lengths.sum().item(),
                                         edge_log_potentials=edge_log_potentials if output_inputs else None,
-                                        forward_encodings=forward_encodings if output_inputs else None)
+                                        forward_encodings=forward_encodings if output_inputs else None,
+                                        forward_alpha=forward_alpha)
 
     def extract_encodings(self, sentences: Union[List[str], List[List[str]]],
                 max_blocks = 1,
@@ -114,7 +122,8 @@ class LatticeTokenizer(nn.Module):
                 try_word_initial_when_unk=False,
                 pad_token_id=0,
                 subsample_vocab=None,
-                temperature=1.0):
+                temperature=1.0,
+                references=None):
         B, N, M, L, K = len(sentences), max_blocks, max_unit_length, max_block_length, 1
         if isinstance(sentences[0], list):
             K = len(sentences[0])
@@ -134,7 +143,8 @@ class LatticeTokenizer(nn.Module):
                                                    memoizer=memoizer,
                                                    sentence_ids=sentence_ids,
                                                    specials=specials,
-                                                   try_word_initial_when_unk=try_word_initial_when_unk).to(self.device).reshape(B, K*N, M, L) # B x KN x M x L
+                                                   try_word_initial_when_unk=try_word_initial_when_unk,
+                                                   references=references).to(self.device).reshape(B, K*N, M, L) # B x KN x M x L
 
         # extract linearized ids
         input_ids = extract_input_ids(forward_encodings, padding_id=pad_token_id) # B x KNE

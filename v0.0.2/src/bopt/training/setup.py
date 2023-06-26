@@ -33,7 +33,7 @@ def setup_classification(args):
 
     # load datasets
     train_dataset = preprocessors[args.domain](args.train_dataset, args)
-    train_monitor_dataset = torch.utils.data.Subset(train_dataset, list(range(100)))
+    train_monitor_dataset = torch.utils.data.Subset(train_dataset, list(range(min(100, len(train_dataset)))))
     dev_dataset = preprocessors[args.domain](args.dev_dataset, args)
     test_dataset = preprocessors[args.domain](args.test_dataset, args)
 

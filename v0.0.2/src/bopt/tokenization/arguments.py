@@ -12,4 +12,9 @@ def parse_arguments():
     add_tokenizer_arguments(parser, mode="tokenize")
     # display options
     parser.add_argument("--display_mode", default="json", choices=["json", "pretty_json"])
-    return parser.parse_args()
+    parser.add_argument("--input_mode", default="txt", choices=["txt", "json"])
+    parser.add_argument("--report_reference", action="store_true")
+    args = parser.parse_args()
+    if args.report_reference and not args.input_mode == "json":
+        raise ValueError("report reference requires json input containing reference")
+    return args

@@ -1,0 +1,1 @@
+{"step": 480, "dev_accuracy": 0.7085001468658447, "test_accuracy": 0.6937173008918762, "dev_entroy": 0.11812422681696064, "test_entropy": 0.1193084405720115, "seed": "44", "ckpt": "checkpoint-final"}

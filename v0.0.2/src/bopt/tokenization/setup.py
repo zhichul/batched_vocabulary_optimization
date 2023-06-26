@@ -17,5 +17,6 @@ def setup(args):
     specials = set(args.special_tokens)
 
     return TokenizationSetup(args=args,
+                            vocab=input_vocab,
                             tokenizer=input_tokenizer,
                             specials=specials)

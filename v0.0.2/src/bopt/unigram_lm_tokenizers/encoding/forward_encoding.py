@@ -75,7 +75,8 @@ def integerize_for_forward(sentences: List[str],
                            memoizer = None,
                            sentence_ids = None,
                            specials=set(),
-                           try_word_initial_when_unk=False) -> torch.Tensor:
+                           try_word_initial_when_unk=False,
+                           references=None) -> torch.Tensor:
     """
     Given a list of sentences, this method extracts substrings from each,
     represented as a 2d matrix of vocabulary ids whose corresponding substrings
@@ -113,12 +114,23 @@ def integerize_for_forward(sentences: List[str],
     but we will make sure to strip it again. Space is treated as a regular char.
 
     remove_space will remove instead of keep space as prefix.
+
+    try_word_intial_when_unk can allow _xyz to stand in place for xyz where
+     _xyz is the word initial form, when the latter is needed but not in vocab.
+    Alternatively in bert notation this would be using xyz in place of ##xyz.
+
+    references contain segmentations of the sentences that we should respect.
+    For each reference, "".join(reference) should return the corresponding
+    sentence.
     """
     # first check arguments
     if len(sentences) == 0: raise ValueError("empty list of sentences received")
     if max_block_length <= 0: raise ValueError("max_block_length must be positive")
     if max_blocks <= 0: raise ValueError("max_blocks must be positive")
     if max_unit_length <= 0: raise ValueError("max_unit_length must be positive")
+    if references is not None:
+        if split_on_space:
+            raise ValueError("references only allowed when split_on_space is set to false")
     if not split_on_space:
         if max_blocks != 1: raise ValueError("when split_on_space is False, "
          "we only generate single lattices without subdivision")
@@ -141,7 +153,7 @@ def integerize_for_forward(sentences: List[str],
                 block_encoding = integerize_blocks(blocks, vocabulary, max_unit_length, max_block_length, specials=specials, try_word_initial_when_unk=try_word_initial_when_unk, word_initial_marker=space_character)
             else:
                 # otherwise integerize the sentence as a single block
-                block_encoding = integerize_blocks([[sentence]], vocabulary, M, L, specials=specials, try_word_initial_when_unk=try_word_initial_when_unk, word_initial_marker=space_character)
+                block_encoding = integerize_blocks([[sentence]], vocabulary, M, L, specials=specials, try_word_initial_when_unk=try_word_initial_when_unk, word_initial_marker=space_character, reference=references[i] if references is not None else None)
             if memoizer:
                 memoizer[sentence_ids[i]] = block_encoding
         else: # load from cache
@@ -150,11 +162,21 @@ def integerize_for_forward(sentences: List[str],
     return torch.stack(outputs, dim=0)
 
 def integerize_blocks(blocks: List[List[str]], vocabulary: Integerizer, max_unit_length: int, max_block_length: int, specials=set(),
-                      try_word_initial_when_unk=False, word_initial_marker="▁"):
+                      try_word_initial_when_unk=False, word_initial_marker="▁", reference: List[str]=None):
     """
     Returns NxMxL where N is len(blocks), and M is max unit size, and L is max unit length
 
+    reference only works when len(blocks) == 1 and len(blocks[0]) = 1
+    it corresponds to the reference segmentation of the 1st string of the first
+    block, i.e. "".join(reference) == block[0][0]. reference does NOT work
+    when there are special tokens in the sentence.
     """
+    if reference is not None:
+        reference_signature = set()
+        start = 0
+        for unit in reference:
+            reference_signature.add((start, len(unit)))
+            start += len(unit)
     M,L = max_unit_length, max_block_length
     outputs = []
     for block in blocks:
@@ -171,6 +193,7 @@ def integerize_blocks(blocks: List[List[str]], vocabulary: Integerizer, max_unit
                 for start in range(chunk_start, chunk_start + len(chunk)):  # this loop is skipped for emtpy sentences
                     for length in range(1, min(block_length - start, M) + 1):
                         if length <= 0: code.interact(local=locals())
+                        if reference is not None and (start, length) not in reference_signature: continue
                         unit = chunk[start - chunk_start:start - chunk_start + length]
                         if unit in vocabulary:
                             # do indexing of all chars and all in-vocab substrings, and only characters can be unknown

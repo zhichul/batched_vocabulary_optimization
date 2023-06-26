@@ -31,10 +31,12 @@ def forward_algorithm(edge_log_potentials: torch.FloatTensor, return_node_contri
     node_log_alphas = [torch.zeros(edge_log_potentials.numel() // (M * L), device=device, dtype=torch.float)]
     for i in range(L):
         # this is to select the outgoing edges of the ith node
-        maski = (torch.diag_embed(torch.ones(L - i, device=device, dtype=torch.bool), offset=i)[:M].unsqueeze(0)).to(torch.float)
+        maski = (torch.diag_embed(torch.ones(L - i, device=device, dtype=torch.bool), offset=i)[:M].unsqueeze(0)) #.to(torch.float)
 
         # this update corresponds to the propagation of alpha from a node to all `outgoing` edges
-        node_to_edge = node_log_alphas[i][:, None, None] * maski
+        # node_to_edge = node_log_alphas[i][:, None, None] * maski
+        node_to_edge = node_log_alphas[i][:, None, None].expand_as(edge_log_alphas).clone()
+        node_to_edge[~maski.expand_as(edge_log_alphas)] = 0
         edge_log_alphas = edge_log_alphas + node_to_edge
 
         # this is bookkeeping to record the node contributions without adding in the edge potentials

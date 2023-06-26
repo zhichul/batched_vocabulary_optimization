@@ -1,0 +1,1 @@
+{"step": 450, "dev_accuracy": 0.9020000100135803, "test_accuracy": 0.9020000100135803, "train_accuracy": 1.0, "dev_entroy": 0.021282751977295185, "test_entropy": 0.02050112560345376, "seed": "42", "l1": "0.1", "mixture": "0.6"}

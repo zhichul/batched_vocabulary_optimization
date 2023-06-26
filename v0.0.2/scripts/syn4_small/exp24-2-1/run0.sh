@@ -20,7 +20,7 @@ TEST_NAME=test.csv
 CONFIG_NAME=${SCRIPT_PREFIX}/config${SIZE}.json
 EPOCH_SIZE=$(wc -l < ${DATA_PREFIX}/${TRAIN_NAME})
 
-CUDA_VISIBLE_DEVICES=0 CUDA_LAUNCH_BLOCKING=1 python3 -O -um bopt.train \
+CUDA_VISIBLE_DEVICES=1 CUDA_LAUNCH_BLOCKING=1 python3 -O -um bopt.train \
     --output_directory ${OUTPUT_DIR} \
     --overwrite_output_directory \
     \

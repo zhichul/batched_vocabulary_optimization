@@ -33,6 +33,13 @@ def maybe_random_restart(setup, override):
 def train_classification_outer(setup: ClassificationBilevelTrainingSetup):
     with open(os.path.join(setup.args.output_directory, "log.json"), "wt") as f:
         pass
+    for i in range(setup.args.random_restarts):
+        with open(os.path.join(setup.args.output_directory, f"train-init-{i}-log.json"), "wt") as f:
+            pass
+    for i in range(setup.args.eval_random_restarts):
+        with open(os.path.join(setup.args.output_directory, f"eval-init-{i}-log.json"), "wt") as f:
+            pass
+
     step = 0
     windowed_loss = []
     best_dev_acc = -1
@@ -51,6 +58,10 @@ def train_classification_outer(setup: ClassificationBilevelTrainingSetup):
         seed(setup.args.seed)
         # maybe evaluate
         if ((raw_step) % (setup.args.train_batch_size // setup.args.gpu_batch_size) == 0) and (step % setup.args.eval_steps == 0):
+            if setup.args.log_trajectory:
+                for i in range(setup.args.eval_random_restarts):
+                    with open(os.path.join(setup.args.output_directory, f"step-{step}-eval-init-{i}-log.json"), "wt") as f:
+                        pass
             eval_metrics = defaultdict(float)
             for i in range(setup.args.eval_random_restarts):
                 maybe_random_restart(setup, initial_model_parameters)
@@ -79,6 +90,8 @@ def train_classification_outer(setup: ClassificationBilevelTrainingSetup):
                 for metric in eval_metrics_i:
                     eval_metrics[metric] += eval_metrics_i[metric] / setup.args.eval_random_restarts
                 print(eval_metrics_i)
+                with open(os.path.join(setup.args.output_directory, f"eval-init-{i}-log.json"), "at") as f:
+                    print(json.dumps(eval_metrics_i), file=f)
             # early stopping
             if eval_metrics["dev_accuracy"] > best_dev_acc:
                 best_dev_acc = eval_metrics["dev_accuracy"]
@@ -114,6 +127,10 @@ def train_classification_outer(setup: ClassificationBilevelTrainingSetup):
                 train_classification_inner(setup, step)
                 set_grad(setup.classifier.input_tokenizer.parameters(), requires_grad=True)
             elif setup.args.bilevel_optimization_scheme == "unroll" or setup.args.bilevel_optimization_scheme == "reversible-learning":
+                if setup.args.log_trajectory:
+                    for i in range(setup.args.random_restarts):
+                            with open(os.path.join(setup.args.output_directory, f"step-{step}-train-init-{i}-log.json"), "wt") as f:
+                                pass
                 cumgrad = 0
                 tokenizer_params_ref = next(setup.classifier.input_tokenizer.parameters())
                 for rr in tqdm(range(setup.args.random_restarts), desc="Random restarts"):
@@ -141,7 +158,8 @@ def train_classification_outer(setup: ClassificationBilevelTrainingSetup):
                     # print(clf_params[0].norm())
                     # if raw_step > 0 and (not (init_params[0] ==clf_params[0]).all() or (init_params[-1] == clf_params[-1]).all()):
                     #     code.interact(local=locals())
-                    task_loss += train_trajectory_inner(setup, step)
+                    task_lossi, logline = train_trajectory_inner(setup, step, rr)
+                    task_loss += task_lossi
 
                     rr_grad = tokenizer_params_ref.grad - cumgrad
                     cumgrad = tokenizer_params_ref.grad.detach().clone()

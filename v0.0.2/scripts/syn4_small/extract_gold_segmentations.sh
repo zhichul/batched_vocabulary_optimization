@@ -2,7 +2,7 @@
 
 for DATA in 100 500 small full
 do
-for NAME in train.100 dev test
+for NAME in train.inner train.outer #train.100 dev test
 do
 python3 -m bopt.data.extract_synthetic_gold_tokenizations \
   < /export/a01/corpora/vopt/syn/4/${DATA}/${NAME}.csv \

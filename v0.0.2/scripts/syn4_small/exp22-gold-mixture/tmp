@@ -1,0 +1,500 @@
+{"text": "xulolx", "tokenizations": [[["xu", 2], ["lo", 4], ["lx", 6]]], "weights": [1.0]}
+{"text": "uuialx", "tokenizations": [[["u", 1], ["uia", 4], ["lx", 6]]], "weights": [1.0]}
+{"text": "lla", "tokenizations": [[["ll", 2], ["a", 3]]], "weights": [1.0]}
+{"text": "lzuiax", "tokenizations": [[["lz", 2], ["uia", 5], ["x", 6]]], "weights": [1.0]}
+{"text": "ouxlzy", "tokenizations": [[["o", 1], ["uxl", 4], ["zy", 6]]], "weights": [1.0]}
+{"text": "xxyxluo", "tokenizations": [[["xx", 2], ["yx", 4], ["luo", 7]]], "weights": [1.0]}
+{"text": "uauxzla", "tokenizations": [[["u", 1], ["aux", 4], ["zla", 7]]], "weights": [1.0]}
+{"text": "uyiluo", "tokenizations": [[["u", 1], ["yi", 3], ["luo", 6]]], "weights": [1.0]}
+{"text": "zoou", "tokenizations": [[["zoo", 3], ["u", 4]]], "weights": [1.0]}
+{"text": "lzxaluo", "tokenizations": [[["lz", 2], ["xa", 4], ["luo", 7]]], "weights": [1.0]}
+{"text": "xzuaxazu", "tokenizations": [[["xz", 2], ["uax", 5], ["azu", 8]]], "weights": [1.0]}
+{"text": "xiyolx", "tokenizations": [[["xi", 2], ["yo", 4], ["lx", 6]]], "weights": [1.0]}
+{"text": "lzuxxox", "tokenizations": [[["lz", 2], ["uxx", 5], ["ox", 7]]], "weights": [1.0]}
+{"text": "xuxuiu", "tokenizations": [[["xu", 2], ["xui", 5], ["u", 6]]], "weights": [1.0]}
+{"text": "xuoaxa", "tokenizations": [[["xu", 2], ["oax", 5], ["a", 6]]], "weights": [1.0]}
+{"text": "xziiluo", "tokenizations": [[["xz", 2], ["ii", 4], ["luo", 7]]], "weights": [1.0]}
+{"text": "uixo", "tokenizations": [[["ui", 2], ["xo", 4]]], "weights": [1.0]}
+{"text": "xuxu", "tokenizations": [[["xu", 2], ["xu", 4]]], "weights": [1.0]}
+{"text": "ayxluo", "tokenizations": [[["ayx", 3], ["luo", 6]]], "weights": [1.0]}
+{"text": "xuauux", "tokenizations": [[["xu", 2], ["auu", 5], ["x", 6]]], "weights": [1.0]}
+{"text": "lzauxo", "tokenizations": [[["lz", 2], ["au", 4], ["xo", 6]]], "weights": [1.0]}
+{"text": "xxuuxo", "tokenizations": [[["xx", 2], ["uu", 4], ["xo", 6]]], "weights": [1.0]}
+{"text": "xzloazu", "tokenizations": [[["xz", 2], ["lo", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "ilzoazu", "tokenizations": [[["il", 2], ["zo", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "yyxoa", "tokenizations": [[["yy", 2], ["xo", 4], ["a", 5]]], "weights": [1.0]}
+{"text": "ullol", "tokenizations": [[["ull", 3], ["ol", 5]]], "weights": [1.0]}
+{"text": "yu", "tokenizations": [[["yu", 2]]], "weights": [1.0]}
+{"text": "uoxluo", "tokenizations": [[["u", 1], ["ox", 3], ["luo", 6]]], "weights": [1.0]}
+{"text": "xzzu", "tokenizations": [[["xz", 2], ["zu", 4]]], "weights": [1.0]}
+{"text": "ullilyluo", "tokenizations": [[["ull", 3], ["ily", 6], ["luo", 9]]], "weights": [1.0]}
+{"text": "ullziox", "tokenizations": [[["ull", 3], ["zi", 5], ["ox", 7]]], "weights": [1.0]}
+{"text": "lzauu", "tokenizations": [[["lz", 2], ["auu", 5]]], "weights": [1.0]}
+{"text": "yylazu", "tokenizations": [[["yy", 2], ["l", 3], ["azu", 6]]], "weights": [1.0]}
+{"text": "ullluaa", "tokenizations": [[["ull", 3], ["lua", 6], ["a", 7]]], "weights": [1.0]}
+{"text": "ullua", "tokenizations": [[["ull", 3], ["ua", 5]]], "weights": [1.0]}
+{"text": "xia", "tokenizations": [[["xi", 2], ["a", 3]]], "weights": [1.0]}
+{"text": "yyalazu", "tokenizations": [[["yy", 2], ["al", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "yalx", "tokenizations": [[["ya", 2], ["lx", 4]]], "weights": [1.0]}
+{"text": "olazu", "tokenizations": [[["ol", 2], ["azu", 5]]], "weights": [1.0]}
+{"text": "ullu", "tokenizations": [[["ull", 3], ["u", 4]]], "weights": [1.0]}
+{"text": "zxzy", "tokenizations": [[["zx", 2], ["zy", 4]]], "weights": [1.0]}
+{"text": "yyzluo", "tokenizations": [[["yy", 2], ["z", 3], ["luo", 6]]], "weights": [1.0]}
+{"text": "xxaalx", "tokenizations": [[["xx", 2], ["aa", 4], ["lx", 6]]], "weights": [1.0]}
+{"text": "ulluyzx", "tokenizations": [[["ull", 3], ["uyz", 6], ["x", 7]]], "weights": [1.0]}
+{"text": "iu", "tokenizations": [[["i", 1], ["u", 2]]], "weights": [1.0]}
+{"text": "iluyzx", "tokenizations": [[["il", 2], ["uyz", 5], ["x", 6]]], "weights": [1.0]}
+{"text": "xxayxx", "tokenizations": [[["xx", 2], ["ayx", 5], ["x", 6]]], "weights": [1.0]}
+{"text": "illylzy", "tokenizations": [[["il", 2], ["lyl", 5], ["zy", 7]]], "weights": [1.0]}
+{"text": "xzxxlazu", "tokenizations": [[["xz", 2], ["xxl", 5], ["azu", 8]]], "weights": [1.0]}
+{"text": "yyxiluo", "tokenizations": [[["yy", 2], ["xi", 4], ["luo", 7]]], "weights": [1.0]}
+{"text": "uxxla", "tokenizations": [[["u", 1], ["xxl", 4], ["a", 5]]], "weights": [1.0]}
+{"text": "uluazla", "tokenizations": [[["u", 1], ["lua", 4], ["zla", 7]]], "weights": [1.0]}
+{"text": "ozyaa", "tokenizations": [[["o", 1], ["zya", 4], ["a", 5]]], "weights": [1.0]}
+{"text": "xuxilx", "tokenizations": [[["xu", 2], ["xi", 4], ["lx", 6]]], "weights": [1.0]}
+{"text": "yyoxuxo", "tokenizations": [[["yy", 2], ["oxu", 5], ["xo", 7]]], "weights": [1.0]}
+{"text": "xuxua", "tokenizations": [[["xu", 2], ["xu", 4], ["a", 5]]], "weights": [1.0]}
+{"text": "uolzy", "tokenizations": [[["u", 1], ["ol", 3], ["zy", 5]]], "weights": [1.0]}
+{"text": "ola", "tokenizations": [[["ol", 2], ["a", 3]]], "weights": [1.0]}
+{"text": "yylozy", "tokenizations": [[["yy", 2], ["lo", 4], ["zy", 6]]], "weights": [1.0]}
+{"text": "xzauulx", "tokenizations": [[["xz", 2], ["auu", 5], ["lx", 7]]], "weights": [1.0]}
+{"text": "xixlzy", "tokenizations": [[["xi", 2], ["xl", 4], ["zy", 6]]], "weights": [1.0]}
+{"text": "uyiix", "tokenizations": [[["u", 1], ["yii", 4], ["x", 5]]], "weights": [1.0]}
+{"text": "lzix", "tokenizations": [[["lz", 2], ["ix", 4]]], "weights": [1.0]}
+{"text": "yyaazluo", "tokenizations": [[["yy", 2], ["aaz", 5], ["luo", 8]]], "weights": [1.0]}
+{"text": "uozu", "tokenizations": [[["u", 1], ["oz", 3], ["u", 4]]], "weights": [1.0]}
+{"text": "xxauiox", "tokenizations": [[["xx", 2], ["aui", 5], ["ox", 7]]], "weights": [1.0]}
+{"text": "ulluazla", "tokenizations": [[["ull", 3], ["ua", 5], ["zla", 8]]], "weights": [1.0]}
+{"text": "xxlua", "tokenizations": [[["xx", 2], ["lua", 5]]], "weights": [1.0]}
+{"text": "yyzxazu", "tokenizations": [[["yy", 2], ["zx", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "xxxuox", "tokenizations": [[["xx", 2], ["xu", 4], ["ox", 6]]], "weights": [1.0]}
+{"text": "xxillx", "tokenizations": [[["xx", 2], ["il", 4], ["lx", 6]]], "weights": [1.0]}
+{"text": "oluilx", "tokenizations": [[["o", 1], ["lui", 4], ["lx", 6]]], "weights": [1.0]}
+{"text": "lzuxlazu", "tokenizations": [[["lz", 2], ["uxl", 5], ["azu", 8]]], "weights": [1.0]}
+{"text": "xxlzyx", "tokenizations": [[["xx", 2], ["lzy", 5], ["x", 6]]], "weights": [1.0]}
+{"text": "yylyxo", "tokenizations": [[["yy", 2], ["ly", 4], ["xo", 6]]], "weights": [1.0]}
+{"text": "lzziazu", "tokenizations": [[["lz", 2], ["zi", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "xuiuiazu", "tokenizations": [[["xu", 2], ["iui", 5], ["azu", 8]]], "weights": [1.0]}
+{"text": "xziilx", "tokenizations": [[["xz", 2], ["ii", 4], ["lx", 6]]], "weights": [1.0]}
+{"text": "yylui", "tokenizations": [[["yy", 2], ["lui", 5]]], "weights": [1.0]}
+{"text": "oauiazu", "tokenizations": [[["o", 1], ["aui", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "xziuizy", "tokenizations": [[["xz", 2], ["iui", 5], ["zy", 7]]], "weights": [1.0]}
+{"text": "ullauuzy", "tokenizations": [[["ull", 3], ["auu", 6], ["zy", 8]]], "weights": [1.0]}
+{"text": "yyuuyxo", "tokenizations": [[["yy", 2], ["uuy", 5], ["xo", 7]]], "weights": [1.0]}
+{"text": "xilizxo", "tokenizations": [[["xi", 2], ["liz", 5], ["xo", 7]]], "weights": [1.0]}
+{"text": "xxzuiu", "tokenizations": [[["xx", 2], ["zui", 5], ["u", 6]]], "weights": [1.0]}
+{"text": "ulluuzla", "tokenizations": [[["ull", 3], ["uu", 5], ["zla", 8]]], "weights": [1.0]}
+{"text": "ilayxzy", "tokenizations": [[["il", 2], ["ayx", 5], ["zy", 7]]], "weights": [1.0]}
+{"text": "uuyox", "tokenizations": [[["uuy", 3], ["ox", 5]]], "weights": [1.0]}
+{"text": "ilxlu", "tokenizations": [[["il", 2], ["xl", 4], ["u", 5]]], "weights": [1.0]}
+{"text": "uxoazu", "tokenizations": [[["u", 1], ["xo", 3], ["azu", 6]]], "weights": [1.0]}
+{"text": "al", "tokenizations": [[["al", 2]]], "weights": [1.0]}
+{"text": "xzxulu", "tokenizations": [[["xz", 2], ["xul", 5], ["u", 6]]], "weights": [1.0]}
+{"text": "lzzyazu", "tokenizations": [[["lz", 2], ["zy", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "ulza", "tokenizations": [[["ulz", 3], ["a", 4]]], "weights": [1.0]}
+{"text": "xilux", "tokenizations": [[["xi", 2], ["lu", 4], ["x", 5]]], "weights": [1.0]}
+{"text": "uxlazu", "tokenizations": [[["uxl", 3], ["azu", 6]]], "weights": [1.0]}
+{"text": "xxul", "tokenizations": [[["xx", 2], ["ul", 4]]], "weights": [1.0]}
+{"text": "xxalx", "tokenizations": [[["xx", 2], ["al", 4], ["x", 5]]], "weights": [1.0]}
+{"text": "xzoiazla", "tokenizations": [[["xz", 2], ["oia", 5], ["zla", 8]]], "weights": [1.0]}
+{"text": "yyluax", "tokenizations": [[["yy", 2], ["lua", 5], ["x", 6]]], "weights": [1.0]}
+{"text": "xzil", "tokenizations": [[["xz", 2], ["il", 4]]], "weights": [1.0]}
+{"text": "lzzyu", "tokenizations": [[["lz", 2], ["zy", 4], ["u", 5]]], "weights": [1.0]}
+{"text": "yyzlx", "tokenizations": [[["yy", 2], ["zl", 4], ["x", 5]]], "weights": [1.0]}
+{"text": "lzxox", "tokenizations": [[["lz", 2], ["xo", 4], ["x", 5]]], "weights": [1.0]}
+{"text": "uzua", "tokenizations": [[["u", 1], ["zu", 3], ["a", 4]]], "weights": [1.0]}
+{"text": "uzooazu", "tokenizations": [[["u", 1], ["zoo", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "lylxo", "tokenizations": [[["lyl", 3], ["xo", 5]]], "weights": [1.0]}
+{"text": "uya", "tokenizations": [[["uy", 2], ["a", 3]]], "weights": [1.0]}
+{"text": "oazla", "tokenizations": [[["oa", 2], ["zla", 5]]], "weights": [1.0]}
+{"text": "uxyxu", "tokenizations": [[["u", 1], ["xyx", 4], ["u", 5]]], "weights": [1.0]}
+{"text": "xxllu", "tokenizations": [[["xx", 2], ["ll", 4], ["u", 5]]], "weights": [1.0]}
+{"text": "oauizla", "tokenizations": [[["o", 1], ["aui", 4], ["zla", 7]]], "weights": [1.0]}
+{"text": "xzxxlox", "tokenizations": [[["xz", 2], ["xxl", 5], ["ox", 7]]], "weights": [1.0]}
+{"text": "ilzilx", "tokenizations": [[["il", 2], ["zi", 4], ["lx", 6]]], "weights": [1.0]}
+{"text": "xiauizy", "tokenizations": [[["xi", 2], ["aui", 5], ["zy", 7]]], "weights": [1.0]}
+{"text": "xuxulx", "tokenizations": [[["xu", 2], ["xul", 5], ["x", 6]]], "weights": [1.0]}
+{"text": "yyuayzy", "tokenizations": [[["yy", 2], ["uay", 5], ["zy", 7]]], "weights": [1.0]}
+{"text": "xxxzy", "tokenizations": [[["xx", 2], ["x", 3], ["zy", 5]]], "weights": [1.0]}
+{"text": "yyuzxo", "tokenizations": [[["yy", 2], ["uz", 4], ["xo", 6]]], "weights": [1.0]}
+{"text": "iliox", "tokenizations": [[["il", 2], ["io", 4], ["x", 5]]], "weights": [1.0]}
+{"text": "yyuza", "tokenizations": [[["yy", 2], ["uz", 4], ["a", 5]]], "weights": [1.0]}
+{"text": "yyuyzxo", "tokenizations": [[["yy", 2], ["uyz", 5], ["xo", 7]]], "weights": [1.0]}
+{"text": "yyxyu", "tokenizations": [[["yy", 2], ["xy", 4], ["u", 5]]], "weights": [1.0]}
+{"text": "yyyazu", "tokenizations": [[["yy", 2], ["y", 3], ["azu", 6]]], "weights": [1.0]}
+{"text": "lzzoox", "tokenizations": [[["lz", 2], ["zoo", 5], ["x", 6]]], "weights": [1.0]}
+{"text": "ayxxo", "tokenizations": [[["ayx", 3], ["xo", 5]]], "weights": [1.0]}
+{"text": "xiay", "tokenizations": [[["xi", 2], ["ay", 4]]], "weights": [1.0]}
+{"text": "ulluxlu", "tokenizations": [[["ull", 3], ["uxl", 6], ["u", 7]]], "weights": [1.0]}
+{"text": "xuoyox", "tokenizations": [[["xu", 2], ["oy", 4], ["ox", 6]]], "weights": [1.0]}
+{"text": "xxayxazu", "tokenizations": [[["xx", 2], ["ayx", 5], ["azu", 8]]], "weights": [1.0]}
+{"text": "oollx", "tokenizations": [[["o", 1], ["ol", 3], ["lx", 5]]], "weights": [1.0]}
+{"text": "xiilyxo", "tokenizations": [[["xi", 2], ["ily", 5], ["xo", 7]]], "weights": [1.0]}
+{"text": "ullulzxo", "tokenizations": [[["ull", 3], ["ulz", 6], ["xo", 8]]], "weights": [1.0]}
+{"text": "xzxlx", "tokenizations": [[["xz", 2], ["xl", 4], ["x", 5]]], "weights": [1.0]}
+{"text": "ilyozy", "tokenizations": [[["il", 2], ["yo", 4], ["zy", 6]]], "weights": [1.0]}
+{"text": "yyuoaazu", "tokenizations": [[["yy", 2], ["uoa", 5], ["azu", 8]]], "weights": [1.0]}
+{"text": "uy", "tokenizations": [[["uy", 2]]], "weights": [1.0]}
+{"text": "yyzouazu", "tokenizations": [[["yy", 2], ["zou", 5], ["azu", 8]]], "weights": [1.0]}
+{"text": "lzoxlx", "tokenizations": [[["lz", 2], ["ox", 4], ["lx", 6]]], "weights": [1.0]}
+{"text": "lzauiazu", "tokenizations": [[["lz", 2], ["aui", 5], ["azu", 8]]], "weights": [1.0]}
+{"text": "uaxzy", "tokenizations": [[["uax", 3], ["zy", 5]]], "weights": [1.0]}
+{"text": "xuuaxlx", "tokenizations": [[["xu", 2], ["uax", 5], ["lx", 7]]], "weights": [1.0]}
+{"text": "xizaa", "tokenizations": [[["xi", 2], ["za", 4], ["a", 5]]], "weights": [1.0]}
+{"text": "xzlzyzy", "tokenizations": [[["xz", 2], ["lzy", 5], ["zy", 7]]], "weights": [1.0]}
+{"text": "xxzxo", "tokenizations": [[["xx", 2], ["z", 3], ["xo", 5]]], "weights": [1.0]}
+{"text": "xzualuo", "tokenizations": [[["xz", 2], ["ua", 4], ["luo", 7]]], "weights": [1.0]}
+{"text": "lzyulazu", "tokenizations": [[["lz", 2], ["yul", 5], ["azu", 8]]], "weights": [1.0]}
+{"text": "uilyox", "tokenizations": [[["u", 1], ["ily", 4], ["ox", 6]]], "weights": [1.0]}
+{"text": "xioxua", "tokenizations": [[["xi", 2], ["oxu", 5], ["a", 6]]], "weights": [1.0]}
+{"text": "xuyy", "tokenizations": [[["xu", 2], ["yy", 4]]], "weights": [1.0]}
+{"text": "olzyu", "tokenizations": [[["o", 1], ["lzy", 4], ["u", 5]]], "weights": [1.0]}
+{"text": "xzla", "tokenizations": [[["x", 1], ["zla", 4]]], "weights": [1.0]}
+{"text": "xilui", "tokenizations": [[["xi", 2], ["lui", 5]]], "weights": [1.0]}
+{"text": "xxoazla", "tokenizations": [[["xx", 2], ["oa", 4], ["zla", 7]]], "weights": [1.0]}
+{"text": "yyxozla", "tokenizations": [[["yy", 2], ["xo", 4], ["zla", 7]]], "weights": [1.0]}
+{"text": "uoax", "tokenizations": [[["uoa", 3], ["x", 4]]], "weights": [1.0]}
+{"text": "uua", "tokenizations": [[["uu", 2], ["a", 3]]], "weights": [1.0]}
+{"text": "ilxa", "tokenizations": [[["il", 2], ["x", 3], ["a", 4]]], "weights": [1.0]}
+{"text": "xixuilx", "tokenizations": [[["xi", 2], ["xui", 5], ["lx", 7]]], "weights": [1.0]}
+{"text": "oaa", "tokenizations": [[["oa", 2], ["a", 3]]], "weights": [1.0]}
+{"text": "xuixxo", "tokenizations": [[["xu", 2], ["ix", 4], ["xo", 6]]], "weights": [1.0]}
+{"text": "ouoalx", "tokenizations": [[["o", 1], ["uoa", 4], ["lx", 6]]], "weights": [1.0]}
+{"text": "xiozox", "tokenizations": [[["xi", 2], ["oz", 4], ["ox", 6]]], "weights": [1.0]}
+{"text": "xzzoozy", "tokenizations": [[["xz", 2], ["zoo", 5], ["zy", 7]]], "weights": [1.0]}
+{"text": "xxoyxo", "tokenizations": [[["xx", 2], ["oy", 4], ["xo", 6]]], "weights": [1.0]}
+{"text": "xxuxllx", "tokenizations": [[["xx", 2], ["uxl", 5], ["lx", 7]]], "weights": [1.0]}
+{"text": "yulox", "tokenizations": [[["yul", 3], ["ox", 5]]], "weights": [1.0]}
+{"text": "xxuayx", "tokenizations": [[["xx", 2], ["uay", 5], ["x", 6]]], "weights": [1.0]}
+{"text": "oyazy", "tokenizations": [[["oya", 3], ["zy", 5]]], "weights": [1.0]}
+{"text": "ullyixo", "tokenizations": [[["ull", 3], ["yi", 5], ["xo", 7]]], "weights": [1.0]}
+{"text": "ooaluo", "tokenizations": [[["o", 1], ["oa", 3], ["luo", 6]]], "weights": [1.0]}
+{"text": "ulloia", "tokenizations": [[["ull", 3], ["oia", 6]]], "weights": [1.0]}
+{"text": "xzioazu", "tokenizations": [[["xz", 2], ["io", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "ullall", "tokenizations": [[["ull", 3], ["all", 6]]], "weights": [1.0]}
+{"text": "ulz", "tokenizations": [[["ulz", 3]]], "weights": [1.0]}
+{"text": "xiozla", "tokenizations": [[["xi", 2], ["o", 3], ["zla", 6]]], "weights": [1.0]}
+{"text": "oyulx", "tokenizations": [[["o", 1], ["yul", 4], ["x", 5]]], "weights": [1.0]}
+{"text": "uul", "tokenizations": [[["u", 1], ["ul", 3]]], "weights": [1.0]}
+{"text": "uxux", "tokenizations": [[["u", 1], ["xu", 3], ["x", 4]]], "weights": [1.0]}
+{"text": "olxazu", "tokenizations": [[["o", 1], ["lx", 3], ["azu", 6]]], "weights": [1.0]}
+{"text": "yyzlu", "tokenizations": [[["yy", 2], ["zl", 4], ["u", 5]]], "weights": [1.0]}
+{"text": "xzioluo", "tokenizations": [[["xz", 2], ["io", 4], ["luo", 7]]], "weights": [1.0]}
+{"text": "xuyuxo", "tokenizations": [[["xu", 2], ["yu", 4], ["xo", 6]]], "weights": [1.0]}
+{"text": "ullaazluo", "tokenizations": [[["ull", 3], ["aaz", 6], ["luo", 9]]], "weights": [1.0]}
+{"text": "zzy", "tokenizations": [[["z", 1], ["zy", 3]]], "weights": [1.0]}
+{"text": "lzolox", "tokenizations": [[["lz", 2], ["ol", 4], ["ox", 6]]], "weights": [1.0]}
+{"text": "lzauiluo", "tokenizations": [[["lz", 2], ["aui", 5], ["luo", 8]]], "weights": [1.0]}
+{"text": "xuulza", "tokenizations": [[["xu", 2], ["ulz", 5], ["a", 6]]], "weights": [1.0]}
+{"text": "xzxuiazu", "tokenizations": [[["xz", 2], ["xui", 5], ["azu", 8]]], "weights": [1.0]}
+{"text": "lzxxo", "tokenizations": [[["lz", 2], ["x", 3], ["xo", 5]]], "weights": [1.0]}
+{"text": "xxizla", "tokenizations": [[["xx", 2], ["i", 3], ["zla", 6]]], "weights": [1.0]}
+{"text": "xxxyu", "tokenizations": [[["xx", 2], ["xy", 4], ["u", 5]]], "weights": [1.0]}
+{"text": "auxox", "tokenizations": [[["aux", 3], ["ox", 5]]], "weights": [1.0]}
+{"text": "xixua", "tokenizations": [[["xi", 2], ["xu", 4], ["a", 5]]], "weights": [1.0]}
+{"text": "ilau", "tokenizations": [[["il", 2], ["a", 3], ["u", 4]]], "weights": [1.0]}
+{"text": "lzyzy", "tokenizations": [[["lzy", 3], ["zy", 5]]], "weights": [1.0]}
+{"text": "uuaxxo", "tokenizations": [[["u", 1], ["uax", 4], ["xo", 6]]], "weights": [1.0]}
+{"text": "auuox", "tokenizations": [[["auu", 3], ["ox", 5]]], "weights": [1.0]}
+{"text": "xiuyzlx", "tokenizations": [[["xi", 2], ["uyz", 5], ["lx", 7]]], "weights": [1.0]}
+{"text": "xzuou", "tokenizations": [[["xz", 2], ["uou", 5]]], "weights": [1.0]}
+{"text": "xuuuyox", "tokenizations": [[["xu", 2], ["uuy", 5], ["ox", 7]]], "weights": [1.0]}
+{"text": "uzu", "tokenizations": [[["uz", 2], ["u", 3]]], "weights": [1.0]}
+{"text": "xuzyluo", "tokenizations": [[["xu", 2], ["zy", 4], ["luo", 7]]], "weights": [1.0]}
+{"text": "xuauxox", "tokenizations": [[["xu", 2], ["aux", 5], ["ox", 7]]], "weights": [1.0]}
+{"text": "xxozxo", "tokenizations": [[["xx", 2], ["oz", 4], ["xo", 6]]], "weights": [1.0]}
+{"text": "xii", "tokenizations": [[["xi", 2], ["i", 3]]], "weights": [1.0]}
+{"text": "yyauuzla", "tokenizations": [[["yy", 2], ["auu", 5], ["zla", 8]]], "weights": [1.0]}
+{"text": "xxuaxzla", "tokenizations": [[["xx", 2], ["uax", 5], ["zla", 8]]], "weights": [1.0]}
+{"text": "xiuuluo", "tokenizations": [[["xi", 2], ["uu", 4], ["luo", 7]]], "weights": [1.0]}
+{"text": "yyxlu", "tokenizations": [[["yy", 2], ["xl", 4], ["u", 5]]], "weights": [1.0]}
+{"text": "iliuzla", "tokenizations": [[["il", 2], ["iu", 4], ["zla", 7]]], "weights": [1.0]}
+{"text": "ulloyxo", "tokenizations": [[["ull", 3], ["oy", 5], ["xo", 7]]], "weights": [1.0]}
+{"text": "ooaxazu", "tokenizations": [[["o", 1], ["oax", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "xioxuzy", "tokenizations": [[["xi", 2], ["oxu", 5], ["zy", 7]]], "weights": [1.0]}
+{"text": "uxxlx", "tokenizations": [[["uxx", 3], ["lx", 5]]], "weights": [1.0]}
+{"text": "xuulzzla", "tokenizations": [[["xu", 2], ["ulz", 5], ["zla", 8]]], "weights": [1.0]}
+{"text": "ullaoxlx", "tokenizations": [[["ull", 3], ["aox", 6], ["lx", 8]]], "weights": [1.0]}
+{"text": "yyaozy", "tokenizations": [[["yy", 2], ["ao", 4], ["zy", 6]]], "weights": [1.0]}
+{"text": "xiuayox", "tokenizations": [[["xi", 2], ["uay", 5], ["ox", 7]]], "weights": [1.0]}
+{"text": "xxzooa", "tokenizations": [[["xx", 2], ["zoo", 5], ["a", 6]]], "weights": [1.0]}
+{"text": "uziluo", "tokenizations": [[["u", 1], ["zi", 3], ["luo", 6]]], "weights": [1.0]}
+{"text": "yyiu", "tokenizations": [[["yy", 2], ["i", 3], ["u", 4]]], "weights": [1.0]}
+{"text": "ozu", "tokenizations": [[["oz", 2], ["u", 3]]], "weights": [1.0]}
+{"text": "lzyoluo", "tokenizations": [[["lz", 2], ["yo", 4], ["luo", 7]]], "weights": [1.0]}
+{"text": "yyayxazu", "tokenizations": [[["yy", 2], ["ayx", 5], ["azu", 8]]], "weights": [1.0]}
+{"text": "xxoaazu", "tokenizations": [[["xx", 2], ["oa", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "ozouxo", "tokenizations": [[["o", 1], ["zou", 4], ["xo", 6]]], "weights": [1.0]}
+{"text": "xiyula", "tokenizations": [[["xi", 2], ["yul", 5], ["a", 6]]], "weights": [1.0]}
+{"text": "ullullxo", "tokenizations": [[["ull", 3], ["ull", 6], ["xo", 8]]], "weights": [1.0]}
+{"text": "ozixo", "tokenizations": [[["o", 1], ["zi", 3], ["xo", 5]]], "weights": [1.0]}
+{"text": "ullyii", "tokenizations": [[["ull", 3], ["yii", 6]]], "weights": [1.0]}
+{"text": "lxazu", "tokenizations": [[["lx", 2], ["azu", 5]]], "weights": [1.0]}
+{"text": "ullaazu", "tokenizations": [[["ull", 3], ["a", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "ullouaa", "tokenizations": [[["ull", 3], ["oua", 6], ["a", 7]]], "weights": [1.0]}
+{"text": "uxx", "tokenizations": [[["uxx", 3]]], "weights": [1.0]}
+{"text": "lzxlzla", "tokenizations": [[["lz", 2], ["xl", 4], ["zla", 7]]], "weights": [1.0]}
+{"text": "xiilox", "tokenizations": [[["xi", 2], ["il", 4], ["ox", 6]]], "weights": [1.0]}
+{"text": "xiozzy", "tokenizations": [[["xi", 2], ["oz", 4], ["zy", 6]]], "weights": [1.0]}
+{"text": "ouaa", "tokenizations": [[["oua", 3], ["a", 4]]], "weights": [1.0]}
+{"text": "xziuiu", "tokenizations": [[["xz", 2], ["iui", 5], ["u", 6]]], "weights": [1.0]}
+{"text": "ozxzy", "tokenizations": [[["o", 1], ["zx", 3], ["zy", 5]]], "weights": [1.0]}
+{"text": "ulo", "tokenizations": [[["u", 1], ["lo", 3]]], "weights": [1.0]}
+{"text": "ullxylx", "tokenizations": [[["ull", 3], ["xy", 5], ["lx", 7]]], "weights": [1.0]}
+{"text": "uliluo", "tokenizations": [[["u", 1], ["li", 3], ["luo", 6]]], "weights": [1.0]}
+{"text": "lzaa", "tokenizations": [[["lz", 2], ["aa", 4]]], "weights": [1.0]}
+{"text": "uax", "tokenizations": [[["uax", 3]]], "weights": [1.0]}
+{"text": "ilyaox", "tokenizations": [[["il", 2], ["ya", 4], ["ox", 6]]], "weights": [1.0]}
+{"text": "xuxulluo", "tokenizations": [[["xu", 2], ["xul", 5], ["luo", 8]]], "weights": [1.0]}
+{"text": "ilayxluo", "tokenizations": [[["il", 2], ["ayx", 5], ["luo", 8]]], "weights": [1.0]}
+{"text": "yuox", "tokenizations": [[["yu", 2], ["ox", 4]]], "weights": [1.0]}
+{"text": "ulloox", "tokenizations": [[["ull", 3], ["o", 4], ["ox", 6]]], "weights": [1.0]}
+{"text": "ouxxu", "tokenizations": [[["o", 1], ["uxx", 4], ["u", 5]]], "weights": [1.0]}
+{"text": "uaxu", "tokenizations": [[["uax", 3], ["u", 4]]], "weights": [1.0]}
+{"text": "yyilazu", "tokenizations": [[["yy", 2], ["il", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "zyla", "tokenizations": [[["zyl", 3], ["a", 4]]], "weights": [1.0]}
+{"text": "oal", "tokenizations": [[["o", 1], ["al", 3]]], "weights": [1.0]}
+{"text": "yyuizy", "tokenizations": [[["yy", 2], ["ui", 4], ["zy", 6]]], "weights": [1.0]}
+{"text": "yyxxllx", "tokenizations": [[["yy", 2], ["xxl", 5], ["lx", 7]]], "weights": [1.0]}
+{"text": "xiaoxu", "tokenizations": [[["xi", 2], ["aox", 5], ["u", 6]]], "weights": [1.0]}
+{"text": "xzziu", "tokenizations": [[["xz", 2], ["zi", 4], ["u", 5]]], "weights": [1.0]}
+{"text": "yyyuazu", "tokenizations": [[["yy", 2], ["yu", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "uuuxo", "tokenizations": [[["u", 1], ["uu", 3], ["xo", 5]]], "weights": [1.0]}
+{"text": "lzlizxo", "tokenizations": [[["lz", 2], ["liz", 5], ["xo", 7]]], "weights": [1.0]}
+{"text": "uyuzy", "tokenizations": [[["u", 1], ["yu", 3], ["zy", 5]]], "weights": [1.0]}
+{"text": "la", "tokenizations": [[["la", 2]]], "weights": [1.0]}
+{"text": "lzzzy", "tokenizations": [[["lz", 2], ["z", 3], ["zy", 5]]], "weights": [1.0]}
+{"text": "auu", "tokenizations": [[["auu", 3]]], "weights": [1.0]}
+{"text": "uiuxo", "tokenizations": [[["u", 1], ["iu", 3], ["xo", 5]]], "weights": [1.0]}
+{"text": "xuzoulx", "tokenizations": [[["xu", 2], ["zou", 5], ["lx", 7]]], "weights": [1.0]}
+{"text": "iloiazy", "tokenizations": [[["il", 2], ["oia", 5], ["zy", 7]]], "weights": [1.0]}
+{"text": "xuayxa", "tokenizations": [[["xu", 2], ["ayx", 5], ["a", 6]]], "weights": [1.0]}
+{"text": "lzlxu", "tokenizations": [[["lz", 2], ["lx", 4], ["u", 5]]], "weights": [1.0]}
+{"text": "uaxzla", "tokenizations": [[["uax", 3], ["zla", 6]]], "weights": [1.0]}
+{"text": "xzyyluo", "tokenizations": [[["xz", 2], ["yy", 4], ["luo", 7]]], "weights": [1.0]}
+{"text": "yyzy", "tokenizations": [[["yy", 2], ["zy", 4]]], "weights": [1.0]}
+{"text": "yyuxx", "tokenizations": [[["yy", 2], ["uxx", 5]]], "weights": [1.0]}
+{"text": "xuuzx", "tokenizations": [[["xu", 2], ["uz", 4], ["x", 5]]], "weights": [1.0]}
+{"text": "yyxozy", "tokenizations": [[["yy", 2], ["xo", 4], ["zy", 6]]], "weights": [1.0]}
+{"text": "oaoxx", "tokenizations": [[["o", 1], ["aox", 4], ["x", 5]]], "weights": [1.0]}
+{"text": "xxloxo", "tokenizations": [[["xx", 2], ["lo", 4], ["xo", 6]]], "weights": [1.0]}
+{"text": "uazzy", "tokenizations": [[["u", 1], ["az", 3], ["zy", 5]]], "weights": [1.0]}
+{"text": "uzluo", "tokenizations": [[["uz", 2], ["luo", 5]]], "weights": [1.0]}
+{"text": "ulaa", "tokenizations": [[["u", 1], ["la", 3], ["a", 4]]], "weights": [1.0]}
+{"text": "xzauazu", "tokenizations": [[["xz", 2], ["au", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "xzauiox", "tokenizations": [[["xz", 2], ["aui", 5], ["ox", 7]]], "weights": [1.0]}
+{"text": "xialazu", "tokenizations": [[["xi", 2], ["al", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "xuaui", "tokenizations": [[["xu", 2], ["aui", 5]]], "weights": [1.0]}
+{"text": "ullayxluo", "tokenizations": [[["ull", 3], ["ayx", 6], ["luo", 9]]], "weights": [1.0]}
+{"text": "xuiiox", "tokenizations": [[["xu", 2], ["ii", 4], ["ox", 6]]], "weights": [1.0]}
+{"text": "xxlozy", "tokenizations": [[["xx", 2], ["lo", 4], ["zy", 6]]], "weights": [1.0]}
+{"text": "xxzlxo", "tokenizations": [[["xx", 2], ["zl", 4], ["xo", 6]]], "weights": [1.0]}
+{"text": "uzlx", "tokenizations": [[["uz", 2], ["lx", 4]]], "weights": [1.0]}
+{"text": "ulliuxo", "tokenizations": [[["ull", 3], ["iu", 5], ["xo", 7]]], "weights": [1.0]}
+{"text": "xiilx", "tokenizations": [[["xi", 2], ["il", 4], ["x", 5]]], "weights": [1.0]}
+{"text": "uiuluo", "tokenizations": [[["u", 1], ["iu", 3], ["luo", 6]]], "weights": [1.0]}
+{"text": "yyxluo", "tokenizations": [[["yy", 2], ["x", 3], ["luo", 6]]], "weights": [1.0]}
+{"text": "xxauxa", "tokenizations": [[["xx", 2], ["aux", 5], ["a", 6]]], "weights": [1.0]}
+{"text": "ulloyaxo", "tokenizations": [[["ull", 3], ["oya", 6], ["xo", 8]]], "weights": [1.0]}
+{"text": "xixlxazu", "tokenizations": [[["xi", 2], ["xlx", 5], ["azu", 8]]], "weights": [1.0]}
+{"text": "ouyzzy", "tokenizations": [[["o", 1], ["uyz", 4], ["zy", 6]]], "weights": [1.0]}
+{"text": "xxxulx", "tokenizations": [[["xx", 2], ["xu", 4], ["lx", 6]]], "weights": [1.0]}
+{"text": "oauxu", "tokenizations": [[["o", 1], ["au", 3], ["xu", 5]]], "weights": [1.0]}
+{"text": "ulluaxluo", "tokenizations": [[["ull", 3], ["uax", 6], ["luo", 9]]], "weights": [1.0]}
+{"text": "xxluaazu", "tokenizations": [[["xx", 2], ["lua", 5], ["azu", 8]]], "weights": [1.0]}
+{"text": "yyzylxo", "tokenizations": [[["yy", 2], ["zyl", 5], ["xo", 7]]], "weights": [1.0]}
+{"text": "xzauuxo", "tokenizations": [[["xz", 2], ["auu", 5], ["xo", 7]]], "weights": [1.0]}
+{"text": "lzaoxazu", "tokenizations": [[["lz", 2], ["a", 3], ["ox", 5], ["azu", 8]]], "weights": [1.0]}
+{"text": "xizlluo", "tokenizations": [[["xi", 2], ["zl", 4], ["luo", 7]]], "weights": [1.0]}
+{"text": "xxluizla", "tokenizations": [[["xx", 2], ["lui", 5], ["zla", 8]]], "weights": [1.0]}
+{"text": "xuozx", "tokenizations": [[["xu", 2], ["ozx", 5]]], "weights": [1.0]}
+{"text": "xzaazzla", "tokenizations": [[["xz", 2], ["aa", 4], ["z", 5], ["zla", 8]]], "weights": [1.0]}
+{"text": "ilauia", "tokenizations": [[["il", 2], ["aui", 5], ["a", 6]]], "weights": [1.0]}
+{"text": "xulxox", "tokenizations": [[["xu", 2], ["lx", 4], ["ox", 6]]], "weights": [1.0]}
+{"text": "xuaoazu", "tokenizations": [[["xu", 2], ["ao", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "yyzoazu", "tokenizations": [[["yy", 2], ["zo", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "uzlx", "tokenizations": [[["uz", 2], ["lx", 4]]], "weights": [1.0]}
+{"text": "yyyyu", "tokenizations": [[["y", 1], ["yy", 3], ["yu", 5]]], "weights": [1.0]}
+{"text": "xixya", "tokenizations": [[["xi", 2], ["xya", 5]]], "weights": [1.0]}
+{"text": "xxlaxo", "tokenizations": [[["xx", 2], ["la", 4], ["xo", 6]]], "weights": [1.0]}
+{"text": "xiyyox", "tokenizations": [[["xi", 2], ["yy", 4], ["ox", 6]]], "weights": [1.0]}
+{"text": "ulla", "tokenizations": [[["ull", 3], ["a", 4]]], "weights": [1.0]}
+{"text": "uyiizla", "tokenizations": [[["uyii", 4], ["zla", 7]]], "weights": [1.0]}
+{"text": "xzyoxo", "tokenizations": [[["xz", 2], ["yo", 4], ["xo", 6]]], "weights": [1.0]}
+{"text": "oyiu", "tokenizations": [[["oy", 2], ["iu", 4]]], "weights": [1.0]}
+{"text": "lzayxx", "tokenizations": [[["lz", 2], ["ay", 4], ["xx", 6]]], "weights": [1.0]}
+{"text": "uoy", "tokenizations": [[["uoy", 3]]], "weights": [1.0]}
+{"text": "lzx", "tokenizations": [[["lz", 2], ["x", 3]]], "weights": [1.0]}
+{"text": "alox", "tokenizations": [[["al", 2], ["ox", 4]]], "weights": [1.0]}
+{"text": "ullauilx", "tokenizations": [[["ull", 3], ["aui", 6], ["lx", 8]]], "weights": [1.0]}
+{"text": "ulzy", "tokenizations": [[["ulzy", 4]]], "weights": [1.0]}
+{"text": "uyulu", "tokenizations": [[["u", 1], ["yu", 3], ["lu", 5]]], "weights": [1.0]}
+{"text": "yyzyluo", "tokenizations": [[["yy", 2], ["zy", 4], ["luo", 7]]], "weights": [1.0]}
+{"text": "zzla", "tokenizations": [[["z", 1], ["zla", 4]]], "weights": [1.0]}
+{"text": "ullza", "tokenizations": [[["ull", 3], ["za", 5]]], "weights": [1.0]}
+{"text": "xuaozla", "tokenizations": [[["xu", 2], ["ao", 4], ["zla", 7]]], "weights": [1.0]}
+{"text": "lzlizu", "tokenizations": [[["lz", 2], ["li", 4], ["zu", 6]]], "weights": [1.0]}
+{"text": "ullaox", "tokenizations": [[["ull", 3], ["a", 4], ["ox", 6]]], "weights": [1.0]}
+{"text": "lzxxlxo", "tokenizations": [[["lz", 2], ["xx", 4], ["lx", 6], ["o", 7]]], "weights": [1.0]}
+{"text": "xxzox", "tokenizations": [[["xx", 2], ["z", 3], ["ox", 5]]], "weights": [1.0]}
+{"text": "uzaxo", "tokenizations": [[["uza", 3], ["xo", 5]]], "weights": [1.0]}
+{"text": "yyzxox", "tokenizations": [[["yy", 2], ["zx", 4], ["ox", 6]]], "weights": [1.0]}
+{"text": "ulllua", "tokenizations": [[["ull", 3], ["lua", 6]]], "weights": [1.0]}
+{"text": "xxxyxzy", "tokenizations": [[["xx", 2], ["xyx", 5], ["zy", 7]]], "weights": [1.0]}
+{"text": "lziux", "tokenizations": [[["lz", 2], ["iu", 4], ["x", 5]]], "weights": [1.0]}
+{"text": "xuuzzla", "tokenizations": [[["xu", 2], ["uz", 4], ["zla", 7]]], "weights": [1.0]}
+{"text": "yylizox", "tokenizations": [[["yy", 2], ["li", 4], ["z", 5], ["ox", 7]]], "weights": [1.0]}
+{"text": "xiluazy", "tokenizations": [[["xi", 2], ["lua", 5], ["zy", 7]]], "weights": [1.0]}
+{"text": "lzoyazu", "tokenizations": [[["lz", 2], ["oy", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "iluix", "tokenizations": [[["il", 2], ["uix", 5]]], "weights": [1.0]}
+{"text": "xzxox", "tokenizations": [[["xz", 2], ["xo", 4], ["x", 5]]], "weights": [1.0]}
+{"text": "lzolx", "tokenizations": [[["lz", 2], ["o", 3], ["lx", 5]]], "weights": [1.0]}
+{"text": "ilxxlzy", "tokenizations": [[["il", 2], ["xx", 4], ["lzy", 7]]], "weights": [1.0]}
+{"text": "ilxzla", "tokenizations": [[["il", 2], ["xz", 4], ["la", 6]]], "weights": [1.0]}
+{"text": "xzoxuzla", "tokenizations": [[["xz", 2], ["o", 3], ["xu", 5], ["zla", 8]]], "weights": [1.0]}
+{"text": "oxuluo", "tokenizations": [[["o", 1], ["xu", 3], ["luo", 6]]], "weights": [1.0]}
+{"text": "oiui", "tokenizations": [[["o", 1], ["iu", 3], ["i", 4]]], "weights": [1.0]}
+{"text": "xxoxo", "tokenizations": [[["xx", 2], ["o", 3], ["xo", 5]]], "weights": [1.0]}
+{"text": "ulluulx", "tokenizations": [[["ull", 3], ["uu", 5], ["lx", 7]]], "weights": [1.0]}
+{"text": "uzax", "tokenizations": [[["u", 1], ["zax", 4]]], "weights": [1.0]}
+{"text": "ullilyox", "tokenizations": [[["ull", 3], ["i", 4], ["ly", 6], ["ox", 8]]], "weights": [1.0]}
+{"text": "oyyxo", "tokenizations": [[["o", 1], ["yy", 3], ["xo", 5]]], "weights": [1.0]}
+{"text": "yyolzla", "tokenizations": [[["yy", 2], ["ol", 4], ["zla", 7]]], "weights": [1.0]}
+{"text": "ilxlx", "tokenizations": [[["il", 2], ["xlx", 5]]], "weights": [1.0]}
+{"text": "xzzyazy", "tokenizations": [[["xz", 2], ["zya", 5], ["zy", 7]]], "weights": [1.0]}
+{"text": "yyzu", "tokenizations": [[["yy", 2], ["zu", 4]]], "weights": [1.0]}
+{"text": "uxl", "tokenizations": [[["uxl", 3]]], "weights": [1.0]}
+{"text": "xzyazy", "tokenizations": [[["xz", 2], ["yazy", 6]]], "weights": [1.0]}
+{"text": "xuyyazu", "tokenizations": [[["xu", 2], ["yy", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "xiau", "tokenizations": [[["xi", 2], ["au", 4]]], "weights": [1.0]}
+{"text": "ullallu", "tokenizations": [[["ull", 3], ["al", 5], ["lu", 7]]], "weights": [1.0]}
+{"text": "yyxia", "tokenizations": [[["yy", 2], ["xi", 4], ["a", 5]]], "weights": [1.0]}
+{"text": "xxallx", "tokenizations": [[["xx", 2], ["al", 4], ["lx", 6]]], "weights": [1.0]}
+{"text": "ullyiixo", "tokenizations": [[["ull", 3], ["yi", 5], ["i", 6], ["xo", 8]]], "weights": [1.0]}
+{"text": "ilauxazu", "tokenizations": [[["il", 2], ["aux", 5], ["azu", 8]]], "weights": [1.0]}
+{"text": "lylu", "tokenizations": [[["ly", 2], ["lu", 4]]], "weights": [1.0]}
+{"text": "oaazzy", "tokenizations": [[["oaaz", 4], ["zy", 6]]], "weights": [1.0]}
+{"text": "yyouaxo", "tokenizations": [[["yy", 2], ["oua", 5], ["xo", 7]]], "weights": [1.0]}
+{"text": "xial", "tokenizations": [[["xi", 2], ["al", 4]]], "weights": [1.0]}
+{"text": "ulloxu", "tokenizations": [[["ull", 3], ["o", 4], ["xu", 6]]], "weights": [1.0]}
+{"text": "xzyx", "tokenizations": [[["xz", 2], ["yx", 4]]], "weights": [1.0]}
+{"text": "ozx", "tokenizations": [[["ozx", 3]]], "weights": [1.0]}
+{"text": "lzli", "tokenizations": [[["lz", 2], ["li", 4]]], "weights": [1.0]}
+{"text": "xuauxluo", "tokenizations": [[["xu", 2], ["aux", 5], ["luo", 8]]], "weights": [1.0]}
+{"text": "xualox", "tokenizations": [[["xu", 2], ["al", 4], ["ox", 6]]], "weights": [1.0]}
+{"text": "lzoiaox", "tokenizations": [[["lz", 2], ["oia", 5], ["ox", 7]]], "weights": [1.0]}
+{"text": "uaozla", "tokenizations": [[["uao", 3], ["zla", 6]]], "weights": [1.0]}
+{"text": "lzulluo", "tokenizations": [[["lz", 2], ["ull", 5], ["uo", 7]]], "weights": [1.0]}
+{"text": "ilzoluo", "tokenizations": [[["il", 2], ["zo", 4], ["luo", 7]]], "weights": [1.0]}
+{"text": "xuioxo", "tokenizations": [[["xu", 2], ["io", 4], ["xo", 6]]], "weights": [1.0]}
+{"text": "ullilyu", "tokenizations": [[["ull", 3], ["il", 5], ["yu", 7]]], "weights": [1.0]}
+{"text": "xxzyalx", "tokenizations": [[["xx", 2], ["zya", 5], ["lx", 7]]], "weights": [1.0]}
+{"text": "oulzu", "tokenizations": [[["oul", 3], ["zu", 5]]], "weights": [1.0]}
+{"text": "ilaoxlx", "tokenizations": [[["il", 2], ["a", 3], ["ox", 5], ["lx", 7]]], "weights": [1.0]}
+{"text": "yyauxa", "tokenizations": [[["yy", 2], ["aux", 5], ["a", 6]]], "weights": [1.0]}
+{"text": "xuiuazu", "tokenizations": [[["xu", 2], ["iu", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "ilyzy", "tokenizations": [[["i", 1], ["ly", 3], ["zy", 5]]], "weights": [1.0]}
+{"text": "xxuaxo", "tokenizations": [[["xx", 2], ["ua", 4], ["xo", 6]]], "weights": [1.0]}
+{"text": "yyuzx", "tokenizations": [[["y", 1], ["yu", 3], ["zx", 5]]], "weights": [1.0]}
+{"text": "uixzla", "tokenizations": [[["uix", 3], ["zla", 6]]], "weights": [1.0]}
+{"text": "uoaxzy", "tokenizations": [[["u", 1], ["oax", 4], ["zy", 6]]], "weights": [1.0]}
+{"text": "xiyua", "tokenizations": [[["xi", 2], ["yu", 4], ["a", 5]]], "weights": [1.0]}
+{"text": "xuzou", "tokenizations": [[["xu", 2], ["zou", 5]]], "weights": [1.0]}
+{"text": "xuzxlx", "tokenizations": [[["xu", 2], ["zx", 4], ["lx", 6]]], "weights": [1.0]}
+{"text": "xxix", "tokenizations": [[["xx", 2], ["ix", 4]]], "weights": [1.0]}
+{"text": "oxyxox", "tokenizations": [[["ox", 2], ["yx", 4], ["ox", 6]]], "weights": [1.0]}
+{"text": "ilxula", "tokenizations": [[["il", 2], ["xu", 4], ["la", 6]]], "weights": [1.0]}
+{"text": "xxxax", "tokenizations": [[["x", 1], ["xx", 3], ["ax", 5]]], "weights": [1.0]}
+{"text": "xzzizy", "tokenizations": [[["xz", 2], ["zi", 4], ["zy", 6]]], "weights": [1.0]}
+{"text": "ullyua", "tokenizations": [[["ull", 3], ["yu", 5], ["a", 6]]], "weights": [1.0]}
+{"text": "xxzyaazu", "tokenizations": [[["xx", 2], ["zya", 5], ["azu", 8]]], "weights": [1.0]}
+{"text": "yyuuy", "tokenizations": [[["yy", 2], ["uuy", 5]]], "weights": [1.0]}
+{"text": "lzaozy", "tokenizations": [[["lz", 2], ["ao", 4], ["zy", 6]]], "weights": [1.0]}
+{"text": "xxauazu", "tokenizations": [[["xx", 2], ["au", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "xuxyazu", "tokenizations": [[["xu", 2], ["xy", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "uluiazu", "tokenizations": [[["ului", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "uyya", "tokenizations": [[["u", 1], ["yy", 3], ["a", 4]]], "weights": [1.0]}
+{"text": "xiaazu", "tokenizations": [[["xi", 2], ["a", 3], ["azu", 6]]], "weights": [1.0]}
+{"text": "xiullzy", "tokenizations": [[["xi", 2], ["ull", 5], ["zy", 7]]], "weights": [1.0]}
+{"text": "lzla", "tokenizations": [[["lz", 2], ["la", 4]]], "weights": [1.0]}
+{"text": "lzaxluo", "tokenizations": [[["lz", 2], ["ax", 4], ["luo", 7]]], "weights": [1.0]}
+{"text": "ooiaxo", "tokenizations": [[["o", 1], ["oia", 4], ["xo", 6]]], "weights": [1.0]}
+{"text": "xzila", "tokenizations": [[["xz", 2], ["il", 4], ["a", 5]]], "weights": [1.0]}
+{"text": "ilxo", "tokenizations": [[["il", 2], ["xo", 4]]], "weights": [1.0]}
+{"text": "ulluua", "tokenizations": [[["ull", 3], ["uu", 5], ["a", 6]]], "weights": [1.0]}
+{"text": "ooiaa", "tokenizations": [[["ooi", 3], ["aa", 5]]], "weights": [1.0]}
+{"text": "yyoialuo", "tokenizations": [[["yy", 2], ["oia", 5], ["luo", 8]]], "weights": [1.0]}
+{"text": "ilzxazu", "tokenizations": [[["il", 2], ["zx", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "yuzy", "tokenizations": [[["yu", 2], ["zy", 4]]], "weights": [1.0]}
+{"text": "xxaylx", "tokenizations": [[["xx", 2], ["ay", 4], ["lx", 6]]], "weights": [1.0]}
+{"text": "yyxyxazu", "tokenizations": [[["yy", 2], ["xyx", 5], ["azu", 8]]], "weights": [1.0]}
+{"text": "xzyulzy", "tokenizations": [[["xz", 2], ["yu", 4], ["lzy", 7]]], "weights": [1.0]}
+{"text": "xzuayzla", "tokenizations": [[["xz", 2], ["uay", 5], ["zla", 8]]], "weights": [1.0]}
+{"text": "uauxzy", "tokenizations": [[["uaux", 4], ["zy", 6]]], "weights": [1.0]}
+{"text": "oxu", "tokenizations": [[["o", 1], ["xu", 3]]], "weights": [1.0]}
+{"text": "ilxla", "tokenizations": [[["il", 2], ["xla", 5]]], "weights": [1.0]}
+{"text": "oauuluo", "tokenizations": [[["o", 1], ["auu", 4], ["luo", 7]]], "weights": [1.0]}
+{"text": "lzoyau", "tokenizations": [[["lz", 2], ["oyau", 6]]], "weights": [1.0]}
+{"text": "ulxu", "tokenizations": [[["ul", 2], ["xu", 4]]], "weights": [1.0]}
+{"text": "yyyxluo", "tokenizations": [[["yy", 2], ["yx", 4], ["luo", 7]]], "weights": [1.0]}
+{"text": "xilua", "tokenizations": [[["xi", 2], ["lua", 5]]], "weights": [1.0]}
+{"text": "ooxzla", "tokenizations": [[["o", 1], ["ox", 3], ["zla", 6]]], "weights": [1.0]}
+{"text": "ulllozy", "tokenizations": [[["ull", 3], ["lo", 5], ["zy", 7]]], "weights": [1.0]}
+{"text": "xzoax", "tokenizations": [[["xz", 2], ["oax", 5]]], "weights": [1.0]}
+{"text": "xzazxo", "tokenizations": [[["xz", 2], ["az", 4], ["xo", 6]]], "weights": [1.0]}
+{"text": "uyyazu", "tokenizations": [[["u", 1], ["yy", 3], ["azu", 6]]], "weights": [1.0]}
+{"text": "uuya", "tokenizations": [[["uuy", 3], ["a", 4]]], "weights": [1.0]}
+{"text": "xzxuazu", "tokenizations": [[["xz", 2], ["xu", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "ilzooox", "tokenizations": [[["il", 2], ["zoo", 5], ["ox", 7]]], "weights": [1.0]}
+{"text": "zllx", "tokenizations": [[["zl", 2], ["lx", 4]]], "weights": [1.0]}
+{"text": "uuxluo", "tokenizations": [[["uu", 2], ["x", 3], ["luo", 6]]], "weights": [1.0]}
+{"text": "xxuia", "tokenizations": [[["xx", 2], ["ui", 4], ["a", 5]]], "weights": [1.0]}
+{"text": "illox", "tokenizations": [[["il", 2], ["l", 3], ["ox", 5]]], "weights": [1.0]}
+{"text": "ullzyau", "tokenizations": [[["ull", 3], ["zy", 5], ["au", 7]]], "weights": [1.0]}
+{"text": "xxxuazu", "tokenizations": [[["xx", 2], ["xu", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "ouuy", "tokenizations": [[["o", 1], ["uuy", 4]]], "weights": [1.0]}
+{"text": "xiaox", "tokenizations": [[["xi", 2], ["a", 3], ["ox", 5]]], "weights": [1.0]}
+{"text": "yyoiaox", "tokenizations": [[["yy", 2], ["oia", 5], ["ox", 7]]], "weights": [1.0]}
+{"text": "oix", "tokenizations": [[["o", 1], ["ix", 3]]], "weights": [1.0]}
+{"text": "ozyzy", "tokenizations": [[["o", 1], ["zy", 3], ["zy", 5]]], "weights": [1.0]}
+{"text": "oxyxx", "tokenizations": [[["ox", 2], ["y", 3], ["xx", 5]]], "weights": [1.0]}
+{"text": "xiaxo", "tokenizations": [[["xi", 2], ["a", 3], ["xo", 5]]], "weights": [1.0]}
+{"text": "yyxuiazu", "tokenizations": [[["yy", 2], ["xu", 4], ["i", 5], ["azu", 8]]], "weights": [1.0]}
+{"text": "xzyiixo", "tokenizations": [[["xz", 2], ["yi", 4], ["i", 5], ["xo", 7]]], "weights": [1.0]}
+{"text": "xiaui", "tokenizations": [[["xi", 2], ["aui", 5]]], "weights": [1.0]}
+{"text": "uzox", "tokenizations": [[["uz", 2], ["ox", 4]]], "weights": [1.0]}
+{"text": "yyuuya", "tokenizations": [[["yy", 2], ["uuy", 5], ["a", 6]]], "weights": [1.0]}
+{"text": "xxxuilx", "tokenizations": [[["xx", 2], ["xu", 4], ["i", 5], ["lx", 7]]], "weights": [1.0]}
+{"text": "xxaua", "tokenizations": [[["xx", 2], ["au", 4], ["a", 5]]], "weights": [1.0]}
+{"text": "lzoa", "tokenizations": [[["lz", 2], ["oa", 4]]], "weights": [1.0]}
+{"text": "xxlluo", "tokenizations": [[["xx", 2], ["l", 3], ["luo", 6]]], "weights": [1.0]}
+{"text": "xzxuiluo", "tokenizations": [[["xz", 2], ["xu", 4], ["i", 5], ["luo", 8]]], "weights": [1.0]}
+{"text": "xxoaxlx", "tokenizations": [[["xx", 2], ["oax", 5], ["lx", 7]]], "weights": [1.0]}
+{"text": "lzyiiluo", "tokenizations": [[["lz", 2], ["yi", 4], ["i", 5], ["luo", 8]]], "weights": [1.0]}
+{"text": "lzxlazu", "tokenizations": [[["lz", 2], ["xl", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "yyxlxxo", "tokenizations": [[["yy", 2], ["xlx", 5], ["xo", 7]]], "weights": [1.0]}
+{"text": "xuallzy", "tokenizations": [[["xu", 2], ["all", 5], ["zy", 7]]], "weights": [1.0]}
+{"text": "uxxluo", "tokenizations": [[["uxx", 3], ["luo", 6]]], "weights": [1.0]}
+{"text": "uyox", "tokenizations": [[["uy", 2], ["ox", 4]]], "weights": [1.0]}
+{"text": "xuyii", "tokenizations": [[["xu", 2], ["yi", 4], ["i", 5]]], "weights": [1.0]}
+{"text": "uuyzzla", "tokenizations": [[["uuy", 3], ["z", 4], ["zla", 7]]], "weights": [1.0]}
+{"text": "oox", "tokenizations": [[["o", 1], ["ox", 3]]], "weights": [1.0]}
+{"text": "uluu", "tokenizations": [[["ul", 2], ["uu", 4]]], "weights": [1.0]}
+{"text": "xxxuiazu", "tokenizations": [[["xx", 2], ["xu", 4], ["i", 5], ["azu", 8]]], "weights": [1.0]}
+{"text": "yyuiu", "tokenizations": [[["y", 1], ["yu", 3], ["iu", 5]]], "weights": [1.0]}
+{"text": "oxx", "tokenizations": [[["o", 1], ["xx", 3]]], "weights": [1.0]}
+{"text": "auuzla", "tokenizations": [[["auu", 3], ["zla", 6]]], "weights": [1.0]}
+{"text": "xxzylxo", "tokenizations": [[["xx", 2], ["zyl", 5], ["xo", 7]]], "weights": [1.0]}
+{"text": "yylalx", "tokenizations": [[["yy", 2], ["la", 4], ["lx", 6]]], "weights": [1.0]}
+{"text": "yyuyzazu", "tokenizations": [[["yy", 2], ["uyz", 5], ["azu", 8]]], "weights": [1.0]}
+{"text": "ulluo", "tokenizations": [[["ull", 3], ["uo", 5]]], "weights": [1.0]}
+{"text": "liu", "tokenizations": [[["l", 1], ["iu", 3]]], "weights": [1.0]}
+{"text": "yyo", "tokenizations": [[["yy", 2], ["o", 3]]], "weights": [1.0]}
+{"text": "xuuoa", "tokenizations": [[["xu", 2], ["uoa", 5]]], "weights": [1.0]}
+{"text": "ulyl", "tokenizations": [[["u", 1], ["lyl", 4]]], "weights": [1.0]}
+{"text": "xxuyzox", "tokenizations": [[["xx", 2], ["uyz", 5], ["ox", 7]]], "weights": [1.0]}
+{"text": "xuzaa", "tokenizations": [[["xu", 2], ["z", 3], ["aa", 5]]], "weights": [1.0]}
+{"text": "xiallluo", "tokenizations": [[["xi", 2], ["all", 5], ["luo", 8]]], "weights": [1.0]}
+{"text": "yyuixo", "tokenizations": [[["yy", 2], ["ui", 4], ["xo", 6]]], "weights": [1.0]}
+{"text": "xuaxu", "tokenizations": [[["xu", 2], ["a", 3], ["xu", 5]]], "weights": [1.0]}
+{"text": "xzxolx", "tokenizations": [[["xz", 2], ["xo", 4], ["lx", 6]]], "weights": [1.0]}

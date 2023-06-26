@@ -45,7 +45,7 @@ def extract_type_ids(forward_encoding):
     type_ids = torch.arange(K, dtype=torch.long, device=device)[None, :, None].expand(B, K, 1).reshape(B * K, -1).expand(B * K, NE).reshape(B, K * NE)  # B x KNE
     return type_ids.reshape(*(forward_encoding.size()[:-4] + (-1,)))
 
-def extract_token_encoding(forward_encoding, use_lattice_position_ids=False, padding_id=0):
+def extract_token_encoding(forward_encoding, use_lattice_position_ids=False, padding_id=0, max_tokens=-1):
     size = forward_encoding.size()
     device = forward_encoding.device
     K, N, M, L = size[-4:]
@@ -62,7 +62,7 @@ def extract_token_encoding(forward_encoding, use_lattice_position_ids=False, pad
         position_ids = extract_position_ids(forward_encoding.reshape(B, K*N, M, L)).reshape(B, -1)
 
     ntokens = serialized_token_mask.sum(-1)  # B (sums over the KN blocks)
-    max_tokens = ntokens.max().item()  # 1
+    max_tokens = max(ntokens.max().item(), max_tokens)  # 1
     sparse_input_ids = input_ids[serialized_token_mask]  # whatever
     sparse_attention_mask = attention_mask[serialized_token_mask]  # whatever
     sparse_type_ids = type_ids[serialized_token_mask]  # whatever

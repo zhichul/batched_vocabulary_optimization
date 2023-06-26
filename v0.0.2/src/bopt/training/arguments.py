@@ -87,4 +87,12 @@ def parse_arguments():
     add_training_arguments(parser)
     add_device_arguments(parser)
     add_logging_parameters(parser)
-    return parser.parse_args()
+    args = parser.parse_args()
+    if args.gold_percentage is not None:
+        if "gold" not in args.domain:
+            raise ValueError(args.domain + " is not gold domain but gold_percentage specified")
+        if args.input_tokenizer_mode != "bert" and args.input_tokenizer_mode != "1best":
+            raise ValueError("gold mode can only work with bert or 1best mode, but got %s" % args.input_tokenizer_mode)
+        if args.use_lattice_position_ids:
+            raise ValueError("gold mode can only work non-lattice-ids")
+    return args

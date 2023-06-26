@@ -1,0 +1,500 @@
+{"text": "xulolx", "tokenizations": [[["xu", 2], ["lo", 4], ["lx", 6]]], "weights": [1.0]}
+{"text": "uuialx", "tokenizations": [[["u", 1], ["uia", 4], ["lx", 6]]], "weights": [1.0]}
+{"text": "lla", "tokenizations": [[["ll", 2], ["a", 3]]], "weights": [1.0]}
+{"text": "lzuiax", "tokenizations": [[["lz", 2], ["uia", 5], ["x", 6]]], "weights": [1.0]}
+{"text": "ouxlzy", "tokenizations": [[["o", 1], ["uxl", 4], ["zy", 6]]], "weights": [1.0]}
+{"text": "xxyxluo", "tokenizations": [[["xx", 2], ["yx", 4], ["luo", 7]]], "weights": [1.0]}
+{"text": "uauxzla", "tokenizations": [[["u", 1], ["aux", 4], ["zla", 7]]], "weights": [1.0]}
+{"text": "uyiluo", "tokenizations": [[["u", 1], ["yi", 3], ["luo", 6]]], "weights": [1.0]}
+{"text": "zoou", "tokenizations": [[["zoo", 3], ["u", 4]]], "weights": [1.0]}
+{"text": "lzxaluo", "tokenizations": [[["lz", 2], ["xa", 4], ["luo", 7]]], "weights": [1.0]}
+{"text": "xzuaxazu", "tokenizations": [[["xz", 2], ["uax", 5], ["azu", 8]]], "weights": [1.0]}
+{"text": "xiyolx", "tokenizations": [[["xi", 2], ["yo", 4], ["lx", 6]]], "weights": [1.0]}
+{"text": "lzuxxox", "tokenizations": [[["lz", 2], ["uxx", 5], ["ox", 7]]], "weights": [1.0]}
+{"text": "xuxuiu", "tokenizations": [[["xu", 2], ["xui", 5], ["u", 6]]], "weights": [1.0]}
+{"text": "xuoaxa", "tokenizations": [[["xu", 2], ["oax", 5], ["a", 6]]], "weights": [1.0]}
+{"text": "xziiluo", "tokenizations": [[["xz", 2], ["ii", 4], ["luo", 7]]], "weights": [1.0]}
+{"text": "uixo", "tokenizations": [[["ui", 2], ["xo", 4]]], "weights": [1.0]}
+{"text": "xuxu", "tokenizations": [[["xu", 2], ["xu", 4]]], "weights": [1.0]}
+{"text": "ayxluo", "tokenizations": [[["ayx", 3], ["luo", 6]]], "weights": [1.0]}
+{"text": "xuauux", "tokenizations": [[["xu", 2], ["auu", 5], ["x", 6]]], "weights": [1.0]}
+{"text": "lzauxo", "tokenizations": [[["lz", 2], ["au", 4], ["xo", 6]]], "weights": [1.0]}
+{"text": "xxuuxo", "tokenizations": [[["xx", 2], ["uu", 4], ["xo", 6]]], "weights": [1.0]}
+{"text": "xzloazu", "tokenizations": [[["xz", 2], ["lo", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "ilzoazu", "tokenizations": [[["il", 2], ["zo", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "yyxoa", "tokenizations": [[["yy", 2], ["xo", 4], ["a", 5]]], "weights": [1.0]}
+{"text": "ullol", "tokenizations": [[["ull", 3], ["ol", 5]]], "weights": [1.0]}
+{"text": "yu", "tokenizations": [[["yu", 2]]], "weights": [1.0]}
+{"text": "uoxluo", "tokenizations": [[["u", 1], ["ox", 3], ["luo", 6]]], "weights": [1.0]}
+{"text": "xzzu", "tokenizations": [[["xz", 2], ["zu", 4]]], "weights": [1.0]}
+{"text": "ullilyluo", "tokenizations": [[["ull", 3], ["ily", 6], ["luo", 9]]], "weights": [1.0]}
+{"text": "ullziox", "tokenizations": [[["ull", 3], ["zi", 5], ["ox", 7]]], "weights": [1.0]}
+{"text": "lzauu", "tokenizations": [[["lz", 2], ["auu", 5]]], "weights": [1.0]}
+{"text": "yylazu", "tokenizations": [[["yy", 2], ["l", 3], ["azu", 6]]], "weights": [1.0]}
+{"text": "ullluaa", "tokenizations": [[["ull", 3], ["lua", 6], ["a", 7]]], "weights": [1.0]}
+{"text": "ullua", "tokenizations": [[["ull", 3], ["ua", 5]]], "weights": [1.0]}
+{"text": "xia", "tokenizations": [[["xi", 2], ["a", 3]]], "weights": [1.0]}
+{"text": "yyalazu", "tokenizations": [[["yy", 2], ["al", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "yalx", "tokenizations": [[["ya", 2], ["lx", 4]]], "weights": [1.0]}
+{"text": "olazu", "tokenizations": [[["ol", 2], ["azu", 5]]], "weights": [1.0]}
+{"text": "ullu", "tokenizations": [[["ull", 3], ["u", 4]]], "weights": [1.0]}
+{"text": "zxzy", "tokenizations": [[["zx", 2], ["zy", 4]]], "weights": [1.0]}
+{"text": "yyzluo", "tokenizations": [[["yy", 2], ["z", 3], ["luo", 6]]], "weights": [1.0]}
+{"text": "xxaalx", "tokenizations": [[["xx", 2], ["aa", 4], ["lx", 6]]], "weights": [1.0]}
+{"text": "ulluyzx", "tokenizations": [[["ull", 3], ["uyz", 6], ["x", 7]]], "weights": [1.0]}
+{"text": "iu", "tokenizations": [[["i", 1], ["u", 2]]], "weights": [1.0]}
+{"text": "iluyzx", "tokenizations": [[["il", 2], ["uyz", 5], ["x", 6]]], "weights": [1.0]}
+{"text": "xxayxx", "tokenizations": [[["xx", 2], ["ayx", 5], ["x", 6]]], "weights": [1.0]}
+{"text": "illylzy", "tokenizations": [[["il", 2], ["lyl", 5], ["zy", 7]]], "weights": [1.0]}
+{"text": "xzxxlazu", "tokenizations": [[["xz", 2], ["xxl", 5], ["azu", 8]]], "weights": [1.0]}
+{"text": "yyxiluo", "tokenizations": [[["yy", 2], ["xi", 4], ["luo", 7]]], "weights": [1.0]}
+{"text": "uxxla", "tokenizations": [[["u", 1], ["xxl", 4], ["a", 5]]], "weights": [1.0]}
+{"text": "uluazla", "tokenizations": [[["u", 1], ["lua", 4], ["zla", 7]]], "weights": [1.0]}
+{"text": "ozyaa", "tokenizations": [[["o", 1], ["zya", 4], ["a", 5]]], "weights": [1.0]}
+{"text": "xuxilx", "tokenizations": [[["xu", 2], ["xi", 4], ["lx", 6]]], "weights": [1.0]}
+{"text": "yyoxuxo", "tokenizations": [[["yy", 2], ["oxu", 5], ["xo", 7]]], "weights": [1.0]}
+{"text": "xuxua", "tokenizations": [[["xu", 2], ["xu", 4], ["a", 5]]], "weights": [1.0]}
+{"text": "uolzy", "tokenizations": [[["u", 1], ["ol", 3], ["zy", 5]]], "weights": [1.0]}
+{"text": "ola", "tokenizations": [[["ol", 2], ["a", 3]]], "weights": [1.0]}
+{"text": "yylozy", "tokenizations": [[["yy", 2], ["lo", 4], ["zy", 6]]], "weights": [1.0]}
+{"text": "xzauulx", "tokenizations": [[["xz", 2], ["auu", 5], ["lx", 7]]], "weights": [1.0]}
+{"text": "xixlzy", "tokenizations": [[["xi", 2], ["xl", 4], ["zy", 6]]], "weights": [1.0]}
+{"text": "uyiix", "tokenizations": [[["u", 1], ["yii", 4], ["x", 5]]], "weights": [1.0]}
+{"text": "lzix", "tokenizations": [[["lz", 2], ["ix", 4]]], "weights": [1.0]}
+{"text": "yyaazluo", "tokenizations": [[["yy", 2], ["aaz", 5], ["luo", 8]]], "weights": [1.0]}
+{"text": "uozu", "tokenizations": [[["u", 1], ["oz", 3], ["u", 4]]], "weights": [1.0]}
+{"text": "xxauiox", "tokenizations": [[["xx", 2], ["aui", 5], ["ox", 7]]], "weights": [1.0]}
+{"text": "ulluazla", "tokenizations": [[["ull", 3], ["ua", 5], ["zla", 8]]], "weights": [1.0]}
+{"text": "xxlua", "tokenizations": [[["xx", 2], ["lua", 5]]], "weights": [1.0]}
+{"text": "yyzxazu", "tokenizations": [[["yy", 2], ["zx", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "xxxuox", "tokenizations": [[["xx", 2], ["xu", 4], ["ox", 6]]], "weights": [1.0]}
+{"text": "xxillx", "tokenizations": [[["xx", 2], ["il", 4], ["lx", 6]]], "weights": [1.0]}
+{"text": "oluilx", "tokenizations": [[["o", 1], ["lui", 4], ["lx", 6]]], "weights": [1.0]}
+{"text": "lzuxlazu", "tokenizations": [[["lz", 2], ["uxl", 5], ["azu", 8]]], "weights": [1.0]}
+{"text": "xxlzyx", "tokenizations": [[["xx", 2], ["lzy", 5], ["x", 6]]], "weights": [1.0]}
+{"text": "yylyxo", "tokenizations": [[["yy", 2], ["ly", 4], ["xo", 6]]], "weights": [1.0]}
+{"text": "lzziazu", "tokenizations": [[["lz", 2], ["zi", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "xuiuiazu", "tokenizations": [[["xu", 2], ["iui", 5], ["azu", 8]]], "weights": [1.0]}
+{"text": "xziilx", "tokenizations": [[["xz", 2], ["ii", 4], ["lx", 6]]], "weights": [1.0]}
+{"text": "yylui", "tokenizations": [[["yy", 2], ["lui", 5]]], "weights": [1.0]}
+{"text": "oauiazu", "tokenizations": [[["o", 1], ["aui", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "xziuizy", "tokenizations": [[["xz", 2], ["iui", 5], ["zy", 7]]], "weights": [1.0]}
+{"text": "ullauuzy", "tokenizations": [[["ull", 3], ["auu", 6], ["zy", 8]]], "weights": [1.0]}
+{"text": "yyuuyxo", "tokenizations": [[["yy", 2], ["uuy", 5], ["xo", 7]]], "weights": [1.0]}
+{"text": "xilizxo", "tokenizations": [[["xi", 2], ["liz", 5], ["xo", 7]]], "weights": [1.0]}
+{"text": "xxzuiu", "tokenizations": [[["xx", 2], ["zui", 5], ["u", 6]]], "weights": [1.0]}
+{"text": "ulluuzla", "tokenizations": [[["ull", 3], ["uu", 5], ["zla", 8]]], "weights": [1.0]}
+{"text": "ilayxzy", "tokenizations": [[["il", 2], ["ayx", 5], ["zy", 7]]], "weights": [1.0]}
+{"text": "uuyox", "tokenizations": [[["uuy", 3], ["ox", 5]]], "weights": [1.0]}
+{"text": "ilxlu", "tokenizations": [[["il", 2], ["xl", 4], ["u", 5]]], "weights": [1.0]}
+{"text": "uxoazu", "tokenizations": [[["u", 1], ["xo", 3], ["azu", 6]]], "weights": [1.0]}
+{"text": "al", "tokenizations": [[["al", 2]]], "weights": [1.0]}
+{"text": "xzxulu", "tokenizations": [[["xz", 2], ["xul", 5], ["u", 6]]], "weights": [1.0]}
+{"text": "lzzyazu", "tokenizations": [[["lz", 2], ["zy", 4], ["azu", 7]]], "weights": [1.0]}
+{"text": "ulza", "tokenizations": [[["ulz", 3], ["a", 4]]], "weights": [1.0]}
+{"text": "xilux", "tokenizations": [[["xi", 2], ["lu", 4], ["x", 5]]], "weights": [1.0]}
+{"text": "uxlazu", "tokenizations": [[["uxl", 3], ["azu", 6]]], "weights": [1.0]}
+{"text": "xxul", "tokenizations": [[["xx", 2], ["ul", 4]]], "weights": [1.0]}
+{"text": "xxalx", "tokenizations": [[["xx", 2], ["al", 4], ["x", 5]]], "weights": [1.0]}
+{"text": "xzoiazla", "tokenizations": [[["xz", 2], ["oia", 5], ["zla", 8]]], "weights": [1.0]}
+{"text": "yyluax", "tokenizations": [[["yy", 2], ["lua", 5], ["x", 6]]], "weights": [1.0]}
+{"text": "xzil", "tokenizations": [[["x", 1], ["z", 2], ["i", 3], ["l", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.079441547393799}
+{"text": "lzzyu", "tokenizations": [[["l", 1], ["z", 2], ["z", 3], ["y", 4], ["u", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "yyzlx", "tokenizations": [[["y", 1], ["y", 2], ["z", 3], ["l", 4], ["x", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "lzxox", "tokenizations": [[["l", 1], ["z", 2], ["x", 3], ["o", 4], ["x", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "uzua", "tokenizations": [[["u", 1], ["z", 2], ["u", 3], ["a", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.7917594909667969}
+{"text": "uzooazu", "tokenizations": [[["u", 1], ["z", 2], ["o", 3], ["o", 4], ["a", 5], ["z", 6], ["u", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.9512438774108887}
+{"text": "lylxo", "tokenizations": [[["l", 1], ["y", 2], ["l", 3], ["x", 4], ["o", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "uya", "tokenizations": [[["u", 1], ["y", 2], ["a", 3], ["[CLS]", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.3862943649291992}
+{"text": "oazla", "tokenizations": [[["o", 1], ["a", 2], ["z", 3], ["l", 4], ["a", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.7725887298583984}
+{"text": "uxyxu", "tokenizations": [[["u", 1], ["x", 2], ["y", 3], ["x", 4], ["u", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.5649495124816895}
+{"text": "xxllu", "tokenizations": [[["x", 1], ["x", 2], ["l", 3], ["l", 4], ["u", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.7725887298583984}
+{"text": "oauizla", "tokenizations": [[["o", 1], ["a", 2], ["u", 3], ["i", 4], ["z", 5], ["l", 6], ["a", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.8712010383605957}
+{"text": "xzxxlox", "tokenizations": [[["x", 1], ["z", 2], ["x", 3], ["x", 4], ["l", 5], ["o", 6], ["x", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.094344615936279}
+{"text": "ilzilx", "tokenizations": [[["i", 1], ["l", 2], ["z", 3], ["i", 4], ["l", 5], ["x", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.332204580307007}
+{"text": "xiauizy", "tokenizations": [[["x", 1], ["i", 2], ["a", 3], ["u", 4], ["i", 5], ["z", 6], ["y", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.9512438774108887}
+{"text": "xuxulx", "tokenizations": [[["x", 1], ["u", 2], ["x", 3], ["u", 4], ["l", 5], ["x", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.332204580307007}
+{"text": "yyuayzy", "tokenizations": [[["y", 1], ["y", 2], ["u", 3], ["a", 4], ["y", 5], ["z", 6], ["y", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.9889841079711914}
+{"text": "xxxzy", "tokenizations": [[["x", 1], ["x", 2], ["x", 3], ["z", 4], ["y", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "yyuzxo", "tokenizations": [[["y", 1], ["y", 2], ["u", 3], ["z", 4], ["x", 5], ["o", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.178053855895996}
+{"text": "iliox", "tokenizations": [[["i", 1], ["l", 2], ["i", 3], ["o", 4], ["x", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "yyuza", "tokenizations": [[["y", 1], ["y", 2], ["u", 3], ["z", 4], ["a", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "yyuyzxo", "tokenizations": [[["y", 1], ["y", 2], ["u", 3], ["y", 4], ["z", 5], ["x", 6], ["o", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.094344615936279}
+{"text": "yyxyu", "tokenizations": [[["y", 1], ["y", 2], ["x", 3], ["y", 4], ["u", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "yyyazu", "tokenizations": [[["y", 1], ["y", 2], ["y", 3], ["a", 4], ["z", 5], ["u", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.332204580307007}
+{"text": "lzzoox", "tokenizations": [[["l", 1], ["z", 2], ["z", 3], ["o", 4], ["o", 5], ["x", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.332204580307007}
+{"text": "ayxxo", "tokenizations": [[["a", 1], ["y", 2], ["x", 3], ["x", 4], ["o", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.7725887298583984}
+{"text": "xiay", "tokenizations": [[["x", 1], ["i", 2], ["a", 3], ["y", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.7917594909667969}
+{"text": "ulluxlu", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["u", 4], ["x", 5], ["l", 6], ["u", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.9889841079711914}
+{"text": "xuoyox", "tokenizations": [[["x", 1], ["u", 2], ["o", 3], ["y", 4], ["o", 5], ["x", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.178053855895996}
+{"text": "xxayxazu", "tokenizations": [[["x", 1], ["x", 2], ["a", 3], ["y", 4], ["x", 5], ["a", 6], ["z", 7], ["u", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.430816650390625}
+{"text": "oollx", "tokenizations": [[["o", 1], ["o", 2], ["l", 3], ["l", 4], ["x", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.5649495124816895}
+{"text": "xiilyxo", "tokenizations": [[["x", 1], ["i", 2], ["i", 3], ["l", 4], ["y", 5], ["x", 6], ["o", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.9512438774108887}
+{"text": "ullulzxo", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["u", 4], ["l", 5], ["z", 6], ["x", 7], ["o", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.682131290435791}
+{"text": "xzxlx", "tokenizations": [[["x", 1], ["z", 2], ["x", 3], ["l", 4], ["x", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.4849066734313965}
+{"text": "ilyozy", "tokenizations": [[["i", 1], ["l", 2], ["y", 3], ["o", 4], ["z", 5], ["y", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.258096694946289}
+{"text": "yyuoaazu", "tokenizations": [[["y", 1], ["y", 2], ["u", 3], ["o", 4], ["a", 5], ["a", 6], ["z", 7], ["u", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.564348220825195}
+{"text": "uy", "tokenizations": [[["u", 1], ["y", 2], ["[CLS]", 3], ["[CLS]", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -0.6931471824645996}
+{"text": "yyzouazu", "tokenizations": [[["y", 1], ["y", 2], ["z", 3], ["o", 4], ["u", 5], ["a", 6], ["z", 7], ["u", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.718498706817627}
+{"text": "lzoxlx", "tokenizations": [[["l", 1], ["z", 2], ["o", 3], ["x", 4], ["l", 5], ["x", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.332204580307007}
+{"text": "lzauiazu", "tokenizations": [[["l", 1], ["z", 2], ["a", 3], ["u", 4], ["i", 5], ["a", 6], ["z", 7], ["u", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.718498706817627}
+{"text": "uaxzy", "tokenizations": [[["u", 1], ["a", 2], ["x", 3], ["z", 4], ["y", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "xuuaxlx", "tokenizations": [[["x", 1], ["u", 2], ["u", 3], ["a", 4], ["x", 5], ["l", 6], ["x", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.9512438774108887}
+{"text": "xizaa", "tokenizations": [[["x", 1], ["i", 2], ["z", 3], ["a", 4], ["a", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "xzlzyzy", "tokenizations": [[["x", 1], ["z", 2], ["l", 3], ["z", 4], ["y", 5], ["z", 6], ["y", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.7376697063446045}
+{"text": "xxzxo", "tokenizations": [[["x", 1], ["x", 2], ["z", 3], ["x", 4], ["o", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.5649495124816895}
+{"text": "xzualuo", "tokenizations": [[["x", 1], ["z", 2], ["u", 3], ["a", 4], ["l", 5], ["u", 6], ["o", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.025351524353027}
+{"text": "lzyulazu", "tokenizations": [[["l", 1], ["z", 2], ["y", 3], ["u", 4], ["l", 5], ["a", 6], ["z", 7], ["u", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.718498706817627}
+{"text": "uilyox", "tokenizations": [[["u", 1], ["i", 2], ["l", 3], ["y", 4], ["o", 5], ["x", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.4011974334716797}
+{"text": "xioxua", "tokenizations": [[["x", 1], ["i", 2], ["o", 3], ["x", 4], ["u", 5], ["a", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.332204580307007}
+{"text": "xuyy", "tokenizations": [[["x", 1], ["u", 2], ["y", 3], ["y", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.7917594909667969}
+{"text": "olzyu", "tokenizations": [[["o", 1], ["l", 2], ["z", 3], ["y", 4], ["u", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "xzla", "tokenizations": [[["x", 1], ["z", 2], ["l", 3], ["a", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.079441547393799}
+{"text": "xilui", "tokenizations": [[["x", 1], ["i", 2], ["l", 3], ["u", 4], ["i", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.7725887298583984}
+{"text": "xxoazla", "tokenizations": [[["x", 1], ["x", 2], ["o", 3], ["a", 4], ["z", 5], ["l", 6], ["a", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.025351524353027}
+{"text": "yyxozla", "tokenizations": [[["y", 1], ["y", 2], ["x", 3], ["o", 4], ["z", 5], ["l", 6], ["a", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.8712010383605957}
+{"text": "uoax", "tokenizations": [[["u", 1], ["o", 2], ["a", 3], ["x", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.079441547393799}
+{"text": "uua", "tokenizations": [[["u", 1], ["u", 2], ["a", 3], ["[CLS]", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.3862943649291992}
+{"text": "ilxa", "tokenizations": [[["i", 1], ["l", 2], ["x", 3], ["a", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.9459102153778076}
+{"text": "xixuilx", "tokenizations": [[["x", 1], ["i", 2], ["x", 3], ["u", 4], ["i", 5], ["l", 6], ["x", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.8712010383605957}
+{"text": "oaa", "tokenizations": [[["o", 1], ["a", 2], ["a", 3], ["[CLS]", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.3862943649291992}
+{"text": "xuixxo", "tokenizations": [[["x", 1], ["u", 2], ["i", 3], ["x", 4], ["x", 5], ["o", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.178053855895996}
+{"text": "ouoalx", "tokenizations": [[["o", 1], ["u", 2], ["o", 3], ["a", 4], ["l", 5], ["x", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.295836925506592}
+{"text": "xiozox", "tokenizations": [[["x", 1], ["i", 2], ["o", 3], ["z", 4], ["o", 5], ["x", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.258096694946289}
+{"text": "xzzoozy", "tokenizations": [[["x", 1], ["z", 2], ["z", 3], ["o", 4], ["o", 5], ["z", 6], ["y", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.9512436389923096}
+{"text": "xxoyxo", "tokenizations": [[["x", 1], ["x", 2], ["o", 3], ["y", 4], ["x", 5], ["o", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.0910425186157227}
+{"text": "xxuxllx", "tokenizations": [[["x", 1], ["x", 2], ["u", 3], ["x", 4], ["l", 5], ["l", 6], ["x", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.9889841079711914}
+{"text": "yulox", "tokenizations": [[["y", 1], ["u", 2], ["l", 3], ["o", 4], ["x", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.7725887298583984}
+{"text": "xxuayx", "tokenizations": [[["x", 1], ["x", 2], ["u", 3], ["a", 4], ["y", 5], ["x", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.295836925506592}
+{"text": "oyazy", "tokenizations": [[["o", 1], ["y", 2], ["a", 3], ["z", 4], ["y", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.7725887298583984}
+{"text": "ullyixo", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["y", 4], ["i", 5], ["x", 6], ["o", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.8712010383605957}
+{"text": "ooaluo", "tokenizations": [[["o", 1], ["o", 2], ["a", 3], ["l", 4], ["u", 5], ["o", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.332204580307007}
+{"text": "ulloia", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["o", 4], ["i", 5], ["a", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.178053855895996}
+{"text": "xzioazu", "tokenizations": [[["x", 1], ["z", 2], ["i", 3], ["o", 4], ["a", 5], ["z", 6], ["u", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.9512438774108887}
+{"text": "ullall", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["a", 4], ["l", 5], ["l", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.258096694946289}
+{"text": "ulz", "tokenizations": [[["u", 1], ["l", 2], ["z", 3], ["[CLS]", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.3862943649291992}
+{"text": "xiozla", "tokenizations": [[["x", 1], ["i", 2], ["o", 3], ["z", 4], ["l", 5], ["a", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.332204580307007}
+{"text": "oyulx", "tokenizations": [[["o", 1], ["y", 2], ["u", 3], ["l", 4], ["x", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.7725887298583984}
+{"text": "uul", "tokenizations": [[["u", 1], ["u", 2], ["l", 3], ["[CLS]", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.3862943649291992}
+{"text": "uxux", "tokenizations": [[["u", 1], ["x", 2], ["u", 3], ["x", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.9459102153778076}
+{"text": "olxazu", "tokenizations": [[["o", 1], ["l", 2], ["x", 3], ["a", 4], ["z", 5], ["u", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.332204580307007}
+{"text": "yyzlu", "tokenizations": [[["y", 1], ["y", 2], ["z", 3], ["l", 4], ["u", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "xzioluo", "tokenizations": [[["x", 1], ["z", 2], ["i", 3], ["o", 4], ["l", 5], ["u", 6], ["o", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.025351524353027}
+{"text": "xuyuxo", "tokenizations": [[["x", 1], ["u", 2], ["y", 3], ["u", 4], ["x", 5], ["o", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.332204580307007}
+{"text": "ullaazluo", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["a", 4], ["a", 5], ["z", 6], ["l", 7], ["u", 8], ["o", 9]]], "weights": [1.0], "reference_log_prob": -5.257495403289795}
+{"text": "zzy", "tokenizations": [[["z", 1], ["z", 2], ["y", 3], ["[CLS]", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.3862943649291992}
+{"text": "lzolox", "tokenizations": [[["l", 1], ["z", 2], ["o", 3], ["l", 4], ["o", 5], ["x", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.332204580307007}
+{"text": "lzauiluo", "tokenizations": [[["l", 1], ["z", 2], ["a", 3], ["u", 4], ["i", 5], ["l", 6], ["u", 7], ["o", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.718498706817627}
+{"text": "xuulza", "tokenizations": [[["x", 1], ["u", 2], ["u", 3], ["l", 4], ["z", 5], ["a", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.332204580307007}
+{"text": "xzxuiazu", "tokenizations": [[["x", 1], ["z", 2], ["x", 3], ["u", 4], ["i", 5], ["a", 6], ["z", 7], ["u", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.787491798400879}
+{"text": "lzxxo", "tokenizations": [[["l", 1], ["z", 2], ["x", 3], ["x", 4], ["o", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.5649495124816895}
+{"text": "xxizla", "tokenizations": [[["x", 1], ["x", 2], ["i", 3], ["z", 4], ["l", 5], ["a", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.332204580307007}
+{"text": "xxxyu", "tokenizations": [[["x", 1], ["x", 2], ["x", 3], ["y", 4], ["u", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "auxox", "tokenizations": [[["a", 1], ["u", 2], ["x", 3], ["o", 4], ["x", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "xixua", "tokenizations": [[["x", 1], ["i", 2], ["x", 3], ["u", 4], ["a", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.4849066734313965}
+{"text": "ilau", "tokenizations": [[["i", 1], ["l", 2], ["a", 3], ["u", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.079441547393799}
+{"text": "lzyzy", "tokenizations": [[["l", 1], ["z", 2], ["y", 3], ["z", 4], ["y", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.4849066734313965}
+{"text": "uuaxxo", "tokenizations": [[["u", 1], ["u", 2], ["a", 3], ["x", 4], ["x", 5], ["o", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.295836925506592}
+{"text": "auuox", "tokenizations": [[["a", 1], ["u", 2], ["u", 3], ["o", 4], ["x", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "xiuyzlx", "tokenizations": [[["x", 1], ["i", 2], ["u", 3], ["y", 4], ["z", 5], ["l", 6], ["x", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.025351524353027}
+{"text": "xzuou", "tokenizations": [[["x", 1], ["z", 2], ["u", 3], ["o", 4], ["u", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.7725887298583984}
+{"text": "xuuuyox", "tokenizations": [[["x", 1], ["u", 2], ["u", 3], ["u", 4], ["y", 5], ["o", 6], ["x", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.094344615936279}
+{"text": "uzu", "tokenizations": [[["u", 1], ["z", 2], ["u", 3], ["[CLS]", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.0986123085021973}
+{"text": "xuzyluo", "tokenizations": [[["x", 1], ["u", 2], ["z", 3], ["y", 4], ["l", 5], ["u", 6], ["o", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.025351524353027}
+{"text": "xuauxox", "tokenizations": [[["x", 1], ["u", 2], ["a", 3], ["u", 4], ["x", 5], ["o", 6], ["x", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.025351524353027}
+{"text": "xxozxo", "tokenizations": [[["x", 1], ["x", 2], ["o", 3], ["z", 4], ["x", 5], ["o", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.178053855895996}
+{"text": "xii", "tokenizations": [[["x", 1], ["i", 2], ["i", 3], ["[CLS]", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.3862943649291992}
+{"text": "yyauuzla", "tokenizations": [[["y", 1], ["y", 2], ["a", 3], ["u", 4], ["u", 5], ["z", 6], ["l", 7], ["a", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.718498706817627}
+{"text": "xxuaxzla", "tokenizations": [[["x", 1], ["x", 2], ["u", 3], ["a", 4], ["x", 5], ["z", 6], ["l", 7], ["a", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.718498706817627}
+{"text": "xiuuluo", "tokenizations": [[["x", 1], ["i", 2], ["u", 3], ["u", 4], ["l", 5], ["u", 6], ["o", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.025351524353027}
+{"text": "yyxlu", "tokenizations": [[["y", 1], ["y", 2], ["x", 3], ["l", 4], ["u", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.70805025100708}
+{"text": "iliuzla", "tokenizations": [[["i", 1], ["l", 2], ["i", 3], ["u", 4], ["z", 5], ["l", 6], ["a", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.9889841079711914}
+{"text": "ulloyxo", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["o", 4], ["y", 5], ["x", 6], ["o", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.9120230674743652}
+{"text": "ooaxazu", "tokenizations": [[["o", 1], ["o", 2], ["a", 3], ["x", 4], ["a", 5], ["z", 6], ["u", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.094344615936279}
+{"text": "xioxuzy", "tokenizations": [[["x", 1], ["i", 2], ["o", 3], ["x", 4], ["u", 5], ["z", 6], ["y", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.9512438774108887}
+{"text": "uxxlx", "tokenizations": [[["u", 1], ["x", 2], ["x", 3], ["l", 4], ["x", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.70805025100708}
+{"text": "xuulzzla", "tokenizations": [[["x", 1], ["u", 2], ["u", 3], ["l", 4], ["z", 5], ["z", 6], ["l", 7], ["a", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.718498706817627}
+{"text": "ullaoxlx", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["a", 4], ["o", 5], ["x", 6], ["l", 7], ["x", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.682131290435791}
+{"text": "yyaozy", "tokenizations": [[["y", 1], ["y", 2], ["a", 3], ["o", 4], ["z", 5], ["y", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.995732307434082}
+{"text": "xiuayox", "tokenizations": [[["x", 1], ["i", 2], ["u", 3], ["a", 4], ["y", 5], ["o", 6], ["x", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.8712010383605957}
+{"text": "xxzooa", "tokenizations": [[["x", 1], ["x", 2], ["z", 3], ["o", 4], ["o", 5], ["a", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.258096694946289}
+{"text": "uziluo", "tokenizations": [[["u", 1], ["z", 2], ["i", 3], ["l", 4], ["u", 5], ["o", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.178053855895996}
+{"text": "yyiu", "tokenizations": [[["y", 1], ["y", 2], ["i", 3], ["u", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.079441547393799}
+{"text": "ozu", "tokenizations": [[["o", 1], ["z", 2], ["u", 3], ["[CLS]", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.3862943649291992}
+{"text": "lzyoluo", "tokenizations": [[["l", 1], ["z", 2], ["y", 3], ["o", 4], ["l", 5], ["u", 6], ["o", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.025351524353027}
+{"text": "yyayxazu", "tokenizations": [[["y", 1], ["y", 2], ["a", 3], ["y", 4], ["x", 5], ["a", 6], ["z", 7], ["u", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.605170249938965}
+{"text": "xxoaazu", "tokenizations": [[["x", 1], ["x", 2], ["o", 3], ["a", 4], ["a", 5], ["z", 6], ["u", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.025351524353027}
+{"text": "ozouxo", "tokenizations": [[["o", 1], ["z", 2], ["o", 3], ["u", 4], ["x", 5], ["o", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.332204580307007}
+{"text": "xiyula", "tokenizations": [[["x", 1], ["i", 2], ["y", 3], ["u", 4], ["l", 5], ["a", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.258096694946289}
+{"text": "ullullxo", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["u", 4], ["l", 5], ["l", 6], ["x", 7], ["o", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.605170249938965}
+{"text": "ozixo", "tokenizations": [[["o", 1], ["z", 2], ["i", 3], ["x", 4], ["o", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.397895336151123}
+{"text": "ullyii", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["y", 4], ["i", 5], ["i", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.332204580307007}
+{"text": "lxazu", "tokenizations": [[["l", 1], ["x", 2], ["a", 3], ["z", 4], ["u", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.7725887298583984}
+{"text": "ullaazu", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["a", 4], ["a", 5], ["z", 6], ["u", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.025351524353027}
+{"text": "ullouaa", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["o", 4], ["u", 5], ["a", 6], ["a", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.094344615936279}
+{"text": "uxx", "tokenizations": [[["u", 1], ["x", 2], ["x", 3], ["[CLS]", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.3862943649291992}
+{"text": "lzxlzla", "tokenizations": [[["l", 1], ["z", 2], ["x", 3], ["l", 4], ["z", 5], ["l", 6], ["a", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.8712010383605957}
+{"text": "xiilox", "tokenizations": [[["x", 1], ["i", 2], ["i", 3], ["l", 4], ["o", 5], ["x", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.258096694946289}
+{"text": "xiozzy", "tokenizations": [[["x", 1], ["i", 2], ["o", 3], ["z", 4], ["z", 5], ["y", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.332204580307007}
+{"text": "ouaa", "tokenizations": [[["o", 1], ["u", 2], ["a", 3], ["a", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.079441547393799}
+{"text": "xziuiu", "tokenizations": [[["x", 1], ["z", 2], ["i", 3], ["u", 4], ["i", 5], ["u", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.178053855895996}
+{"text": "ozxzy", "tokenizations": [[["o", 1], ["z", 2], ["x", 3], ["z", 4], ["y", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.4849066734313965}
+{"text": "ulo", "tokenizations": [[["u", 1], ["l", 2], ["o", 3], ["[CLS]", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.3862943649291992}
+{"text": "ullxylx", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["x", 4], ["y", 5], ["l", 6], ["x", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.7841897010803223}
+{"text": "uliluo", "tokenizations": [[["u", 1], ["l", 2], ["i", 3], ["l", 4], ["u", 5], ["o", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.258096694946289}
+{"text": "lzaa", "tokenizations": [[["l", 1], ["z", 2], ["a", 3], ["a", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.9459102153778076}
+{"text": "uax", "tokenizations": [[["u", 1], ["a", 2], ["x", 3], ["[CLS]", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.3862943649291992}
+{"text": "ilyaox", "tokenizations": [[["i", 1], ["l", 2], ["y", 3], ["a", 4], ["o", 5], ["x", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.178053855895996}
+{"text": "xuxulluo", "tokenizations": [[["x", 1], ["u", 2], ["x", 3], ["u", 4], ["l", 5], ["l", 6], ["u", 7], ["o", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.718498706817627}
+{"text": "ilayxluo", "tokenizations": [[["i", 1], ["l", 2], ["a", 3], ["y", 4], ["x", 5], ["l", 6], ["u", 7], ["o", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.718498706817627}
+{"text": "yuox", "tokenizations": [[["y", 1], ["u", 2], ["o", 3], ["x", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.7917594909667969}
+{"text": "ulloox", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["o", 4], ["o", 5], ["x", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.178053855895996}
+{"text": "ouxxu", "tokenizations": [[["o", 1], ["u", 2], ["x", 3], ["x", 4], ["u", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "uaxu", "tokenizations": [[["u", 1], ["a", 2], ["x", 3], ["u", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.079441547393799}
+{"text": "yyilazu", "tokenizations": [[["y", 1], ["y", 2], ["i", 3], ["l", 4], ["a", 5], ["z", 6], ["u", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.7841897010803223}
+{"text": "zyla", "tokenizations": [[["z", 1], ["y", 2], ["l", 3], ["a", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.9459102153778076}
+{"text": "oal", "tokenizations": [[["o", 1], ["a", 2], ["l", 3], ["[CLS]", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.3862943649291992}
+{"text": "yyuizy", "tokenizations": [[["y", 1], ["y", 2], ["u", 3], ["i", 4], ["z", 5], ["y", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.178053855895996}
+{"text": "yyxxllx", "tokenizations": [[["y", 1], ["y", 2], ["x", 3], ["x", 4], ["l", 5], ["l", 6], ["x", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.9120230674743652}
+{"text": "xiaoxu", "tokenizations": [[["x", 1], ["i", 2], ["a", 3], ["o", 4], ["x", 5], ["u", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.2188758850097656}
+{"text": "xzziu", "tokenizations": [[["x", 1], ["z", 2], ["z", 3], ["i", 4], ["u", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.397895336151123}
+{"text": "yyyuazu", "tokenizations": [[["y", 1], ["y", 2], ["y", 3], ["u", 4], ["a", 5], ["z", 6], ["u", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.9889841079711914}
+{"text": "uuuxo", "tokenizations": [[["u", 1], ["u", 2], ["u", 3], ["x", 4], ["o", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.5649495124816895}
+{"text": "lzlizxo", "tokenizations": [[["l", 1], ["z", 2], ["l", 3], ["i", 4], ["z", 5], ["x", 6], ["o", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.8712010383605957}
+{"text": "uyuzy", "tokenizations": [[["u", 1], ["y", 2], ["u", 3], ["z", 4], ["y", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "la", "tokenizations": [[["l", 1], ["a", 2], ["[CLS]", 3], ["[CLS]", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -0.6931471824645996}
+{"text": "lzzzy", "tokenizations": [[["l", 1], ["z", 2], ["z", 3], ["z", 4], ["y", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "auu", "tokenizations": [[["a", 1], ["u", 2], ["u", 3], ["[CLS]", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.3862943649291992}
+{"text": "uiuxo", "tokenizations": [[["u", 1], ["i", 2], ["u", 3], ["x", 4], ["o", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "xuzoulx", "tokenizations": [[["x", 1], ["u", 2], ["z", 3], ["o", 4], ["u", 5], ["l", 6], ["x", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.8712010383605957}
+{"text": "iloiazy", "tokenizations": [[["i", 1], ["l", 2], ["o", 3], ["i", 4], ["a", 5], ["z", 6], ["y", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.7841897010803223}
+{"text": "xuayxa", "tokenizations": [[["x", 1], ["u", 2], ["a", 3], ["y", 4], ["x", 5], ["a", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.332204580307007}
+{"text": "lzlxu", "tokenizations": [[["l", 1], ["z", 2], ["l", 3], ["x", 4], ["u", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.5649495124816895}
+{"text": "uaxzla", "tokenizations": [[["u", 1], ["a", 2], ["x", 3], ["z", 4], ["l", 5], ["a", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.332204580307007}
+{"text": "xzyyluo", "tokenizations": [[["x", 1], ["z", 2], ["y", 3], ["y", 4], ["l", 5], ["u", 6], ["o", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.060442924499512}
+{"text": "yyzy", "tokenizations": [[["y", 1], ["y", 2], ["z", 3], ["y", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.079441547393799}
+{"text": "yyuxx", "tokenizations": [[["y", 1], ["y", 2], ["u", 3], ["x", 4], ["x", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "xuuzx", "tokenizations": [[["x", 1], ["u", 2], ["u", 3], ["z", 4], ["x", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.4849066734313965}
+{"text": "yyxozy", "tokenizations": [[["y", 1], ["y", 2], ["x", 3], ["o", 4], ["z", 5], ["y", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.178053855895996}
+{"text": "oaoxx", "tokenizations": [[["o", 1], ["a", 2], ["o", 3], ["x", 4], ["x", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.4849066734313965}
+{"text": "xxloxo", "tokenizations": [[["x", 1], ["x", 2], ["l", 3], ["o", 4], ["x", 5], ["o", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.332204580307007}
+{"text": "uazzy", "tokenizations": [[["u", 1], ["a", 2], ["z", 3], ["z", 4], ["y", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.4849066734313965}
+{"text": "uzluo", "tokenizations": [[["u", 1], ["z", 2], ["l", 3], ["u", 4], ["o", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "ulaa", "tokenizations": [[["u", 1], ["l", 2], ["a", 3], ["a", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.9459102153778076}
+{"text": "xzauazu", "tokenizations": [[["x", 1], ["z", 2], ["a", 3], ["u", 4], ["a", 5], ["z", 6], ["u", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.8712010383605957}
+{"text": "xzauiox", "tokenizations": [[["x", 1], ["z", 2], ["a", 3], ["u", 4], ["i", 5], ["o", 6], ["x", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.9120230674743652}
+{"text": "xialazu", "tokenizations": [[["x", 1], ["i", 2], ["a", 3], ["l", 4], ["a", 5], ["z", 6], ["u", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.025351524353027}
+{"text": "xuaui", "tokenizations": [[["x", 1], ["u", 2], ["a", 3], ["u", 4], ["i", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "ullayxluo", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["a", 4], ["y", 5], ["x", 6], ["l", 7], ["u", 8], ["o", 9]]], "weights": [1.0], "reference_log_prob": -5.411645889282227}
+{"text": "xuiiox", "tokenizations": [[["x", 1], ["u", 2], ["i", 3], ["i", 4], ["o", 5], ["x", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.332204580307007}
+{"text": "xxlozy", "tokenizations": [[["x", 1], ["x", 2], ["l", 3], ["o", 4], ["z", 5], ["y", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.332204580307007}
+{"text": "xxzlxo", "tokenizations": [[["x", 1], ["x", 2], ["z", 3], ["l", 4], ["x", 5], ["o", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.367295742034912}
+{"text": "uzlx", "tokenizations": [[["u", 1], ["z", 2], ["l", 3], ["x", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.079441547393799}
+{"text": "ulliuxo", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["i", 4], ["u", 5], ["x", 6], ["o", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.127134323120117}
+{"text": "xiilx", "tokenizations": [[["x", 1], ["i", 2], ["i", 3], ["l", 4], ["x", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "uiuluo", "tokenizations": [[["u", 1], ["i", 2], ["u", 3], ["l", 4], ["u", 5], ["o", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.465735912322998}
+{"text": "yyxluo", "tokenizations": [[["y", 1], ["y", 2], ["x", 3], ["l", 4], ["u", 5], ["o", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.4011974334716797}
+{"text": "xxauxa", "tokenizations": [[["x", 1], ["x", 2], ["a", 3], ["u", 4], ["x", 5], ["a", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.258096694946289}
+{"text": "ulloyaxo", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["o", 4], ["y", 5], ["a", 6], ["x", 7], ["o", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.430816650390625}
+{"text": "xixlxazu", "tokenizations": [[["x", 1], ["i", 2], ["x", 3], ["l", 4], ["x", 5], ["a", 6], ["z", 7], ["u", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.564348220825195}
+{"text": "ouyzzy", "tokenizations": [[["o", 1], ["u", 2], ["y", 3], ["z", 4], ["z", 5], ["y", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.178053855895996}
+{"text": "xxxulx", "tokenizations": [[["x", 1], ["x", 2], ["x", 3], ["u", 4], ["l", 5], ["x", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.4011974334716797}
+{"text": "oauxu", "tokenizations": [[["o", 1], ["a", 2], ["u", 3], ["x", 4], ["u", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.4849066734313965}
+{"text": "ulluaxluo", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["u", 4], ["a", 5], ["x", 6], ["l", 7], ["u", 8], ["o", 9]]], "weights": [1.0], "reference_log_prob": -5.33753776550293}
+{"text": "xxluaazu", "tokenizations": [[["x", 1], ["x", 2], ["l", 3], ["u", 4], ["a", 5], ["a", 6], ["z", 7], ["u", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.718498706817627}
+{"text": "yyzylxo", "tokenizations": [[["y", 1], ["y", 2], ["z", 3], ["y", 4], ["l", 5], ["x", 6], ["o", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.094344615936279}
+{"text": "xzauuxo", "tokenizations": [[["x", 1], ["z", 2], ["a", 3], ["u", 4], ["u", 5], ["x", 6], ["o", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.7841897010803223}
+{"text": "lzaoxazu", "tokenizations": [[["l", 1], ["z", 2], ["a", 3], ["o", 4], ["x", 5], ["a", 6], ["z", 7], ["u", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.430816650390625}
+{"text": "xizlluo", "tokenizations": [[["x", 1], ["i", 2], ["z", 3], ["l", 4], ["l", 5], ["u", 6], ["o", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.9512438774108887}
+{"text": "xxluizla", "tokenizations": [[["x", 1], ["x", 2], ["l", 3], ["u", 4], ["i", 5], ["z", 6], ["l", 7], ["a", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.718498706817627}
+{"text": "xuozx", "tokenizations": [[["x", 1], ["u", 2], ["o", 3], ["z", 4], ["x", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "xzaazzla", "tokenizations": [[["x", 1], ["z", 2], ["a", 3], ["a", 4], ["z", 5], ["z", 6], ["l", 7], ["a", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.564348220825195}
+{"text": "ilauia", "tokenizations": [[["i", 1], ["l", 2], ["a", 3], ["u", 4], ["i", 5], ["a", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.332204580307007}
+{"text": "xulxox", "tokenizations": [[["x", 1], ["u", 2], ["l", 3], ["x", 4], ["o", 5], ["x", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.4339871406555176}
+{"text": "xuaoazu", "tokenizations": [[["x", 1], ["u", 2], ["a", 3], ["o", 4], ["a", 5], ["z", 6], ["u", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.025351524353027}
+{"text": "yyzoazu", "tokenizations": [[["y", 1], ["y", 2], ["z", 3], ["o", 4], ["a", 5], ["z", 6], ["u", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.025351524353027}
+{"text": "uzlx", "tokenizations": [[["u", 1], ["z", 2], ["l", 3], ["x", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.079441547393799}
+{"text": "yyyyu", "tokenizations": [[["y", 1], ["y", 2], ["y", 3], ["y", 4], ["u", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "xixya", "tokenizations": [[["x", 1], ["i", 2], ["x", 3], ["y", 4], ["a", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "xxlaxo", "tokenizations": [[["x", 1], ["x", 2], ["l", 3], ["a", 4], ["x", 5], ["o", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.258096694946289}
+{"text": "xiyyox", "tokenizations": [[["x", 1], ["i", 2], ["y", 3], ["y", 4], ["o", 5], ["x", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.178053855895996}
+{"text": "ulla", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["a", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.079441547393799}
+{"text": "uyiizla", "tokenizations": [[["u", 1], ["y", 2], ["i", 3], ["i", 4], ["z", 5], ["l", 6], ["a", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.158883094787598}
+{"text": "xzyoxo", "tokenizations": [[["x", 1], ["z", 2], ["y", 3], ["o", 4], ["x", 5], ["o", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.295836925506592}
+{"text": "oyiu", "tokenizations": [[["o", 1], ["y", 2], ["i", 3], ["u", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.9459102153778076}
+{"text": "lzayxx", "tokenizations": [[["l", 1], ["z", 2], ["a", 3], ["y", 4], ["x", 5], ["x", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.4011974334716797}
+{"text": "uoy", "tokenizations": [[["u", 1], ["o", 2], ["y", 3], ["[CLS]", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.3862943649291992}
+{"text": "lzx", "tokenizations": [[["l", 1], ["z", 2], ["x", 3], ["[CLS]", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.3862943649291992}
+{"text": "alox", "tokenizations": [[["a", 1], ["l", 2], ["o", 3], ["x", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.7917594909667969}
+{"text": "ullauilx", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["a", 4], ["u", 5], ["i", 6], ["l", 7], ["x", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.682131290435791}
+{"text": "ulzy", "tokenizations": [[["u", 1], ["l", 2], ["z", 3], ["y", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.079441547393799}
+{"text": "uyulu", "tokenizations": [[["u", 1], ["y", 2], ["u", 3], ["l", 4], ["u", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "yyzyluo", "tokenizations": [[["y", 1], ["y", 2], ["z", 3], ["y", 4], ["l", 5], ["u", 6], ["o", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.025351524353027}
+{"text": "zzla", "tokenizations": [[["z", 1], ["z", 2], ["l", 3], ["a", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.079441547393799}
+{"text": "ullza", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["z", 4], ["a", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "xuaozla", "tokenizations": [[["x", 1], ["u", 2], ["a", 3], ["o", 4], ["z", 5], ["l", 6], ["a", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.8712010383605957}
+{"text": "lzlizu", "tokenizations": [[["l", 1], ["z", 2], ["l", 3], ["i", 4], ["z", 5], ["u", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.890371799468994}
+{"text": "ullaox", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["a", 4], ["o", 5], ["x", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.332204580307007}
+{"text": "lzxxlxo", "tokenizations": [[["l", 1], ["z", 2], ["x", 3], ["x", 4], ["l", 5], ["x", 6], ["o", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.970292091369629}
+{"text": "xxzox", "tokenizations": [[["x", 1], ["x", 2], ["z", 3], ["o", 4], ["x", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.70805025100708}
+{"text": "uzaxo", "tokenizations": [[["u", 1], ["z", 2], ["a", 3], ["x", 4], ["o", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "yyzxox", "tokenizations": [[["y", 1], ["y", 2], ["z", 3], ["x", 4], ["o", 5], ["x", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.2188758850097656}
+{"text": "ulllua", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["l", 4], ["u", 5], ["a", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.465735912322998}
+{"text": "xxxyxzy", "tokenizations": [[["x", 1], ["x", 2], ["x", 3], ["y", 4], ["x", 5], ["z", 6], ["y", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.828641414642334}
+{"text": "lziux", "tokenizations": [[["l", 1], ["z", 2], ["i", 3], ["u", 4], ["x", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.4849066734313965}
+{"text": "xuuzzla", "tokenizations": [[["x", 1], ["u", 2], ["u", 3], ["z", 4], ["z", 5], ["l", 6], ["a", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.8712010383605957}
+{"text": "yylizox", "tokenizations": [[["y", 1], ["y", 2], ["l", 3], ["i", 4], ["z", 5], ["o", 6], ["x", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.8712010383605957}
+{"text": "xiluazy", "tokenizations": [[["x", 1], ["i", 2], ["l", 3], ["u", 4], ["a", 5], ["z", 6], ["y", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.9512436389923096}
+{"text": "lzoyazu", "tokenizations": [[["l", 1], ["z", 2], ["o", 3], ["y", 4], ["a", 5], ["z", 6], ["u", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.060442924499512}
+{"text": "iluix", "tokenizations": [[["i", 1], ["l", 2], ["u", 3], ["i", 4], ["x", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.70805025100708}
+{"text": "xzxox", "tokenizations": [[["x", 1], ["z", 2], ["x", 3], ["o", 4], ["x", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.5649495124816895}
+{"text": "lzolx", "tokenizations": [[["l", 1], ["z", 2], ["o", 3], ["l", 4], ["x", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "ilxxlzy", "tokenizations": [[["i", 1], ["l", 2], ["x", 3], ["x", 4], ["l", 5], ["z", 6], ["y", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.8712010383605957}
+{"text": "ilxzla", "tokenizations": [[["i", 1], ["l", 2], ["x", 3], ["z", 4], ["l", 5], ["a", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.332204580307007}
+{"text": "xzoxuzla", "tokenizations": [[["x", 1], ["z", 2], ["o", 3], ["x", 4], ["u", 5], ["z", 6], ["l", 7], ["a", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.605170249938965}
+{"text": "oxuluo", "tokenizations": [[["o", 1], ["x", 2], ["u", 3], ["l", 4], ["u", 5], ["o", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.465735912322998}
+{"text": "oiui", "tokenizations": [[["o", 1], ["i", 2], ["u", 3], ["i", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.079441547393799}
+{"text": "xxoxo", "tokenizations": [[["x", 1], ["x", 2], ["o", 3], ["x", 4], ["o", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "ulluulx", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["u", 4], ["u", 5], ["l", 6], ["x", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.9512438774108887}
+{"text": "uzax", "tokenizations": [[["u", 1], ["z", 2], ["a", 3], ["x", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.9459102153778076}
+{"text": "ullilyox", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["i", 4], ["l", 5], ["y", 6], ["o", 7], ["x", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.718498706817627}
+{"text": "oyyxo", "tokenizations": [[["o", 1], ["y", 2], ["y", 3], ["x", 4], ["o", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "yyolzla", "tokenizations": [[["y", 1], ["y", 2], ["o", 3], ["l", 4], ["z", 5], ["l", 6], ["a", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.9512438774108887}
+{"text": "ilxlx", "tokenizations": [[["i", 1], ["l", 2], ["x", 3], ["l", 4], ["x", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.7725887298583984}
+{"text": "xzzyazy", "tokenizations": [[["x", 1], ["z", 2], ["z", 3], ["y", 4], ["a", 5], ["z", 6], ["y", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.094344615936279}
+{"text": "yyzu", "tokenizations": [[["y", 1], ["y", 2], ["z", 3], ["u", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.079441547393799}
+{"text": "uxl", "tokenizations": [[["u", 1], ["x", 2], ["l", 3], ["[CLS]", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.3862943649291992}
+{"text": "xzyazy", "tokenizations": [[["x", 1], ["z", 2], ["y", 3], ["a", 4], ["z", 5], ["y", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.332204580307007}
+{"text": "xuyyazu", "tokenizations": [[["x", 1], ["u", 2], ["y", 3], ["y", 4], ["a", 5], ["z", 6], ["u", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.8712010383605957}
+{"text": "xiau", "tokenizations": [[["x", 1], ["i", 2], ["a", 3], ["u", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.9459102153778076}
+{"text": "ullallu", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["a", 4], ["l", 5], ["l", 6], ["u", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.8712010383605957}
+{"text": "yyxia", "tokenizations": [[["y", 1], ["y", 2], ["x", 3], ["i", 4], ["a", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.4849066734313965}
+{"text": "xxallx", "tokenizations": [[["x", 1], ["x", 2], ["a", 3], ["l", 4], ["l", 5], ["x", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.332204580307007}
+{"text": "ullyiixo", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["y", 4], ["i", 5], ["i", 6], ["x", 7], ["o", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.682131290435791}
+{"text": "ilauxazu", "tokenizations": [[["i", 1], ["l", 2], ["a", 3], ["u", 4], ["x", 5], ["a", 6], ["z", 7], ["u", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.718498706817627}
+{"text": "lylu", "tokenizations": [[["l", 1], ["y", 2], ["l", 3], ["u", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.079441547393799}
+{"text": "oaazzy", "tokenizations": [[["o", 1], ["a", 2], ["a", 3], ["z", 4], ["z", 5], ["y", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.178053855895996}
+{"text": "yyouaxo", "tokenizations": [[["y", 1], ["y", 2], ["o", 3], ["u", 4], ["a", 5], ["x", 6], ["o", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.8712010383605957}
+{"text": "xial", "tokenizations": [[["x", 1], ["i", 2], ["a", 3], ["l", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -2.079441547393799}
+{"text": "ulloxu", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["o", 4], ["x", 5], ["u", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.465735912322998}
+{"text": "xzyx", "tokenizations": [[["x", 1], ["z", 2], ["y", 3], ["x", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.9459102153778076}
+{"text": "ozx", "tokenizations": [[["o", 1], ["z", 2], ["x", 3], ["[CLS]", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.3862943649291992}
+{"text": "lzli", "tokenizations": [[["l", 1], ["z", 2], ["l", 3], ["i", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -1.7917594909667969}
+{"text": "xuauxluo", "tokenizations": [[["x", 1], ["u", 2], ["a", 3], ["u", 4], ["x", 5], ["l", 6], ["u", 7], ["o", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -4.644391059875488}
+{"text": "xualox", "tokenizations": [[["x", 1], ["u", 2], ["a", 3], ["l", 4], ["o", 5], ["x", 6], ["[CLS]", 7], ["[CLS]", 8], ["[CLS]", 9]]], "weights": [1.0], "reference_log_prob": -3.0910425186157227}
+{"text": "lzoiaox", "tokenizations": [[["l", 1], ["z", 2], ["o", 3], ["i", 4], ["a", 5], ["o", 6], ["x", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -4.025351524353027}
+{"text": "uaozla", "tokenizations": [[["u", 1], ["a", 2], ["o", 3], ["z", 4], ["l", 5], ["a", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.178053855895996}
+{"text": "lzulluo", "tokenizations": [[["l", 1], ["z", 2], ["u", 3], ["l", 4], ["l", 5], ["u", 6], ["o", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.9889841079711914}
+{"text": "ilzoluo", "tokenizations": [[["i", 1], ["l", 2], ["z", 3], ["o", 4], ["l", 5], ["u", 6], ["o", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.9512438774108887}
+{"text": "xuioxo", "tokenizations": [[["x", 1], ["u", 2], ["i", 3], ["o", 4], ["x", 5], ["o", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.4011974334716797}
+{"text": "ullilyu", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["i", 4], ["l", 5], ["y", 6], ["u", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.7841897010803223}
+{"text": "xxzyalx", "tokenizations": [[["x", 1], ["x", 2], ["z", 3], ["y", 4], ["a", 5], ["l", 6], ["x", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -4.025351524353027}
+{"text": "oulzu", "tokenizations": [[["o", 1], ["u", 2], ["l", 3], ["z", 4], ["u", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.5649495124816895}
+{"text": "ilaoxlx", "tokenizations": [[["i", 1], ["l", 2], ["a", 3], ["o", 4], ["x", 5], ["l", 6], ["x", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.9889841079711914}
+{"text": "yyauxa", "tokenizations": [[["y", 1], ["y", 2], ["a", 3], ["u", 4], ["x", 5], ["a", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.258096694946289}
+{"text": "xuiuazu", "tokenizations": [[["x", 1], ["u", 2], ["i", 3], ["u", 4], ["a", 5], ["z", 6], ["u", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -4.025351524353027}
+{"text": "ilyzy", "tokenizations": [[["i", 1], ["l", 2], ["y", 3], ["z", 4], ["y", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "xxuaxo", "tokenizations": [[["x", 1], ["x", 2], ["u", 3], ["a", 4], ["x", 5], ["o", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.4011974334716797}
+{"text": "yyuzx", "tokenizations": [[["y", 1], ["y", 2], ["u", 3], ["z", 4], ["x", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.4849066734313965}
+{"text": "uixzla", "tokenizations": [[["u", 1], ["i", 2], ["x", 3], ["z", 4], ["l", 5], ["a", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.258096694946289}
+{"text": "uoaxzy", "tokenizations": [[["u", 1], ["o", 2], ["a", 3], ["x", 4], ["z", 5], ["y", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.4011974334716797}
+{"text": "xiyua", "tokenizations": [[["x", 1], ["i", 2], ["y", 3], ["u", 4], ["a", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "xuzou", "tokenizations": [[["x", 1], ["u", 2], ["z", 3], ["o", 4], ["u", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "xuzxlx", "tokenizations": [[["x", 1], ["u", 2], ["z", 3], ["x", 4], ["l", 5], ["x", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.995732307434082}
+{"text": "xxix", "tokenizations": [[["x", 1], ["x", 2], ["i", 3], ["x", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -1.9459102153778076}
+{"text": "oxyxox", "tokenizations": [[["o", 1], ["x", 2], ["y", 3], ["x", 4], ["o", 5], ["x", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.2188758850097656}
+{"text": "ilxula", "tokenizations": [[["i", 1], ["l", 2], ["x", 3], ["u", 4], ["l", 5], ["a", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.4011974334716797}
+{"text": "xxxax", "tokenizations": [[["x", 1], ["x", 2], ["x", 3], ["a", 4], ["x", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.397895336151123}
+{"text": "xzzizy", "tokenizations": [[["x", 1], ["z", 2], ["z", 3], ["i", 4], ["z", 5], ["y", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.2188758850097656}
+{"text": "ullyua", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["y", 4], ["u", 5], ["a", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.178053855895996}
+{"text": "xxzyaazu", "tokenizations": [[["x", 1], ["x", 2], ["z", 3], ["y", 4], ["a", 5], ["a", 6], ["z", 7], ["u", 8]]], "weights": [1.0], "reference_log_prob": -4.644391059875488}
+{"text": "yyuuy", "tokenizations": [[["y", 1], ["y", 2], ["u", 3], ["u", 4], ["y", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.7725887298583984}
+{"text": "lzaozy", "tokenizations": [[["l", 1], ["z", 2], ["a", 3], ["o", 4], ["z", 5], ["y", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.0910425186157227}
+{"text": "xxauazu", "tokenizations": [[["x", 1], ["x", 2], ["a", 3], ["u", 4], ["a", 5], ["z", 6], ["u", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.9512438774108887}
+{"text": "xuxyazu", "tokenizations": [[["x", 1], ["u", 2], ["x", 3], ["y", 4], ["a", 5], ["z", 6], ["u", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -4.025351524353027}
+{"text": "uluiazu", "tokenizations": [[["u", 1], ["l", 2], ["u", 3], ["i", 4], ["a", 5], ["z", 6], ["u", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -4.025351524353027}
+{"text": "uyya", "tokenizations": [[["u", 1], ["y", 2], ["y", 3], ["a", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -1.7917594909667969}
+{"text": "xiaazu", "tokenizations": [[["x", 1], ["i", 2], ["a", 3], ["a", 4], ["z", 5], ["u", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.178053855895996}
+{"text": "xiullzy", "tokenizations": [[["x", 1], ["i", 2], ["u", 3], ["l", 4], ["l", 5], ["z", 6], ["y", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.9889841079711914}
+{"text": "lzla", "tokenizations": [[["l", 1], ["z", 2], ["l", 3], ["a", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.079441547393799}
+{"text": "lzaxluo", "tokenizations": [[["l", 1], ["z", 2], ["a", 3], ["x", 4], ["l", 5], ["u", 6], ["o", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.9512438774108887}
+{"text": "ooiaxo", "tokenizations": [[["o", 1], ["o", 2], ["i", 3], ["a", 4], ["x", 5], ["o", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.4011974334716797}
+{"text": "xzila", "tokenizations": [[["x", 1], ["z", 2], ["i", 3], ["l", 4], ["a", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "ilxo", "tokenizations": [[["i", 1], ["l", 2], ["x", 3], ["o", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.079441547393799}
+{"text": "ulluua", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["u", 4], ["u", 5], ["a", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.258096694946289}
+{"text": "ooiaa", "tokenizations": [[["o", 1], ["o", 2], ["i", 3], ["a", 4], ["a", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.4849066734313965}
+{"text": "yyoialuo", "tokenizations": [[["y", 1], ["y", 2], ["o", 3], ["i", 4], ["a", 5], ["l", 6], ["u", 7], ["o", 8]]], "weights": [1.0], "reference_log_prob": -4.477336883544922}
+{"text": "ilzxazu", "tokenizations": [[["i", 1], ["l", 2], ["z", 3], ["x", 4], ["a", 5], ["z", 6], ["u", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.9120230674743652}
+{"text": "yuzy", "tokenizations": [[["y", 1], ["u", 2], ["z", 3], ["y", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.079441547393799}
+{"text": "xxaylx", "tokenizations": [[["x", 1], ["x", 2], ["a", 3], ["y", 4], ["l", 5], ["x", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.0910425186157227}
+{"text": "yyxyxazu", "tokenizations": [[["y", 1], ["y", 2], ["x", 3], ["y", 4], ["x", 5], ["a", 6], ["z", 7], ["u", 8]]], "weights": [1.0], "reference_log_prob": -4.682131290435791}
+{"text": "xzyulzy", "tokenizations": [[["x", 1], ["z", 2], ["y", 3], ["u", 4], ["l", 5], ["z", 6], ["y", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.9889841079711914}
+{"text": "xzuayzla", "tokenizations": [[["x", 1], ["z", 2], ["u", 3], ["a", 4], ["y", 5], ["z", 6], ["l", 7], ["a", 8]]], "weights": [1.0], "reference_log_prob": -4.787491798400879}
+{"text": "uauxzy", "tokenizations": [[["u", 1], ["a", 2], ["u", 3], ["x", 4], ["z", 5], ["y", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.4011974334716797}
+{"text": "oxu", "tokenizations": [[["o", 1], ["x", 2], ["u", 3], ["[CLS]", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -1.3862943649291992}
+{"text": "ilxla", "tokenizations": [[["i", 1], ["l", 2], ["x", 3], ["l", 4], ["a", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "oauuluo", "tokenizations": [[["o", 1], ["a", 2], ["u", 3], ["u", 4], ["l", 5], ["u", 6], ["o", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.828641414642334}
+{"text": "lzoyau", "tokenizations": [[["l", 1], ["z", 2], ["o", 3], ["y", 4], ["a", 5], ["u", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.4011974334716797}
+{"text": "ulxu", "tokenizations": [[["u", 1], ["l", 2], ["x", 3], ["u", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -1.9459102153778076}
+{"text": "yyyxluo", "tokenizations": [[["y", 1], ["y", 2], ["y", 3], ["x", 4], ["l", 5], ["u", 6], ["o", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.9889841079711914}
+{"text": "xilua", "tokenizations": [[["x", 1], ["i", 2], ["l", 3], ["u", 4], ["a", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.70805025100708}
+{"text": "ooxzla", "tokenizations": [[["o", 1], ["o", 2], ["x", 3], ["z", 4], ["l", 5], ["a", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.332204580307007}
+{"text": "ulllozy", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["l", 4], ["o", 5], ["z", 6], ["y", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -4.060442924499512}
+{"text": "xzoax", "tokenizations": [[["x", 1], ["z", 2], ["o", 3], ["a", 4], ["x", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.7725887298583984}
+{"text": "xzazxo", "tokenizations": [[["x", 1], ["z", 2], ["a", 3], ["z", 4], ["x", 5], ["o", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.178053855895996}
+{"text": "uyyazu", "tokenizations": [[["u", 1], ["y", 2], ["y", 3], ["a", 4], ["z", 5], ["u", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.178053855895996}
+{"text": "uuya", "tokenizations": [[["u", 1], ["u", 2], ["y", 3], ["a", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -1.9459102153778076}
+{"text": "xzxuazu", "tokenizations": [[["x", 1], ["z", 2], ["x", 3], ["u", 4], ["a", 5], ["z", 6], ["u", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.9512438774108887}
+{"text": "ilzooox", "tokenizations": [[["i", 1], ["l", 2], ["z", 3], ["o", 4], ["o", 5], ["o", 6], ["x", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.9512438774108887}
+{"text": "zllx", "tokenizations": [[["z", 1], ["l", 2], ["l", 3], ["x", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.079441547393799}
+{"text": "uuxluo", "tokenizations": [[["u", 1], ["u", 2], ["x", 3], ["l", 4], ["u", 5], ["o", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.332204580307007}
+{"text": "xxuia", "tokenizations": [[["x", 1], ["x", 2], ["u", 3], ["i", 4], ["a", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.7725887298583984}
+{"text": "illox", "tokenizations": [[["i", 1], ["l", 2], ["l", 3], ["o", 4], ["x", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.7725887298583984}
+{"text": "ullzyau", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["z", 4], ["y", 5], ["a", 6], ["u", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.9512436389923096}
+{"text": "xxxuazu", "tokenizations": [[["x", 1], ["x", 2], ["x", 3], ["u", 4], ["a", 5], ["z", 6], ["u", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.9889841079711914}
+{"text": "ouuy", "tokenizations": [[["o", 1], ["u", 2], ["u", 3], ["y", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -1.9459102153778076}
+{"text": "xiaox", "tokenizations": [[["x", 1], ["i", 2], ["a", 3], ["o", 4], ["x", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "yyoiaox", "tokenizations": [[["y", 1], ["y", 2], ["o", 3], ["i", 4], ["a", 5], ["o", 6], ["x", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.8712010383605957}
+{"text": "oix", "tokenizations": [[["o", 1], ["i", 2], ["x", 3], ["[CLS]", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -1.3862943649291992}
+{"text": "ozyzy", "tokenizations": [[["o", 1], ["z", 2], ["y", 3], ["z", 4], ["y", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.4849066734313965}
+{"text": "oxyxx", "tokenizations": [[["o", 1], ["x", 2], ["y", 3], ["x", 4], ["x", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.5649495124816895}
+{"text": "xiaxo", "tokenizations": [[["x", 1], ["i", 2], ["a", 3], ["x", 4], ["o", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "yyxuiazu", "tokenizations": [[["y", 1], ["y", 2], ["x", 3], ["u", 4], ["i", 5], ["a", 6], ["z", 7], ["u", 8]]], "weights": [1.0], "reference_log_prob": -4.787491798400879}
+{"text": "xzyiixo", "tokenizations": [[["x", 1], ["z", 2], ["y", 3], ["i", 4], ["i", 5], ["x", 6], ["o", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -4.025351524353027}
+{"text": "xiaui", "tokenizations": [[["x", 1], ["i", 2], ["a", 3], ["u", 4], ["i", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.5649495124816895}
+{"text": "uzox", "tokenizations": [[["u", 1], ["z", 2], ["o", 3], ["x", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.079441547393799}
+{"text": "yyuuya", "tokenizations": [[["y", 1], ["y", 2], ["u", 3], ["u", 4], ["y", 5], ["a", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.332204580307007}
+{"text": "xxxuilx", "tokenizations": [[["x", 1], ["x", 2], ["x", 3], ["u", 4], ["i", 5], ["l", 6], ["x", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -4.060442924499512}
+{"text": "xxaua", "tokenizations": [[["x", 1], ["x", 2], ["a", 3], ["u", 4], ["a", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "lzoa", "tokenizations": [[["l", 1], ["z", 2], ["o", 3], ["a", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.079441547393799}
+{"text": "xxlluo", "tokenizations": [[["x", 1], ["x", 2], ["l", 3], ["l", 4], ["u", 5], ["o", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.465735912322998}
+{"text": "xzxuiluo", "tokenizations": [[["x", 1], ["z", 2], ["x", 3], ["u", 4], ["i", 5], ["l", 6], ["u", 7], ["o", 8]]], "weights": [1.0], "reference_log_prob": -4.787491798400879}
+{"text": "xxoaxlx", "tokenizations": [[["x", 1], ["x", 2], ["o", 3], ["a", 4], ["x", 5], ["l", 6], ["x", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -4.025351524353027}
+{"text": "lzyiiluo", "tokenizations": [[["l", 1], ["z", 2], ["y", 3], ["i", 4], ["i", 5], ["l", 6], ["u", 7], ["o", 8]]], "weights": [1.0], "reference_log_prob": -4.718498706817627}
+{"text": "lzxlazu", "tokenizations": [[["l", 1], ["z", 2], ["x", 3], ["l", 4], ["a", 5], ["z", 6], ["u", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.7841897010803223}
+{"text": "yyxlxxo", "tokenizations": [[["y", 1], ["y", 2], ["x", 3], ["l", 4], ["x", 5], ["x", 6], ["o", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -4.025351524353027}
+{"text": "xuallzy", "tokenizations": [[["x", 1], ["u", 2], ["a", 3], ["l", 4], ["l", 5], ["z", 6], ["y", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.9889841079711914}
+{"text": "uxxluo", "tokenizations": [[["u", 1], ["x", 2], ["x", 3], ["l", 4], ["u", 5], ["o", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.465735912322998}
+{"text": "uyox", "tokenizations": [[["u", 1], ["y", 2], ["o", 3], ["x", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.079441547393799}
+{"text": "xuyii", "tokenizations": [[["x", 1], ["u", 2], ["y", 3], ["i", 4], ["i", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.7725887298583984}
+{"text": "uuyzzla", "tokenizations": [[["u", 1], ["u", 2], ["y", 3], ["z", 4], ["z", 5], ["l", 6], ["a", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.8712010383605957}
+{"text": "oox", "tokenizations": [[["o", 1], ["o", 2], ["x", 3], ["[CLS]", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -1.3862943649291992}
+{"text": "uluu", "tokenizations": [[["u", 1], ["l", 2], ["u", 3], ["u", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -1.9459102153778076}
+{"text": "xxxuiazu", "tokenizations": [[["x", 1], ["x", 2], ["x", 3], ["u", 4], ["i", 5], ["a", 6], ["z", 7], ["u", 8]]], "weights": [1.0], "reference_log_prob": -4.770684719085693}
+{"text": "yyuiu", "tokenizations": [[["y", 1], ["y", 2], ["u", 3], ["i", 4], ["u", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.4849066734313965}
+{"text": "oxx", "tokenizations": [[["o", 1], ["x", 2], ["x", 3], ["[CLS]", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -1.0986123085021973}
+{"text": "auuzla", "tokenizations": [[["a", 1], ["u", 2], ["u", 3], ["z", 4], ["l", 5], ["a", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.332204580307007}
+{"text": "xxzylxo", "tokenizations": [[["x", 1], ["x", 2], ["z", 3], ["y", 4], ["l", 5], ["x", 6], ["o", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -4.127134323120117}
+{"text": "yylalx", "tokenizations": [[["y", 1], ["y", 2], ["l", 3], ["a", 4], ["l", 5], ["x", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.258096694946289}
+{"text": "yyuyzazu", "tokenizations": [[["y", 1], ["y", 2], ["u", 3], ["y", 4], ["z", 5], ["a", 6], ["z", 7], ["u", 8]]], "weights": [1.0], "reference_log_prob": -4.564348220825195}
+{"text": "ulluo", "tokenizations": [[["u", 1], ["l", 2], ["l", 3], ["u", 4], ["o", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.7725887298583984}
+{"text": "liu", "tokenizations": [[["l", 1], ["i", 2], ["u", 3], ["[CLS]", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -1.3862943649291992}
+{"text": "yyo", "tokenizations": [[["y", 1], ["y", 2], ["o", 3], ["[CLS]", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -1.3862943649291992}
+{"text": "xuuoa", "tokenizations": [[["x", 1], ["u", 2], ["u", 3], ["o", 4], ["a", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "ulyl", "tokenizations": [[["u", 1], ["l", 2], ["y", 3], ["l", 4], ["[CLS]", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.079441547393799}
+{"text": "xxuyzox", "tokenizations": [[["x", 1], ["x", 2], ["u", 3], ["y", 4], ["z", 5], ["o", 6], ["x", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.9889841079711914}
+{"text": "xuzaa", "tokenizations": [[["x", 1], ["u", 2], ["z", 3], ["a", 4], ["a", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.6390573978424072}
+{"text": "xiallluo", "tokenizations": [[["x", 1], ["i", 2], ["a", 3], ["l", 4], ["l", 5], ["l", 6], ["u", 7], ["o", 8]]], "weights": [1.0], "reference_log_prob": -4.644391059875488}
+{"text": "yyuixo", "tokenizations": [[["y", 1], ["y", 2], ["u", 3], ["i", 4], ["x", 5], ["o", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.178053855895996}
+{"text": "xuaxu", "tokenizations": [[["x", 1], ["u", 2], ["a", 3], ["x", 4], ["u", 5], ["[CLS]", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -2.7725887298583984}
+{"text": "xzxolx", "tokenizations": [[["x", 1], ["z", 2], ["x", 3], ["o", 4], ["l", 5], ["x", 6], ["[CLS]", 7], ["[CLS]", 8]]], "weights": [1.0], "reference_log_prob": -3.0910425186157227}

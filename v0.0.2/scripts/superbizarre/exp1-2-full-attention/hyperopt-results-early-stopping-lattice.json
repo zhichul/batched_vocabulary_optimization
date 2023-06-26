@@ -1,0 +1,1 @@
+{"step": 240, "dev_accuracy": 0.7243096232414246, "test_accuracy": 0.7195360064506531, "dev_entroy": 0.508212720596273, "test_entropy": 0.5084993113315149, "seed": "44", "data": "arxiv"}

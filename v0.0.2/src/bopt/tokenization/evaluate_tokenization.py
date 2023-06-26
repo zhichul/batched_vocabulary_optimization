@@ -1,5 +1,6 @@
 import code
 import json
+import math
 import sys
 from argparse import ArgumentParser
 from collections import defaultdict
@@ -22,6 +23,8 @@ def main():
     parser.add_argument("label_file")
     parser.add_argument("prediction_file")
     parser.add_argument("--categories_file", default=None)
+    parser.add_argument("--report_reference", action="store_true")
+    parser.add_argument("--skip_inf", action="store_true")
     args = parser.parse_args()
 
     label_tokenizations = []
@@ -41,7 +44,7 @@ def main():
         with open(args.categories_file, "rt") as f:
             for line in f:
                 label_tokenization_categories.append(json.loads(line))
-        assert len(label_tokenizations) == len(label_tokenization_categories)
+        assert len(label_tokenizations) == len(label_tokenization_categories), (len(label_tokenizations), len(label_tokenization_categories))
 
     token_tp = 0
     token_ap = 0
@@ -51,6 +54,7 @@ def main():
     boundary_at = 0
     unique_predicted_tokens = set()
     unique_gold_tokens = set()
+    total_chars = 0
     if args.categories_file:
         category_token_tp = defaultdict(float)
         category_token_ap = defaultdict(float)
@@ -59,9 +63,16 @@ def main():
         category_boundary_ap = defaultdict(float)
         category_boundary_at = defaultdict(float)
         category_unique_gold_tokens = defaultdict(set)
+    if args.report_reference:
+        reference_log_prob = 0
 
     for k in range(len(label_tokenizations)):
         gold_line, predicted_line = label_tokenizations[k], predicted_tokenizations[k]
+        total_chars += len(gold_line["text"])
+        if args.report_reference:
+            if args.skip_inf and predicted_line["reference_log_prob"] == -math.inf:
+                continue
+            reference_log_prob += predicted_line["reference_log_prob"]
         if args.categories_file:
             category_line = label_tokenization_categories[k]
         for i, j in product(range(len(gold_line["weights"])), range(len(predicted_line["weights"]))):
@@ -104,6 +115,8 @@ def main():
     token_precision, token_recall, token_f1 = f1(token_tp, token_ap, token_at)
     boundary_precision, boundary_recall, boundary_f1 = f1(boundary_tp, boundary_ap, boundary_at)
     output = {"token_precision": token_precision, "token_recall": token_recall, "token_f1": token_f1, "boundary_precision": boundary_precision, "boundary_recall": boundary_recall, "boundary_f1":boundary_f1, "unique_predicted_tokens": len(unique_predicted_tokens), "unique_gold_tokens": len(unique_gold_tokens)}
+    if args.report_reference:
+        output["reference_log_prob"] = reference_log_prob / total_chars
     if args.categories_file:
         for category in category_token_at.keys():
             category_token_precision, category_token_recall, category_token_f1 = f1(category_token_tp[category], category_token_ap[category], category_token_at[category])

@@ -6,6 +6,7 @@ from bopt.unigram_lm_tokenizers.encoding.forward_encoding import integerize_for_
 from bopt.unigram_lm_tokenizers.encoding.linearized_encoding import extract_input_ids, extract_position_ids, \
     extract_attention_mask, extract_token_encoding
 from bopt.unigram_lm_tokenizers.inference.entropy import entropy
+from bopt.unigram_lm_tokenizers.inference.forward_backward import forward_algorithm
 from bopt.unigram_lm_tokenizers.inference.viterbi import viterbi_nbest
 
 from typing import Union, List
@@ -35,7 +36,10 @@ class NBestTokenizer(LatticeTokenizer):
                 pad_token_id=0,
                 subsample_vocab=None,
                 temperature=1.0,
-                output_inputs=False):
+                output_inputs=False,
+                output_forward_alpha=False,
+                references=None,
+                max_tokens=-1):
         if memoizer is None != sentence_ids is None: raise ValueError(
             "memoizer and sentence_ids have to be set at the same time")
         forward_encodings, input_ids, position_ids, attention_mask, type_ids, B, N, M, L, K = self.extract_encodings(
@@ -53,7 +57,8 @@ class NBestTokenizer(LatticeTokenizer):
             try_word_initial_when_unk=try_word_initial_when_unk,
             pad_token_id = pad_token_id,
             subsample_vocab=subsample_vocab,
-            temperature=temperature
+            temperature=temperature,
+            references=references,
             )
 
         # compute nbest
@@ -65,7 +70,7 @@ class NBestTokenizer(LatticeTokenizer):
 
         # extract integer ids
         nbest_input_ids, nbest_attention_mask, nbest_position_ids, nbest_type_ids = extract_token_encoding(nbest_forward_encodings,
-                                                                    use_lattice_position_ids=use_lattice_position_ids) # B x n x seq_length
+                                                                    use_lattice_position_ids=use_lattice_position_ids, max_tokens=max_tokens) # B x n x seq_length
         weight = viterbi_nbest_output.weight.sum(1) # B x KN x n -> B x n
 
         # compute and normalize entropy
@@ -73,6 +78,9 @@ class NBestTokenizer(LatticeTokenizer):
         lengths = length(forward_encodings) # B x KN
 
         ent_scalar = ent.sum() / lengths.sum() # 1
+
+        # do some extra work if requested
+        forward_alpha = forward_algorithm(edge_log_potentials).last_node_log_alphas if output_forward_alpha else None
         return UnigramLMTokenizerOutput(input_ids=nbest_input_ids,
                                         attention_mask=nbest_attention_mask,
                                         position_ids=nbest_position_ids,
@@ -82,5 +90,6 @@ class NBestTokenizer(LatticeTokenizer):
                                         nchars=lengths.sum().item(),
                                         weights=weight,
                                         edge_log_potentials=edge_log_potentials if output_inputs else None,
-                                        forward_encodings=forward_encodings if output_inputs else None)
+                                        forward_encodings=forward_encodings if output_inputs else None,
+                                        forward_alpha=forward_alpha)
 

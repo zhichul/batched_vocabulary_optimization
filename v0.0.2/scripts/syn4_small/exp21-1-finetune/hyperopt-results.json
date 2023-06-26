@@ -1,0 +1,4 @@
+{"step": 210, "dev_accuracy": 0.5839999914169312, "test_accuracy": 0.5933333039283752, "train_accuracy": 1.0, "dev_entroy": 0.027546325214565556, "test_entropy": 0.026508378872855214, "l1": "0.01", "seed": "50", "data": "100"}
+{"step": 270, "dev_accuracy": 0.8293333053588867, "test_accuracy": 0.8233333230018616, "train_accuracy": 1.0, "dev_entroy": 0.02281239295183217, "test_entropy": 0.02417429707618156, "l1": "0.1", "seed": "44", "data": "500"}
+{"step": 180, "dev_accuracy": 0.9693333506584167, "test_accuracy": 0.9586666822433472, "train_accuracy": 1.0, "dev_entroy": 0.013799203776951216, "test_entropy": 0.014774615293559988, "l1": "0.1", "seed": "50", "data": "small"}
+{"step": 300, "dev_accuracy": 0.9953333139419556, "test_accuracy": 0.9926666617393494, "train_accuracy": 1.0, "dev_entroy": 0.011552838817999352, "test_entropy": 0.01275482759416388, "l1": "0.1", "seed": "42", "data": "full"}

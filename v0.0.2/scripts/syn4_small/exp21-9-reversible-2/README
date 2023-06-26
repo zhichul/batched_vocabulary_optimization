@@ -1,0 +1,1 @@
+bilevel runs with small model with fixed transformer initilaization instead of random restart, this one has more detailed logs of every training/evaluation trajectory

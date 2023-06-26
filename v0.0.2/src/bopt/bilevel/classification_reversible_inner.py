@@ -1,5 +1,10 @@
 import code
+import gc
+import json
 import math
+import os
+import time
+from collections import deque
 
 import torch
 from tqdm import tqdm
@@ -13,13 +18,13 @@ from experiments.utils.reversible_operations import f_cast, f_uncast, f_mul_rat,
     f_sub
 
 
-def reversible_inner(setup: ClassificationBilevelTrainingSetup, outer_step: int, warmup=False):
+def reversible_inner(setup: ClassificationBilevelTrainingSetup, outer_step: int, warmup=False, random_init=0):
 
     step = 0
     windowed_loss = []
     windowed_loss_avg = math.inf
     grad_norm = math.inf
-    buffers_first = []
+    buffers_first = [] # [None] * (setup.args.train_steps_inner if not warmup else setup.args.train_steps_warmup)
     buffers_second = []
     batch_ids = []
     batch_id = []
@@ -34,22 +39,51 @@ def reversible_inner(setup: ClassificationBilevelTrainingSetup, outer_step: int,
     g_2 = None
     g_t = None
     second_step = None
+    start = 0
+    end = 0
     bar = tqdm(enumerate(load_forever(setup.train_inner_dataloader)),total=(setup.args.train_steps_inner if not warmup else setup.args.train_steps_warmup) * setup.args.train_batch_size_inner // setup.args.gpu_batch_size_inner)
+    gc.disable()
     for raw_step, (epoch, batch) in bar:
+        end = time.time()
         # training state
-        bar.set_description_str(f"Inner Epoch={epoch} Step={step} InnerLoss={sum(windowed_loss) / len(windowed_loss) if len(windowed_loss) else windowed_loss_avg:.2f}({len(windowed_loss) * setup.args.gpu_batch_size_inner:>4d} exs)")
+        bar.set_description_str(f"Inner Epoch={epoch} Step={step} InnerLoss={sum(windowed_loss) / len(windowed_loss) if len(windowed_loss) else windowed_loss_avg:.2f}({len(windowed_loss) * setup.args.gpu_batch_size_inner:>4d} exs)"
+                                f"{start-end} ")
+        start = time.time()
         state = TrainingState(step, epoch, bar.format_dict['elapsed'])
+        if ((raw_step) % (setup.args.train_batch_size_inner // setup.args.gpu_batch_size_inner) == 0) and (
+                step % setup.args.log_trajectory_steps == 0):
+            setup.classifier.eval()
+            with torch.no_grad():
+                eval_metrics = eval_classification(setup, state)
+            setup.classifier.train()
+
+            # save log
+            with open(os.path.join(setup.args.output_directory, f"step-{outer_step}-{'eval' if warmup else 'train'}-init-{random_init}-log.json"), "at") as f:
+                logline = {
+                    "step": step,
+                    "epoch": epoch,
+                    "elapsed": state.elapsed,
+                    "train_loss": windowed_loss_avg,
+                    "model_lr": setup.args.task_model_learning_rate
+                }
+                if setup.args.input_tokenizer_model in ["unigram", "nulm"] and setup.args.input_tokenizer_learning_rate: # only do this if training
+                    logline["tokenizer_lr"] = setup.args.input_tokenizer_learning_rate
+                logline.update(eval_metrics)
+                print(json.dumps(logline), file=f)
+                # print(logline)
 
         if raw_step >= ((setup.args.train_steps_inner if not warmup else setup.args.train_steps_warmup) * (setup.args.train_batch_size_inner // setup.args.gpu_batch_size_inner)) or grad_norm <= setup.args.inner_threshold:
             break
         # training
         ids, sentences, labels = batch
-        batch_id.append(ids)
+        batch_id.append(ids) ##TODO uncomment
 
         # run model
+
         output: ClassifierOutput = setup.classifier(setup, ids, sentences, labels, "train_inner")
         loss = output.task_loss * (setup.args.gpu_batch_size_inner / setup.args.train_batch_size_inner)
         loss.backward()
+
         loss = loss.item()
         # print(loss)
         # maybe step optimizer
@@ -59,9 +93,13 @@ def reversible_inner(setup: ClassificationBilevelTrainingSetup, outer_step: int,
             g_t = f_cast(p.grad for p in setup.classifier.model.parameters())
             # new direction
             v_t_first, buffer_t_first = f_mul_rat(v_t, *to_rational(setup.args.momentum_coefficient, d=setup.args.momentum_coefficient_precision))
+            buffers_first.append(buffer_t_first) #TODO uncomment
+            # buffers_first.append(torch.ones((20000, 2000) ,dtype=torch.uint8)) #TODO uncomment
+            # code.interact(local=locals())
+            # buffers_first[step] = (buffer_t_first) #TODO uncomment
+
             # v_tp1_second = [mult_by_ratio(grad, setup.args.momentum_dampening[1]-setup.args.momentum_dampening[0], setup.args.momentum_dampening[1]) for grad in g_t]
             # buffer_t_second = [(buffer.detach().cpu(), dexp.detach().cpu()) for _, buffer, dexp in v_tp1_second]
-            buffers_first.append(buffer_t_first)
             # buffers_second.append(buffer_t_second)
             # v_tp1 = torch._foreach_add([tup[0] for tup in v_tp1_first], [tup[0] for tup in v_tp1_second], alpha=-1)
             # v_t = torch._foreach_add(v_t_first, g_t, alpha=-(1-setup.args.momentum_dampening[0]/setup.args.momentum_dampening[1]))
@@ -96,14 +134,13 @@ def reversible_inner(setup: ClassificationBilevelTrainingSetup, outer_step: int,
             #     third_iterate = f_cast(setup.classifier.model.parameters())
 
             step += 1
-            batch_ids.append(batch_id)
+            batch_ids.append(batch_id) #TODO uncomment
             batch_id = []
             setup.classifier.model.zero_grad()
             # code.interact(local=locals())
             # code.interact(local=locals())
-
         # maybe step scheduler, only for ift currently
-        windowed_loss.append(loss)
+        windowed_loss.append(loss) #TODO uncomment
         if len(windowed_loss) >= (setup.args.lr_adjustment_window_size // setup.args.gpu_batch_size_inner):
             windowed_loss_avg = sum(windowed_loss) / len(windowed_loss)
             windowed_loss = []
@@ -112,21 +149,33 @@ def reversible_inner(setup: ClassificationBilevelTrainingSetup, outer_step: int,
             #     # reset so never step down due to increasing entropy loss factor, and continue with new baseline after
             #     # the annealing factor is maxed out
             # setup.inner_scheduler.step(windowed_loss_avg)
-    # if setup.args.bilevel_optimization_scheme == "ift":
-    #     setup.classifier.eval()
-    #     with torch.no_grad():
-    #         eval_metrics = eval_classification(setup, state, save_prediction=False)
-    #     setup.classifier.train()
-    #     # save log
-    #     logline = {
-    #         "step": step,
-    #         "epoch": epoch,
-    #         "elapsed": state.elapsed,
-    #         "train_loss": windowed_loss_avg,
-    #         "model_lr": setup.inner_optimizer.named_param_groups["model_decay"]["lr"]
-    #     }
-    #     logline.update(eval_metrics)
-    #     print("\t" + str(logline))
-    # code.interact(local=locals())
-    return InnerLoopOutput(buffers_first=buffers_first, buffers_second=buffers_second, batch_ids=batch_ids, last_step=v_t, last_grad=f_uncast(g_t) if g_t is not None else None,zero_iterate=zero_iterate,  first_iterate=first_iterate, g_1=f_uncast(g_1)if g_1 is not None else None, g_2=f_uncast(g_2)if g_2 is not None else None, second_iterate=second_iterate, third_iterate=third_iterate, second_step=second_step, first_step=first_step)
+    setup.classifier.eval()
+    with torch.no_grad():
+        eval_metrics = eval_classification(setup, state, save_prediction=False)
+    setup.classifier.train()
+    # save log
+    logline = {
+        "outer_step": outer_step,
+        "step": step,
+        "epoch": epoch,
+        "elapsed": state.elapsed,
+        "train_loss": windowed_loss_avg,
+        "model_lr": setup.inner_optimizer.named_param_groups["model_decay"]["lr"]
+    }
+    logline.update(eval_metrics)
+    gc.enable()
+    return InnerLoopOutput(buffers_first=buffers_first,
+                           buffers_second=buffers_second,
+                           batch_ids=batch_ids,
+                           last_step=v_t,
+                           last_grad=f_uncast(g_t) if g_t is not None else None,
+                           zero_iterate=zero_iterate,
+                           first_iterate=first_iterate,
+                           g_1=f_uncast(g_1)if g_1 is not None else None,
+                           g_2=f_uncast(g_2)if g_2 is not None else None,
+                           second_iterate=second_iterate,
+                           third_iterate=third_iterate,
+                           second_step=second_step,
+                           first_step=first_step,
+                           logline=logline)
 

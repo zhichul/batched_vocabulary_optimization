@@ -1,0 +1,23 @@
+test
+>>> for quantile in [1.0, 0.999, 0.99, 0.9]: print(sorted(x)[int(len(x)*quantile)-1])
+...
+246
+206
+191
+117
+
+dev
+>>> for quantile in [1.0, 0.999, 0.99, 0.9]: print(sorted(x)[int(len(x)*quantile)-1])
+...
+308
+176
+123
+76
+
+train
+>>> for quantile in [1.0, 0.999, 0.99, 0.9]: print(sorted(x)[int(len(x)*quantile)-1])
+...
+1881
+242
+123
+74

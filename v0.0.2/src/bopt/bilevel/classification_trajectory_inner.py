@@ -1,5 +1,7 @@
 import code
+import json
 import math
+import os
 
 import higher
 from tqdm import tqdm
@@ -42,18 +44,20 @@ def accumulate_rollout_gradient(rollout_output: InnerLoopOutput, setup: Classifi
             p.grad += np.grad
     return losses
 
-def train_trajectory_inner(setup: ClassificationBilevelTrainingSetup, outer_step):
+def train_trajectory_inner(setup: ClassificationBilevelTrainingSetup, outer_step, restart_number=0):
     windowed_loss = []
     windowed_loss_avg = math.inf
     bar = tqdm(range(setup.args.train_trajectory_inner))
     outer_loss = 0
     initial_params = f_uncast(f_cast(p.detach().clone() for p in setup.classifier.model.parameters()))
+    logline = None
     for step in bar:
         bar.set_description_str(f"Traj Epoch={(step * setup.args.train_batch_size_inner) / len(setup.train_inner_dataloader.dataset) if step > 0 else 0} Step={step} InnerLoss={sum(windowed_loss) / len(windowed_loss) if len(windowed_loss) else windowed_loss_avg:.2f}({len(windowed_loss) * setup.args.train_batch_size_inner:>4d} exs)")
         # unroll requires diff-through-opt so do that instead
         if setup.args.bilevel_optimization_scheme == "reversible-learning":
             set_grad(setup.classifier.input_tokenizer.parameters(), requires_grad=False)
         rollout_output = train_classification_inner(setup, outer_step)
+        logline = rollout_output.logline
         if setup.args.bilevel_optimization_scheme == "reversible-learning":
             set_grad(setup.classifier.input_tokenizer.parameters(), requires_grad=True)
         if setup.args.bilevel_optimization_scheme == "unroll":
@@ -74,4 +78,6 @@ def train_trajectory_inner(setup: ClassificationBilevelTrainingSetup, outer_step
             windowed_loss_avg = sum(windowed_loss) / len(windowed_loss)
             setup.inner_scheduler.step(windowed_loss_avg)
             windowed_loss = []
-    return outer_loss
+    with open(os.path.join(setup.args.output_directory, f"train-init-{restart_number}-log.json"), "at") as f:
+        print(json.dumps(logline), file=f)
+    return outer_loss, logline
